@@ -1,0 +1,99 @@
+.katakana {
+  font-size: 200px;
+  color: #000000;
+  text-align: center;
+  margin: 30px 0;
+  padding: 30px;
+}
+
+button {
+  display: block;
+  margin: -10px auto;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #3D97DE;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.katakanaTitle {
+  text-align: center;
+  font-size: 40px;
+  margin: 0;
+}
+
+.katakanaTitleContainer {
+  background-color: #E9E9E9;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.katakanaBox {
+  background-color: #E9E9E9;
+  width: 300px;
+  height: 430px;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 30px auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.katakanaCard {
+  background-color: #FFFFFF;
+  width: 270px;
+  height: 370px;
+  margin: 20px auto;
+}
+
+.inputTitle {
+  margin: 10px;
+}
+
+#romanjiForm {
+  text-align: center;
+}
+
+#romanjiInput {
+  width: 10%;
+  padding: 5px;
+  margin-bottom: 20px;
+  font-size: 1em;
+  border: 1px solid #CCCCCC;
+  border-radius: 5px;
+}
+
+button[type="submit"] {
+  display: block;
+  width: 5%;
+  padding: 10px;
+  font-size: 1em;
+  background-color: #3D97DE;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.correctMsg {
+  text-align: center;
+  color: forestgreen;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.incorrectMsg {
+  text-align: center;
+  color: red;
+  font-size: 20px;
+}
