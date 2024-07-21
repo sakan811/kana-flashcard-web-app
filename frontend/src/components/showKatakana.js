@@ -2,6 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import axios from 'axios';
 import './showKatakana.css';
 import {getRandomCharacter} from "./funcs/utilsFunc";
+import KatakanaPerformanceTable from "./katakanaPerformanceTable";
 
 // Initialize with equal weights
 const initialKatakanaCharacters  = [
@@ -59,27 +60,7 @@ const RandomKatakana = () => {
   const [inputValue, setInputValue] = useState('');
   const [correctMsg, setCorrectMsg] = useState('');
   const [incorrectMsg, setIncorrectMsg] = useState('');
-
-  // const getRandomKatakana = useCallback((katakanaData) => {
-  //   // Calculate the total weight by summing up the weights of all Katakana characters.
-  //   const totalWeight = katakanaData.reduce((sum, { weight }) => sum + weight, 0);
-  //
-  //   // Generate a random number between 0 and the total weight.
-  //   let randomNum = Math.random() * totalWeight;
-  //
-  //   // Iterate over the Katakana data to find which character the random number falls into.
-  //   for (const item of katakanaData) {
-  //     // Subtract the weight of the current item from the random number.
-  //     randomNum -= item.weight;
-  //     // If the random number is now less than or equal to 0, return the current item.
-  //     if (randomNum <= 0) {
-  //       return item;
-  //     }
-  //   }
-  //
-  //   // In case of rounding errors or unexpected situations, return the last item.
-  //   return katakanaData[katakanaData.length - 1];
-  // }, []);
+  const [performanceData, setPerformanceData] = useState([]);
 
   const getRandomKatakana = useCallback((katakanaData) => {
     return getRandomCharacter(katakanaData);
@@ -108,19 +89,19 @@ const RandomKatakana = () => {
 
 
   const getKatakanaPerformance = useCallback(async () => {
-        try {
-              const response = await axios.get('http://localhost:5000/katakana-performance');
-              const data = response.data;
-        } catch (error) {
-            console.error('Error fetching katakana performance:', error);
-        }
-      }
-  );
+    try {
+      const response = await axios.get('http://localhost:5000/katakana-performance');
+      setPerformanceData(response.data);
+    } catch (error) {
+      console.error('Error fetching katakana performance:', error);
+    }
+  }, []);
 
 
   useEffect(() => {
     fetchAndUpdateKatakana();
-  }, [fetchAndUpdateKatakana]);
+    getKatakanaPerformance();
+  }, [fetchAndUpdateKatakana, getKatakanaPerformance]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -141,6 +122,9 @@ const RandomKatakana = () => {
         setIncorrectMsg(`Incorrect. It is <b>${currentKatakana.romanji}</b>`);
         setCorrectMsg('');
       }
+
+      // Fetch updated performance data after submitting an answer
+      await getKatakanaPerformance();
 
       // Fetch updated percentages and set new katakana
       setTimeout(() => {
@@ -183,6 +167,7 @@ const RandomKatakana = () => {
       </form>
       {correctMsg && <p className="correctMsg">{correctMsg}</p>}
       {incorrectMsg && <p className="incorrectMsg" dangerouslySetInnerHTML={{ __html: incorrectMsg }}></p>}
+      <KatakanaPerformanceTable performanceData={performanceData} />
     </>
   );
 };

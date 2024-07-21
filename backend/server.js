@@ -82,10 +82,16 @@ app.get('/katakana-percentages', async (req, res) => {
 app.get('/katakana-performance', async (req, res) => {
   try {
     const [results] = await sequelize.query(`
-      SELECT *
-      FROM public."KatakanaAnswers";
+      SELECT
+        katakana,
+        romanji,
+        COUNT(*) AS total_answer,
+        SUM(CASE WHEN is_correct = true THEN 1 ELSE 0 END) AS correct_answer,
+        (SUM(CASE WHEN is_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS accuracy
+      FROM public."KatakanaAnswers"
+      GROUP BY katakana, romanji
+      order by (SUM(CASE WHEN is_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) desc;
     `);
-
     res.json(results);
   } catch (error) {
     res.status(500).json({ message: error.message });
