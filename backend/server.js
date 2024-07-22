@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Sequelize, DataTypes } = require('sequelize');
+require('dotenv').config();
 
 const app = express();
 const port = 5000;
@@ -11,7 +12,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Connect to PostgreSQL
-const sequelize = new Sequelize('kana_db', 'postgres', '625143', {
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: 'localhost',
   dialect: 'postgres',
 });
@@ -41,7 +42,7 @@ sequelize.sync().then(() => {
   console.log('Database synced');
 });
 
-// Define routes
+// Define API endpoints
 app.post('/katakana-answer', async (req, res) => {
   const { answer, katakana, romanji, is_correct } = req.body;
 
