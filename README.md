@@ -7,6 +7,12 @@ The web-app was built to run locally.
 # Status
 Latest Update: 10 August 2024
 
+[![Backend Test](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-backend.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-backend.yml)
+
+[![Frontend Test](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend.yml)
+
+[![Docker Build](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml)
+
 # To Use the Web App 
 ## Setup the Web App 
 - Run ```docker-compose up```
