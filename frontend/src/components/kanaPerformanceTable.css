@@ -1,0 +1,47 @@
+.kanaPerformanceTableContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 10px;
+}
+
+.kanaPerformanceTable {
+  width: 50%;
+  margin-top: 10px;
+  border-collapse: separate;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kanaPerformanceTable th,
+.kanaPerformanceTable td {
+  padding: 10px;
+  text-align: center;
+}
+
+.kanaPerformanceTable th {
+  background-color: #007bff;
+  color: white;
+}
+
+.kanaPerformanceTable tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.kanaPerformanceTable tr:hover {
+  background-color: #ddd;
+}
+
+.kanaPerformanceTableTitle {
+  margin: 5px;
+}
+
+.kanaPerformanceButton {
+  margin: 20px;
+}
+
+.kanaPerformanceButtonContainer {
+  display: flex;
+  justify-content: center;
+}
+
