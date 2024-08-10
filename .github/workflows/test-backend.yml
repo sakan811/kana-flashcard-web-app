@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 18, 19, 20 ]
+        node-version: [18, 19, 20]
 
     services:
       postgres:
@@ -46,6 +46,13 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+
+    - name: Wait for PostgreSQL
+      run: |
+        until pg_isready -h localhost -U postgres; do
+          echo "Waiting for PostgreSQL to be ready..."
+          sleep 2
+        done
 
     - name: Start backend server
       run: npm start &
