@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  frontend:
+    image: sakanbeer88/kana-flashcard-app-frontend:latest
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend:5000
+
+  backend:
+    image: sakanbeer88/kana-flashcard-app-backend:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=kana_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=kana_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
