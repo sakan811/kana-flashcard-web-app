@@ -11,31 +11,52 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        node-version:
-          - 18
-          - 19
-          - 20
-
+  build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [ 18, 19, 20 ]
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: kana_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: './backend/package-lock.json'
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies
-        working-directory: ./backend
-        run: npm install
+    - name: Install dependencies
+      run: npm install
 
-      - name: Run tests
-        working-directory: ./backend
-        run: npm test
+    - name: Start backend server
+      run: npm start &
+      env:
+        DB_NAME: kana_db
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_HOST: localhost
+
+    - name: Run tests
+      run: npm test
+      env:
+        DB_NAME: kana_db
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_HOST: localhost
