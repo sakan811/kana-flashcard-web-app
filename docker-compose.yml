@@ -21,6 +21,7 @@ services:
       - DB_PASSWORD=postgres
       - DB_HOST=db
       - DB_PORT=5432
+    entrypoint: ["/usr/local/bin/wait-for-db.sh", "db:5432", "--", "npm", "start"]
 
   db:
     image: postgres:latest
