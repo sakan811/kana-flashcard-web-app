@@ -8,6 +8,8 @@ services:
       - backend
     environment:
       - REACT_APP_BACKEND_URL=http://backend:5000
+    networks:
+      - app-network
 
   backend:
     image: sakanbeer88/kana-flashcard-app-backend:latest
@@ -21,6 +23,8 @@ services:
       - DB_PASSWORD=postgres
       - DB_HOST=db
       - DB_PORT=5432
+    networks:
+      - app-network
 
   db:
     image: postgres:16
@@ -32,12 +36,12 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 5s
+    networks:
+      - app-network
 
 volumes:
   db_data:
+
+networks:
+  app-network:
+    driver: bridge
