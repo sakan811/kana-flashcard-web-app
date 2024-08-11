@@ -17,7 +17,7 @@ COPY . .
 COPY wait-for-db.sh /usr/local/bin/wait-for-db.sh
 
 # Make the script executable
-RUN chmod +x /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/wait-for-db.sh
 
 # Expose the port the app runs on
 EXPOSE 5000
