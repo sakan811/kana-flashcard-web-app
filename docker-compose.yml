@@ -20,6 +20,7 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_HOST=db
+      - DB_PORT=5432
 
   db:
     image: postgres:latest
@@ -29,6 +30,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
 volumes:
   db_data:
