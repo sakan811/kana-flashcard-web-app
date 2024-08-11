@@ -30,9 +30,11 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.5.2",
     "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/spy": "^2.0.5",
     "@vitest/ui": "^2.0.5",
     "jsdom": "^24.0.0",
     "typescript": "^5.5.4",

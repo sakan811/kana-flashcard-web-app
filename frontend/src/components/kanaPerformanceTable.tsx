@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import { Table, Button } from 'react-bootstrap';
 import './kanaPerformanceTable.css';
 
-const KanaPerformanceTable = ({ performanceData, columns, title }) => {
-  const [showTable, setShowTable] = useState(false);
+// Define types for the props
+interface Column {
+  key: string;
+  header: string;
+}
 
-  const toggleTable = () => {
-    setShowTable(!showTable);
+interface KanaPerformanceTableProps {
+  performanceData: Record<string, any>[];
+  columns: Column[];
+  title: string;
+}
+
+const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
+    { performanceData, columns, title }
+) => {
+  const [showTable, setShowTable] = useState<boolean>(false);
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  const toggleTable = (): void => {
+    setShowTable(prevShowTable => !prevShowTable);
   };
+
+  useEffect(() => {
+    if (showTable && tableRef.current) {
+      tableRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [showTable]); // Only runs when showTable changes
 
   return (
     <>
@@ -21,7 +42,7 @@ const KanaPerformanceTable = ({ performanceData, columns, title }) => {
         </Button>
       </div>
       {showTable && (
-        <div className="kanaPerformanceTableContainer">
+        <div className="kanaPerformanceTableContainer" ref={tableRef}>
           <h2 className="kanaPerformanceTableTitle">{title}</h2>
           <Table striped bordered hover className="kanaPerformanceTable">
             <thead>
