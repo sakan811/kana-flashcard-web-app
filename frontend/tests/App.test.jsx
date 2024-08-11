@@ -1,18 +1,20 @@
-import React from 'react';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import App from "../src/App";
+import App from '../src/App';
 
-test('renders Home page and find the title', () => {
-  render(<App />);
-  expect(screen.getByText(/Japanese Kana Flashcard App/i)).toBeInTheDocument();
-});
+describe('App Component', () => {
+  it('renders Home page and finds the title', () => {
+    render(<App />);
+    expect(screen.getByText(/Japanese Kana Flashcard App/i)).not.toBeNull();
+  });
 
-test('renders Home page and find the practice katakana button', () => {
-  render(<App />);
-  expect(screen.getByText(/Practice Katakana/i)).toBeInTheDocument();
-});
+  it('renders Home page and finds the practice katakana button', () => {
+    render(<App />);
+    expect(screen.getByText(/Practice Katakana/i)).not.toBeNull();
+  });
 
-test('renders Home page and find the practice hiragana button', () => {
-  render(<App />);
-  expect(screen.getByText(/Practice Hiragana/i)).toBeInTheDocument();
+  it('renders Home page and finds the practice hiragana button', () => {
+    render(<App />);
+    expect(screen.getByText(/Practice Hiragana/i)).not.toBeNull();
+  });
 });

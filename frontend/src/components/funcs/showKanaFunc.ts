@@ -1,22 +1,5 @@
 import axios from 'axios';
 
-/**
- * Get the performance data of the given Japanese kana from the database.
- *
- * @param {(value: (((prevState: *[]) => *[]) | *[])) => void} setPerformanceData - A list that stores performance data of the given Kana.
- * @param {String} kanaType - Japanese Kana Type, e.g., Hiragana or Katakana.
- *
- * @returns {VoidFunction}
- */
-export const getKanaPerformance = async (setPerformanceData, kanaType) => {
-    try {
-        const response = await axios.get(`http://localhost:5000/${kanaType}-performance`);
-        setPerformanceData(response.data);
-    } catch (error) {
-        console.error(`Error fetching ${kanaType} performance:`, error);
-    }
-};
-
 
 /**
  * Update each Kana's weight.
@@ -26,13 +9,13 @@ export const getKanaPerformance = async (setPerformanceData, kanaType) => {
  * @returns {Promise<Array>} - A list of Kana with updated weight.
  */
 export const updateKanaWeight = async (
-    initialKanaCharacters,
-    kanaType
-) => {
+    initialKanaCharacters: Array<object>,
+    kanaType: string
+): Promise<Array<object>> => {
     try {
         // Fetch the kana percentages from the server
         const response = await axios.get(`http://localhost:5000/${kanaType}-percentages`);
-        const data = response.data;
+        const data: Array<object> = response.data;
 
         try {
             // Update weights based on the fetched data
@@ -57,21 +40,25 @@ export const updateKanaWeight = async (
  * @param {String} kanaType - The type of Kana (e.g., 'Hiragana' or 'Katakana') that is being processed.
  * @returns {Array} - A new array of Kana objects with the updated weight values.
  */
-function updateWeights(initialKanaCharacters, serverData, kanaType) {
+function updateWeights(
+    initialKanaCharacters: Array<object>,
+    serverData: Array<object>,
+    kanaType: string
+): Array<object>{
   // Use map to iterate over each Kana character in the initial array
-  return initialKanaCharacters.map(function(char) {
+  return initialKanaCharacters.map(function(char: object): object {
 
     // Find the corresponding data item in the server data using the kanaType key
-    const dataItem = serverData.find(function(item) {
+    const dataItem: object = serverData.find(function(item: object): boolean {
       return item[kanaType] === char[kanaType];
     });
 
     // If a matching data item is found, calculate the new weight
     if (dataItem) {
       // Weight is calculated based on the user's performance: higher percentage means lower weight
-      const userPerformance = (100 - dataItem.correct_percentage) / 10
+      const userPerformance: number = (100 - dataItem.correct_percentage) / 10
       // We use Math.max to ensure the weight is at least 1
-      const weight = Math.max(1, userPerformance);
+      const weight: number = Math.max(1, userPerformance);
 
       // Return a new object with all original properties of the Kana character, but with the updated weight
       return { ...char, weight };
@@ -92,11 +79,11 @@ function updateWeights(initialKanaCharacters, serverData, kanaType) {
  * @returns {Promise<void>}
  */
 export const submitAnswer = async (
-    kanaType,
-    inputValue,
-    currentKana,
-    isCorrect
-) => {
+    kanaType: string,
+    inputValue: string,
+    currentKana: object,
+    isCorrect: boolean
+): Promise<void> => {
       await axios.post(`http://localhost:5000/${kanaType}-answer/`, {
         answer: inputValue,
         [kanaType]: currentKana[kanaType],
