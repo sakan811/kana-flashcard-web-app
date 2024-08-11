@@ -4,8 +4,8 @@ FROM node:20-alpine
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install bash
-RUN apk add --no-cache bash
+# Install bash and netcat
+RUN apk add --no-cache bash netcat-openbsd
 
 # Copy package.json and package-lock.json (or yarn.lock) into the working directory
 COPY package*.json ./
