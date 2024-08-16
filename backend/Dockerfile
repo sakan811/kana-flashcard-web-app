@@ -4,6 +4,9 @@ FROM node:20-alpine
 # Set the working directory inside the container
 WORKDIR /app
 
+# Install necessary packages for creating users
+RUN apk add --no-cache shadow
+
 # Create a non-root user and group with a specific UID and GID
 RUN groupadd -g 1000 appgroup && useradd -u 1000 -g appgroup -s /bin/sh -m appuser
 

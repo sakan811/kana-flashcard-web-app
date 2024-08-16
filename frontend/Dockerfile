@@ -19,6 +19,9 @@ RUN npx vite build
 # Use a smaller image to serve the application
 FROM nginx:alpine
 
+# Install necessary packages for creating users
+RUN apk add --no-cache shadow
+
 # Create a non-root user and group with a specific UID and GID
 RUN groupadd -g 1001 appgroup && useradd -u 1001 -g appgroup -s /bin/sh -m appuser
 
