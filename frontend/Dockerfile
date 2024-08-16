@@ -29,7 +29,7 @@ RUN groupadd -g 1001 appgroup && useradd -u 1001 -g appgroup -s /bin/sh -m appus
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Change ownership of nginx directories to non-root user
-RUN chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/run
+RUN chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/run /var/log/nginx /tmp/
 
 # Switch to the non-root user
 USER appuser
