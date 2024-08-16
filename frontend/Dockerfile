@@ -1,10 +1,10 @@
-# Use the official Node.js image as the base image
+# Use the official Node.js image as the base image for building the application
 FROM node:20-alpine AS build
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or yarn.lock) into the working directory
+# Copy package.json and package-lock.json into the working directory
 COPY package*.json ./
 
 # Install dependencies
@@ -19,8 +19,17 @@ RUN npx vite build
 # Use a smaller image to serve the application
 FROM nginx:alpine
 
+# Create a non-root user and group
+RUN addgroup -g 1001 appgroup && adduser -S -u 1001 -G appgroup appuser
+
 # Copy the built application from the build stage
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Change ownership of nginx directories to non-root user
+RUN chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/run
+
+# Switch to the non-root user
+USER appuser
 
 # Expose port 80 to access the application
 EXPOSE 80
