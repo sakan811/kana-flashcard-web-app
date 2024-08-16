@@ -28,8 +28,11 @@ RUN groupadd -g 1001 appgroup && useradd -u 1001 -g appgroup -s /bin/sh -m appus
 # Copy the built application from the build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Copy custom nginx.conf with /tmp for pid location
+COPY nginx.conf /etc/nginx/nginx.conf
+
 # Change ownership of nginx directories to non-root user
-RUN chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/run /var/log/nginx /tmp/
+RUN chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/run
 
 # Switch to the non-root user
 USER appuser
