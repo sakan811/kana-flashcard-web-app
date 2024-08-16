@@ -23,7 +23,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
     restart: on-failure
-    user: "1000:1000"
+    user: "1010:1010"
 
   db:
     image: postgres:latest
