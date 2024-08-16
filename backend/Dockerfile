@@ -4,8 +4,8 @@ FROM node:20-alpine
 # Set the working directory inside the container
 WORKDIR /app
 
-# Create a new user and group with a specific UID and GID
-RUN addgroup -g 1000 appgroup && adduser -S -u 1000 -G appgroup appuser
+# Create a non-root user and group with a specific UID and GID
+RUN groupadd -g 1000 appgroup && useradd -u 1000 -g appgroup -s /bin/sh -m appuser
 
 # Copy package.json and package-lock.json (or yarn.lock) into the working directory
 COPY package*.json ./

@@ -8,6 +8,7 @@ services:
       - backend
     environment:
       - REACT_APP_BACKEND_URL=http://backend:5000
+    user: "1001:1001"
 
   backend:
     image: sakanbeer88/kana-flashcard-app-backend:latest
@@ -22,6 +23,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
     restart: on-failure
+    user: "1000:1000"
 
   db:
     image: postgres:latest

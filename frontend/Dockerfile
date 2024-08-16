@@ -19,8 +19,8 @@ RUN npx vite build
 # Use a smaller image to serve the application
 FROM nginx:alpine
 
-# Create a non-root user and group
-RUN addgroup -g 1001 appgroup && adduser -S -u 1001 -G appgroup appuser
+# Create a non-root user and group with a specific UID and GID
+RUN groupadd -g 1001 appgroup && useradd -u 1001 -g appgroup -s /bin/sh -m appuser
 
 # Copy the built application from the build stage
 COPY --from=build /app/dist /usr/share/nginx/html
