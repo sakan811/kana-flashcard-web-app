@@ -1,12 +1,10 @@
 # Japanese Kana Flashcard Web App
 
-A Japanese Kana Flashcard Web App for practicing Japanese Kana, e.g., Hiragana and Katakana.
+A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, e.g., Hiragana and Katakana.
 
-The web-app was built to run locally.
+The web-app was built to run **locally**.
 
 # Status
-Latest Update: 10 August 2024
-
 [![Backend Test](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-backend.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-backend.yml)
 
 [![Frontend Test](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend.yml)
