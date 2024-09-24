@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback, FormEvent, ChangeEvent} from 'react';
 import './showKana.css';
 import {getRandomCharacter, getHiraganaList, Character} from "./funcs/utilsFunc";
-import KanaPerformanceTable from "./kanaPerformanceTable";
+import KanaPerformanceTable from "./performanceTable/kanaPerformanceTable";
 import {updateKanaWeight, submitAnswer} from "./funcs/showKanaFunc";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
