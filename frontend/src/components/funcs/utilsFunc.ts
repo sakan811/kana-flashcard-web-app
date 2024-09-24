@@ -1,15 +1,24 @@
+// Define an interface for the character data objects
+export interface Character {
+  hiragana?: string;
+  katakana?: string;
+  romanji: string;
+  weight: number;
+}
+
 /**
  * Selects a random character from the provided data based on their weights.
  *
- * @param {Array} characterData - An array of objects representing characters.
+ * @param {Character[]} characterData - An array of objects representing characters.
  * Each object should have the following structure:
- *   - character: {string} - The Kana character, e.g., Katakana and Hiragana.
- *   - weight: {number} - The weight of the Katakana character.
+ *   - hiragana or katakana: string - The Kana character (either hiragana or katakana).
+ *   - romanji: string - The romanized version of the character.
+ *   - weight: number - The weight associated with the character.
  *
- * @returns {Object} - A random character object selected based on weight.
+ * @returns {Character} - A random character object selected based on weight.
  * In case of rounding errors or unexpected situations, the last item is returned.
  */
-export const getRandomCharacter = (characterData: Array<object>): object => {
+export const getRandomCharacter = (characterData: Array<Character>): Character => {
   // Calculate the total weight by summing up the weights of all characters.
   const totalWeight: number = characterData.reduce((sum, { weight }) => sum + weight, 0);
 
@@ -31,10 +40,11 @@ export const getRandomCharacter = (characterData: Array<object>): object => {
 };
 
 /**
- * Return a list of Hiragana, which is a list of objects
- * @returns {[{romanji: string, hiragana: string, weight: number},{romanji: string, hiragana: string, weight: number},{romanji: string, hiragana: string, weight: number},{romanji: string, hiragana: string, weight: number},{romanji: string, hiragana: string, weight: number},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]}
+ * Returns a list of Hiragana characters, each with romanji and weight.
+ *
+ * @returns {Character[]} - A list of hiragana characters.
  */
-export const getHiraganaList = () => {
+export const getHiraganaList = (): Character[] => {
   return [
     { hiragana: "あ", romanji: "a", weight: 1 },
     { hiragana: "い", romanji: "i", weight: 1 },
@@ -86,10 +96,11 @@ export const getHiraganaList = () => {
 };
 
 /**
- * Return a list of Katakana, which is a list of objects
- * @returns {[{romanji: string, katakana: string, weight: number},{romanji: string, katakana: string, weight: number},{romanji: string, katakana: string, weight: number},{romanji: string, katakana: string, weight: number},{romanji: string, katakana: string, weight: number},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]}
+ * Returns a list of Katakana characters, each with romanji and weight.
+ *
+ * @returns {Character[]} - A list of katakana characters.
  */
-export const getKatakanaList = () => {
+export const getKatakanaList = (): Character[] => {
   return [
     { katakana: "ア", romanji: "a", weight: 1 },
     { katakana: "イ", romanji: "i", weight: 1 },
