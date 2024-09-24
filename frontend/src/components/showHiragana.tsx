@@ -1,16 +1,10 @@
 import React, {useState, useEffect, useCallback, FormEvent, ChangeEvent} from 'react';
-import './showKana.css';
-import {getRandomCharacter, getHiraganaList} from "./funcs/utilsFunc";
+import './css/showKana.css';
+import {getRandomCharacter, getHiraganaList, Character} from "./funcs/utilsFunc";
 import KanaPerformanceTable from "./kanaPerformanceTable";
 import {updateKanaWeight, submitAnswer} from "./funcs/showKanaFunc";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
-
-interface HiraganaCharacter {
-  hiragana: string;
-  romanji: string;
-  weight: number;
-}
 
 interface PerformanceData {
   hiragana: string;
@@ -21,7 +15,7 @@ interface PerformanceData {
 }
 
 // Initialize with equal weights
-const initialHiraganaCharacters: Array<HiraganaCharacter> = getHiraganaList()
+const initialHiraganaCharacters: Character[] = getHiraganaList()
 
 const tableColumns = [
   { key: 'hiragana', header: 'Hiragana' },
@@ -36,14 +30,14 @@ const kanaType = 'hiragana';
 
 const RandomHiragana: React.FC = () => {
   const navigate = useNavigate();
-  const [currentHiragana, setCurrentHiragana] = useState<HiraganaCharacter>(initialHiraganaCharacters[0]);
+  const [currentHiragana, setCurrentHiragana] = useState<Character>(initialHiraganaCharacters[0]);
   const [inputValue, setInputValue] = useState<string>('');
   const [correctMsg, setCorrectMsg] = useState<string>('');
   const [incorrectMsg, setIncorrectMsg] = useState<string>('');
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
 
-  const getRandomHiragana = useCallback((hiraganaData: Array<object>): HiraganaCharacter => {
-    return getRandomCharacter(hiraganaData) as HiraganaCharacter;
+  const getRandomHiragana = useCallback((hiraganaData: Character[]): Character => {
+    return getRandomCharacter(hiraganaData) as Character;
   }, []);
 
   const fetchAndUpdateHiragana = useCallback(async () => {

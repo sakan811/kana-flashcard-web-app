@@ -1,16 +1,10 @@
 import React, {useState, useEffect, useCallback, FormEvent, ChangeEvent} from 'react';
-import './showKana.css';
-import {getKatakanaList, getRandomCharacter} from "./funcs/utilsFunc";
+import './css/showKana.css';
+import {getKatakanaList, getRandomCharacter, Character} from "./funcs/utilsFunc";
 import KanaPerformanceTable from "./kanaPerformanceTable";
 import {useNavigate} from "react-router-dom";
 import {updateKanaWeight, submitAnswer} from "./funcs/showKanaFunc";
 import axios from "axios";
-
-interface KatakanaCharacter {
-  katakana: string;
-  romanji: string;
-  weight: number;
-}
 
 interface PerformanceData {
   katakana: string;
@@ -38,14 +32,14 @@ const kanaType = 'katakana'
 
 const RandomKatakana = () => {
   const navigate = useNavigate();
-  const [currentKatakana, setCurrentKatakana] = useState<KatakanaCharacter>(initialKatakanaCharacters[0]);
+  const [currentKatakana, setCurrentKatakana] = useState<Character>(initialKatakanaCharacters[0]);
   const [inputValue, setInputValue] = useState<string>('');
   const [correctMsg, setCorrectMsg] = useState<string>('');
   const [incorrectMsg, setIncorrectMsg] = useState<string>('');
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
 
-  const getRandomKatakana = useCallback((katakanaData: Array<object>): KatakanaCharacter => {
-    return getRandomCharacter(katakanaData) as KatakanaCharacter;
+  const getRandomKatakana = useCallback((katakanaData: Character[]): Character => {
+    return getRandomCharacter(katakanaData) as Character;
   }, []);
 
   const fetchAndUpdateKatakana = useCallback(async () => {

@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import { Table, Button } from 'react-bootstrap';
-import './kanaPerformanceTable.css';
+import './css/kanaPerformanceTable.css';
 
 // Define types for the props
 interface Column {
