@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback, FormEvent, ChangeEvent} from 'react';
-import './css/showKana.css';
+import './showKana.css';
 import {getRandomCharacter, getHiraganaList, Character} from "./funcs/utilsFunc";
 import KanaPerformanceTable from "./kanaPerformanceTable";
 import {updateKanaWeight, submitAnswer} from "./funcs/showKanaFunc";

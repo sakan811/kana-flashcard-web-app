@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback, FormEvent, ChangeEvent} from 'react';
-import './css/showKana.css';
+import './showKana.css';
 import {getKatakanaList, getRandomCharacter, Character} from "./funcs/utilsFunc";
 import KanaPerformanceTable from "./kanaPerformanceTable";
 import {useNavigate} from "react-router-dom";
