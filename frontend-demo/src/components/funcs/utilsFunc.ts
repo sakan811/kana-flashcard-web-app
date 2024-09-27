@@ -6,15 +6,6 @@ export interface Character {
   weight: number;
 }
 
-export interface PerformanceData {
-  hiragana?: string;
-  katakana?: string;
-  romanji: string;
-  correct_answer: number;
-  total_answer: number;
-  accuracy: number;
-}
-
 /**
  * Selects a random character from the provided data based on their weights.
  *
@@ -49,7 +40,7 @@ export const getRandomCharacter = (characterData: Array<Character>): Character =
 };
 
 /**
- * Returns a list of Hiragana characters, each with romanji and weight.
+ * Returns a list of Hiragana characters, each with romanji and initial weight.
  *
  * @returns {Character[]} - A list of hiragana characters.
  */
@@ -105,7 +96,7 @@ export const getHiraganaList = (): Character[] => {
 };
 
 /**
- * Returns a list of Katakana characters, each with romanji and weight.
+ * Returns a list of Katakana characters, each with romanji and initial weight.
  *
  * @returns {Character[]} - A list of katakana characters.
  */

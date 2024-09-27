@@ -44,7 +44,7 @@ const RandomKatakana = () => {
 
   const fetchAndUpdateKatakana = useCallback(async () => {
     const updatedCharWeight = await updateKanaWeight(initialKatakanaCharacters, kanaType)
-    setCurrentKatakana(getRandomKatakana(updatedCharWeight));
+      setCurrentKatakana(getRandomKatakana(updatedCharWeight));
   }, [getRandomKatakana]);
 
   const getKatakanaPerformance = useCallback(async () => {
