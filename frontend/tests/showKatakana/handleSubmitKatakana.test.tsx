@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { describe, expect, vi, test } from 'vitest';
 import * as showKanaFunc from '../../src/components/funcs/showKanaFunc';
 import * as utilsFunc from '../../src/components/funcs/utilsFunc';
-import RandomKatakana from "../../src/components/showKatakana";
+import RandomKana from "../../src/components/showKana";
 
 // Mock the react-router-dom useNavigate hook
 vi.mock('react-router-dom', () => ({
@@ -35,7 +35,7 @@ vi.spyOn(utilsFunc, 'getRandomCharacter').mockReturnValue({ katakana: 'ア', rom
 describe('RandomKatakana', () => {
   test('submits correct answer', async () => {
     await act(async () => {
-      render(<RandomKatakana />);
+      render(<RandomKana />);
     });
 
     const input = screen.getByLabelText('Enter Romanji:');
@@ -55,7 +55,7 @@ describe('RandomKatakana', () => {
 
   test('submits incorrect answer', async () => {
     await act(async () => {
-      render(<RandomKatakana />);
+      render(<RandomKana />);
     });
 
     const input = screen.getByLabelText('Enter Romanji:');
@@ -82,7 +82,7 @@ describe('RandomKatakana', () => {
     mockSubmitAnswer.mockRejectedValue(new Error('Submission failed'));
 
     await act(async () => {
-      render(<RandomKatakana />);
+      render(<RandomKana />);
     });
 
     const input = screen.getByLabelText('Enter Romanji:');

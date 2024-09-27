@@ -1,9 +1,9 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import RandomHiragana from '../../src/components/showHiragana';
 import * as showKanaFunc from '../../src/components/funcs/showKanaFunc';
 import * as utilsFunc from '../../src/components/funcs/utilsFunc';
+import RandomKana from "../../src/components/showKana";
 
 // Mock the react-router-dom useNavigate hook
 vi.mock('react-router-dom', () => ({
@@ -32,12 +32,12 @@ vi.spyOn(utilsFunc, 'getRandomCharacter').mockReturnValue({ hiragana: 'あ', rom
 
 describe('RandomHiragana', () => {
   it('renders RandomHiragana component', async () => {
-    render(<RandomHiragana />);
+    render(<RandomKana />);
     expect(screen.getByText('Hiragana Flashcard')).not.toBeNull();
   });
 
   it('updates Hiragana and performance data after submission', async () => {
-    render(<RandomHiragana />);
+    render(<RandomKana />);
 
     const input = screen.getByLabelText('Enter Romanji:');
     fireEvent.change(input, { target: { value: 'a' } });

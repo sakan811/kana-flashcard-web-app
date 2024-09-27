@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
-import RandomKatakana from '../../src/components/showKatakana';
+import RandomKana from "../../src/components/showKana";
 
 // Mock the react-router-dom useNavigate hook
 vi.mock('react-router-dom', () => ({
@@ -10,7 +10,7 @@ vi.mock('react-router-dom', () => ({
 
 describe('RandomKatakana handleChange', () => {
   test('updates input value on change', async () => {
-    render(<RandomKatakana />);
+    render(<RandomKana />);
 
     const input = screen.getByPlaceholderText('Type here...') as HTMLInputElement;
     fireEvent.change(input, { target: { value: 'ka' } });

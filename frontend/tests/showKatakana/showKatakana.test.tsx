@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { describe, expect, vi, test } from 'vitest';
 import * as showKanaFunc from '../../src/components/funcs/showKanaFunc';
 import * as utilsFunc from '../../src/components/funcs/utilsFunc';
-import RandomKatakana from "../../src/components/showKatakana";
+import RandomKana from "../../src/components/showKana";
 
 // Mock the react-router-dom useNavigate hook
 vi.mock('react-router-dom', () => ({
@@ -35,14 +35,14 @@ vi.spyOn(utilsFunc, 'getRandomCharacter').mockReturnValue({ katakana: 'ア', rom
 describe('RandomKatakana', () => {
   test('renders RandomKatakana component', async () => {
     await act(async () => {
-      render(<RandomKatakana />);
+      render(<RandomKana />);
     });
     expect(screen.getByText('Katakana Flashcard')).not.toBeNull();
   });
 
   test('updates katakana and performance data after submission', async () => {
     await act(async () => {
-      render(<RandomKatakana />);
+      render(<RandomKana />);
     });
 
     const input = screen.getByLabelText('Enter Romanji:');

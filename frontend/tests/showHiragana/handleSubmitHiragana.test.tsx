@@ -1,9 +1,9 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import RandomHiragana from '../../src/components/showHiragana';
 import * as showKanaFunc from '../../src/components/funcs/showKanaFunc';
 import * as utilsFunc from '../../src/components/funcs/utilsFunc';
+import RandomKana from "../../src/components/showKana";
 
 // Mock the react-router-dom useNavigate hook
 vi.mock('react-router-dom', () => ({
@@ -32,7 +32,7 @@ vi.spyOn(utilsFunc, 'getRandomCharacter').mockReturnValue({ hiragana: 'あ', rom
 
 describe('RandomHiragana', () => {
   it('submits correct answer', async () => {
-    render(<RandomHiragana />);
+    render(<RandomKana />);
 
     const input = screen.getByLabelText('Enter Romanji:');
     fireEvent.change(input, { target: { value: 'a' } });
@@ -51,7 +51,7 @@ describe('RandomHiragana', () => {
   });
 
   it('submits incorrect answer', async () => {
-    render(<RandomHiragana />);
+    render(<RandomKana />);
 
     const input = screen.getByLabelText('Enter Romanji:');
     fireEvent.change(input, { target: { value: 'i' } });
@@ -77,7 +77,7 @@ describe('RandomHiragana', () => {
   it('handles submission error', async () => {
     vi.spyOn(showKanaFunc, 'submitAnswer').mockRejectedValue(new Error('Submission failed'));
 
-    render(<RandomHiragana />);
+    render(<RandomKana />);
 
     const input = screen.getByLabelText('Enter Romanji:');
     fireEvent.change(input, { target: { value: 'a' } });
