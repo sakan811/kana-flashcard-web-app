@@ -4,18 +4,14 @@ import { describe, expect, vi, test } from 'vitest';
 import * as showKanaFunc from '../../src/components/funcs/showKanaFunc';
 import * as utilsFunc from '../../src/components/funcs/utilsFunc';
 import RandomKana from "../../src/components/showKana";
-
-// Mock the react-router-dom useNavigate hook
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => vi.fn(),
-}));
+import {MemoryRouter, Route, Routes} from "react-router-dom";
 
 // Mock the imported functions
-vi.mock('./funcs/utilsFunc', () => ({
+vi.mock('../src/components/funcs/utilsFunc', () => ({
   getRandomCharacter: vi.fn(() => ({ katakana: 'ア', romanji: 'a', weight: 1 })),
-  getHiraganaList: vi.fn(() => [{ katakana: 'ア', romanji: 'a', weight: 1 }])
+  getKatakanaList: vi.fn(() => [{ katakana: 'ア', romanji: 'a', weight: 1 }])
 }));
-vi.mock('./funcs/showKanaFunc', () => ({
+vi.mock('../src/components/funcs/utilsFunc', () => ({
   updateKanaWeight: vi.fn(() => [{ katakana: 'ア', romanji: 'a', weight: 1 }]),
   submitAnswer: vi.fn()
 }));
@@ -35,7 +31,13 @@ vi.spyOn(utilsFunc, 'getRandomCharacter').mockReturnValue({ katakana: 'ア', rom
 describe('RandomKatakana', () => {
   test('submits correct answer', async () => {
     await act(async () => {
-      render(<RandomKana />);
+      render(
+        <MemoryRouter initialEntries={['/katakana']}>
+          <Routes>
+            <Route path="/:kanaType" element={<RandomKana />} />
+          </Routes>
+        </MemoryRouter>
+      );
     });
 
     const input = screen.getByLabelText('Enter Romanji:');
@@ -55,7 +57,13 @@ describe('RandomKatakana', () => {
 
   test('submits incorrect answer', async () => {
     await act(async () => {
-      render(<RandomKana />);
+      render(
+        <MemoryRouter initialEntries={['/katakana']}>
+          <Routes>
+            <Route path="/:kanaType" element={<RandomKana />} />
+          </Routes>
+        </MemoryRouter>
+      );
     });
 
     const input = screen.getByLabelText('Enter Romanji:');
@@ -82,7 +90,13 @@ describe('RandomKatakana', () => {
     mockSubmitAnswer.mockRejectedValue(new Error('Submission failed'));
 
     await act(async () => {
-      render(<RandomKana />);
+      render(
+        <MemoryRouter initialEntries={['/katakana']}>
+          <Routes>
+            <Route path="/:kanaType" element={<RandomKana />} />
+          </Routes>
+        </MemoryRouter>
+      );
     });
 
     const input = screen.getByLabelText('Enter Romanji:');

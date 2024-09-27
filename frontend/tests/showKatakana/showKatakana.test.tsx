@@ -4,11 +4,7 @@ import { describe, expect, vi, test } from 'vitest';
 import * as showKanaFunc from '../../src/components/funcs/showKanaFunc';
 import * as utilsFunc from '../../src/components/funcs/utilsFunc';
 import RandomKana from "../../src/components/showKana";
-
-// Mock the react-router-dom useNavigate hook
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => vi.fn(),
-}));
+import {MemoryRouter} from "react-router-dom";
 
 // Mock the imported functions
 vi.mock('./funcs/utilsFunc', () => ({
@@ -35,14 +31,22 @@ vi.spyOn(utilsFunc, 'getRandomCharacter').mockReturnValue({ katakana: 'ア', rom
 describe('RandomKatakana', () => {
   test('renders RandomKatakana component', async () => {
     await act(async () => {
-      render(<RandomKana />);
+      render(
+        <MemoryRouter> {/* Wrap the component with MemoryRouter */}
+          <RandomKana />
+        </MemoryRouter>
+      );
     });
     expect(screen.getByText('Katakana Flashcard')).not.toBeNull();
   });
 
   test('updates katakana and performance data after submission', async () => {
     await act(async () => {
-      render(<RandomKana />);
+    render(
+      <MemoryRouter> {/* Wrap the component with MemoryRouter */}
+        <RandomKana />
+      </MemoryRouter>
+    );
     });
 
     const input = screen.getByLabelText('Enter Romanji:');

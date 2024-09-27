@@ -4,11 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import * as showKanaFunc from '../../src/components/funcs/showKanaFunc';
 import * as utilsFunc from '../../src/components/funcs/utilsFunc';
 import RandomKana from "../../src/components/showKana";
-
-// Mock the react-router-dom useNavigate hook
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => vi.fn(),
-}));
+import {MemoryRouter, Route, Routes} from "react-router-dom";
 
 // Mock the imported functions
 vi.mock('../src/components/funcs/utilsFunc', () => ({
@@ -32,12 +28,22 @@ vi.spyOn(utilsFunc, 'getRandomCharacter').mockReturnValue({ hiragana: 'あ', rom
 
 describe('RandomHiragana', () => {
   it('renders RandomHiragana component', async () => {
-    render(<RandomKana />);
+    render(
+      <MemoryRouter initialEntries={['/hiragana']}>
+        <Routes>
+          <Route path="/:kanaType" element={<RandomKana />} />
+        </Routes>
+      </MemoryRouter>
+    );
     expect(screen.getByText('Hiragana Flashcard')).not.toBeNull();
   });
 
   it('updates Hiragana and performance data after submission', async () => {
-    render(<RandomKana />);
+    render(
+      <MemoryRouter> {/* Wrap the component with MemoryRouter */}
+        <RandomKana />
+      </MemoryRouter>
+    );
 
     const input = screen.getByLabelText('Enter Romanji:');
     fireEvent.change(input, { target: { value: 'a' } });

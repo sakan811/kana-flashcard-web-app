@@ -4,11 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import * as showKanaFunc from '../../src/components/funcs/showKanaFunc';
 import * as utilsFunc from '../../src/components/funcs/utilsFunc';
 import RandomKana from "../../src/components/showKana";
-
-// Mock the react-router-dom useNavigate hook
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => vi.fn(),
-}));
+import {MemoryRouter, Route, Routes} from "react-router-dom";
 
 // Mock the imported functions
 vi.mock('../src/components/funcs/utilsFunc', () => ({
@@ -32,7 +28,13 @@ vi.spyOn(utilsFunc, 'getRandomCharacter').mockReturnValue({ hiragana: 'あ', rom
 
 describe('RandomHiragana', () => {
   it('submits correct answer', async () => {
-    render(<RandomKana />);
+    render(
+      <MemoryRouter initialEntries={['/hiragana']}>
+        <Routes>
+          <Route path="/:kanaType" element={<RandomKana />} />
+        </Routes>
+      </MemoryRouter>
+    );
 
     const input = screen.getByLabelText('Enter Romanji:');
     fireEvent.change(input, { target: { value: 'a' } });
@@ -51,7 +53,13 @@ describe('RandomHiragana', () => {
   });
 
   it('submits incorrect answer', async () => {
-    render(<RandomKana />);
+    render(
+      <MemoryRouter initialEntries={['/hiragana']}>
+        <Routes>
+          <Route path="/:kanaType" element={<RandomKana />} />
+        </Routes>
+      </MemoryRouter>
+    );
 
     const input = screen.getByLabelText('Enter Romanji:');
     fireEvent.change(input, { target: { value: 'i' } });
@@ -77,7 +85,13 @@ describe('RandomHiragana', () => {
   it('handles submission error', async () => {
     vi.spyOn(showKanaFunc, 'submitAnswer').mockRejectedValue(new Error('Submission failed'));
 
-    render(<RandomKana />);
+    render(
+      <MemoryRouter initialEntries={['/hiragana']}>
+        <Routes>
+          <Route path="/:kanaType" element={<RandomKana />} />
+        </Routes>
+      </MemoryRouter>
+    );
 
     const input = screen.getByLabelText('Enter Romanji:');
     fireEvent.change(input, { target: { value: 'a' } });
