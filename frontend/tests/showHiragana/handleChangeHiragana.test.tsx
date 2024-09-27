@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import RandomKana from "../../src/components/showKana";
 import { MemoryRouter } from 'react-router-dom';
 
