@@ -8,8 +8,12 @@ interface Column {
   header: string;
 }
 
+interface PerformanceItem {
+  [key: string]: React.ReactNode;
+}
+
 interface KanaPerformanceTableProps {
-  performanceData: Record<string, any>[];
+  performanceData: PerformanceItem[];
   columns: Column[];
   title: string;
 }
@@ -53,7 +57,7 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
               </tr>
             </thead>
             <tbody>
-              {performanceData.map((item, index) => (
+              {performanceData.map((item: PerformanceItem, index: number) => (
                 <tr key={index}>
                   {columns.map((column) => (
                     <td key={column.key}>{item[column.key]}</td>

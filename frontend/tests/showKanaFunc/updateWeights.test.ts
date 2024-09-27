@@ -9,7 +9,7 @@ interface KanaCharacter {
 }
 
 interface ServerData {
-  [key: string]: any;
+  [key: string]: unknown;
   correct_percentage: number;
 }
 

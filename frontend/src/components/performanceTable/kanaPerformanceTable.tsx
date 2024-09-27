@@ -9,7 +9,7 @@ interface Column {
 }
 
 interface KanaPerformanceTableProps {
-  performanceData: Record<string, any>[];
+  performanceData: Record<string, never>[];
   columns: Column[];
   title: string;
 }
