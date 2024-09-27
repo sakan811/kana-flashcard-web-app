@@ -15,8 +15,12 @@ interface ServerData {
  */
 export const updateKanaWeight = async (
     initialKanaCharacters: Array<Character>,
-    kanaType: string
+    kanaType: "hiragana" | "katakana" | undefined
 ): Promise<Character[]> => {
+  if (!kanaType) {
+    throw new Error('kanaType is undefined');
+  }
+
   try {
     // Fetch the kana percentages from the server
     const response = await axios.get(`http://localhost:5000/${kanaType}-percentages`);
@@ -45,9 +49,9 @@ export const updateKanaWeight = async (
  * @returns {Character[]} - A new array of Kana objects with the updated weight values.
  */
 export function updateWeights(
-  initialKanaCharacters: Character[],
-  serverData: ServerData[],
-  kanaType: string
+    initialKanaCharacters: Character[],
+    serverData: ServerData[],
+    kanaType: "hiragana" | "katakana"
 ): Character[] {
     // Use map to iterate over each Kana character in the initial array
     return initialKanaCharacters.map((char: Character): Character => {
@@ -81,11 +85,15 @@ export function updateWeights(
  * @returns {Promise<void>}
  */
 export const submitAnswer = async (
-    kanaType: string,
+    kanaType: "hiragana" | "katakana" | undefined,
     inputValue: string,
     currentKana: Character,
     isCorrect: boolean
 ): Promise<void> => {
+  if (!kanaType) {
+    throw new Error('kanaType is undefined');
+  }
+
   await axios.post(`http://localhost:5000/${kanaType}-answer/`, {
     answer: inputValue,
     [kanaType]: (currentKana as any)[kanaType],
