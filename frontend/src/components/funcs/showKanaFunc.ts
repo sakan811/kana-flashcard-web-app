@@ -2,7 +2,7 @@ import axios from 'axios';
 import {Character} from "@/components/funcs/utilsFunc";
 
 interface ServerData {
-  [key: string]: any;
+  [key: string]: unknown;
   correct_percentage: number;
 }
 
@@ -10,7 +10,7 @@ interface ServerData {
  * Update each Kana's weight.
  *
  * @param {Character[]} initialKanaCharacters - Initial Kana Weight
- * @param {string} kanaType - Japanese Kana Type, e.g., Hiragana or Katakana.
+ * @param {"hiragana" | "katakana" | undefined} kanaType - Japanese Kana Type, e.g., Hiragana or Katakana.
  * @returns {Promise<Character[]>} - A list of Kana with updated weight.
  */
 export const updateKanaWeight = async (
@@ -45,7 +45,7 @@ export const updateKanaWeight = async (
  * Update weight of each Kana.
  * @param {Character[]} initialKanaCharacters - Initial array of Kana objects with their default weights.
  * @param {ServerData[]} serverData - Array of objects containing user performance data for each Kana from the database.
- * @param {string} kanaType - The type of Kana (e.g., 'Hiragana' or 'Katakana') that is being processed.
+ * @param {"hiragana" | "katakana"} kanaType - The type of Kana (e.g., 'Hiragana' or 'Katakana') that is being processed.
  * @returns {Character[]} - A new array of Kana objects with the updated weight values.
  */
 export function updateWeights(
@@ -57,7 +57,7 @@ export function updateWeights(
     return initialKanaCharacters.map((char: Character): Character => {
       // Find the corresponding data item in the server data using the kanaType key
       const dataItem: ServerData | undefined = serverData.find((item: ServerData): boolean => {
-        return item[kanaType] === (char as any)[kanaType];
+        return item[kanaType] === (char as never)[kanaType];
       });
 
     // If a matching data item is found, calculate the new weight
@@ -78,7 +78,7 @@ export function updateWeights(
 
 /**
  * Submit users' answer to the database
- * @param {string} kanaType - The type of Kana (e.g., 'Hiragana' or 'Katakana') that is being processed.
+ * @param {"hiragana" | "katakana" | undefined} kanaType - The type of Kana (e.g., 'Hiragana' or 'Katakana') that is being processed.
  * @param {string} inputValue - Users' answer of the displayed Kana as a Romanji.
  * @param {Character} currentKana - Currently displayed Kana.
  * @param {boolean} isCorrect - Whether the answer is correct.
@@ -96,7 +96,7 @@ export const submitAnswer = async (
 
   await axios.post(`http://localhost:5000/${kanaType}-answer/`, {
     answer: inputValue,
-    [kanaType]: (currentKana as any)[kanaType],
+    [kanaType]: (currentKana as never)[kanaType],
     romanji: currentKana.romanji,
     is_correct: isCorrect
   });

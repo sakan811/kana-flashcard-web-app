@@ -1,5 +1,5 @@
 import {render, fireEvent, screen, waitFor} from '@testing-library/react';
-import { describe, beforeEach, it, expect, vi } from 'vitest';
+import { describe, beforeEach, it, expect } from 'vitest';
 import {MemoryRouter, Route, Routes} from "react-router-dom";
 import RandomKana from "../../src/components/showKana";
 import React from "react";
