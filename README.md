@@ -9,6 +9,8 @@ The web-app was built to run **locally**.
 
 [![Frontend Test](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend.yml)
 
+[![Frontend Test Demo](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend-demo.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend-demo.yml)
+
 [![Docker Build](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml)
 
 # How to Use the Web App 
