@@ -1,16 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import RandomKatakana from "./components/showKatakana";
-import RandomHiragana from "./components/showHiragana";
 import Home from "./pages/Home";
+import RandomKana from "../src/components/showKana";
 
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/katakana" element={<RandomKatakana />} />
-        <Route path="/hiragana" element={<RandomHiragana />} />
+        <Route path="/:kanaType" element={<RandomKana />} />
       </Routes>
     </Router>
   );
