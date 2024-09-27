@@ -18,7 +18,7 @@ export const updateKanaWeight = async (
     kanaType: "hiragana" | "katakana" | undefined
 ): Promise<Character[]> => {
   if (!kanaType) {
-    throw new Error('kanaType is undefined');
+     kanaType = 'hiragana';
   }
 
   try {
@@ -91,7 +91,7 @@ export const submitAnswer = async (
     isCorrect: boolean
 ): Promise<void> => {
   if (!kanaType) {
-    throw new Error('kanaType is undefined');
+     kanaType = 'hiragana';
   }
 
   await axios.post(`http://localhost:5000/${kanaType}-answer/`, {
