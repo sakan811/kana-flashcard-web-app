@@ -1,5 +1,4 @@
 **/*.idea
-/.idea
 **/*.sql
 **/*.env
 /frontend/dist/
