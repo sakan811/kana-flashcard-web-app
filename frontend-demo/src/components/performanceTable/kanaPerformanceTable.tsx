@@ -1,25 +1,25 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import './kanaPerformanceTable.css';
+import { PerformanceData } from "@/components/funcs/showKanaFunc";
 
-// Define types for the props
-interface Column {
-  key: string;
+// Define a type for the keys of PerformanceData
+type PerformanceDataKey = keyof PerformanceData;
+
+// Update the Column interface
+export interface Column {
+  key: PerformanceDataKey;
   header: string;
 }
 
-interface PerformanceItem {
-  [key: string]: React.ReactNode;
-}
-
 interface KanaPerformanceTableProps {
-  performanceData: PerformanceItem[];
+  performanceData: PerformanceData[];
   columns: Column[];
   title: string;
 }
 
 const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
-    { performanceData, columns, title }
+  { performanceData, columns, title }
 ) => {
   const [showTable, setShowTable] = useState<boolean>(false);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -29,10 +29,18 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
   };
 
   useEffect(() => {
-    if (showTable && tableRef.current) {
-      tableRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (showTable) {
+      tableRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [showTable]); // Only runs when showTable changes
+  }, [showTable]);
+
+  // Filter and sort the performance data
+  const sortedAndFilteredPerformanceData = useMemo(() =>
+    performanceData
+      .filter(item => item.total_answer > 0)
+      .sort((a, b) => b.accuracy - a.accuracy),
+    [performanceData]
+  );
 
   return (
     <>
@@ -57,7 +65,7 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
               </tr>
             </thead>
             <tbody>
-              {performanceData.map((item: PerformanceItem, index: number) => (
+              {sortedAndFilteredPerformanceData.map((item: PerformanceData, index: number) => (
                 <tr key={index}>
                   {columns.map((column) => (
                     <td key={column.key}>{item[column.key]}</td>

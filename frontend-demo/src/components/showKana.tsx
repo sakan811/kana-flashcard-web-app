@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback, FormEvent, ChangeEvent } from 'react';
 import './showKana.css';
 import { getRandomCharacter, getHiraganaList, getKatakanaList, Character } from './funcs/utilsFunc';
-import KanaPerformanceTable from './performanceTable/kanaPerformanceTable';
+import KanaPerformanceTable, { Column } from './performanceTable/kanaPerformanceTable';
 import {useNavigate, useParams} from 'react-router-dom';
 import {initializeKanaPerformanceData, PerformanceData} from "./funcs/showKanaFunc";
 
 
-const tableColumns = [
+const tableColumns: Column[]  = [
   { key: 'kana', header: 'Kana' },
   { key: 'romanji', header: 'Romanji' },
   { key: 'correct_answer', header: 'Correct Answers' },
@@ -37,12 +37,12 @@ const RandomKana: React.FC = () => {
 
   // Fetch performance data from sessionStorage
   const getKanaPerformanceFromSession = useCallback(() => {
-    const storedData = sessionStorage.getItem(`${kanaType}-performance`);
+    const storedData: string | null = sessionStorage.getItem(`${kanaType}-performance`);
     if (storedData) {
       setPerformanceData(JSON.parse(storedData));
     } else {
       // Initialize performance data if it's not in session storage
-      const initialData = initializeKanaPerformanceData(kanaType, initialKanaCharacters);
+      const initialData: PerformanceData[] = initializeKanaPerformanceData(kanaType, initialKanaCharacters);
       setPerformanceData(initialData);
       sessionStorage.setItem(`${kanaType}-performance`, JSON.stringify(initialData));
     }
