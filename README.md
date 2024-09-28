@@ -13,6 +13,8 @@ The web-app was built to run **locally**.
 
 [![Docker Build](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml)
 
+[![Trivy Docker Image Scan](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/trivy-scan.yml)
+
 # How to Use the Web App 
 ## Demo Version
 - Navigate to https://kana-flashcard-web-app-671v.vercel.app/
