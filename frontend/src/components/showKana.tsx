@@ -40,13 +40,21 @@ const RandomKana: React.FC = () => {
   }, [getRandomKana]);
 
   const getKanaPerformance = useCallback(async () => {
-    try {
-        const response = await axios.get(`http://localhost:5000/${kanaType}-performance`);
-        setPerformanceData(response.data);
-    } catch (error) {
-        console.error(`Error fetching ${kanaType} performance:`, error);
+    const validKanaTypes = ['hiragana', 'katakana'];
+    if (!validKanaTypes.includes(kanaType)) {
+      console.error('Invalid kana type');
+      setPerformanceData([]);
+      return;
     }
-  }, [setPerformanceData]);
+  
+    try {
+      const response = await axios.get(`http://localhost:5000/${kanaType}-performance`);
+      setPerformanceData(response.data);
+    } catch (error) {
+      console.error(`Error fetching ${kanaType} performance:`, error);
+      setPerformanceData([]);
+    }
+  }, [kanaType, setPerformanceData]);
 
   useEffect(() => {
     fetchAndUpdateKana();
