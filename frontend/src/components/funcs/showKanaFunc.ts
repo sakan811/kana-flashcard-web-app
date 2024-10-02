@@ -30,12 +30,12 @@ export const updateKanaWeight = async (
       // Update weights based on the fetched data
       return updateWeights(initialKanaCharacters, data, kanaType);
     } catch (updateError) {
-      console.error(`Error updating weights for ${kanaType}:`, updateError);
+      console.error("Error updating weights for %s:", kanaType, updateError);
       // Return the original list with initial weights if weight update fails
       return initialKanaCharacters;
     }
   } catch (fetchError) {
-    console.error(`Error fetching ${kanaType} data:`, fetchError);
+    console.error("Error fetching %s data:", kanaType, fetchError);
     // Return the original list with initial weights if fetch fails
     return initialKanaCharacters;
   }
