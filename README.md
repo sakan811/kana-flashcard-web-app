@@ -23,8 +23,9 @@ The web-app was built to run **locally**.
 ### Setup the Web App 
 - Download [docker-compose.yml](docker-compose.yml) file and place at any place of your choice.
 - Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Open **Terminal**
-- Type and run `cd /path/of/docker-compose/`
+- Open **Terminal** console
+- Use `cd` command to navigate to the directory where you saved the `docker-compose.yml` file
+  - For example: `cd /path/to/directory/`
 - Type ```docker-compose up``` and enter
 
 ### Run the Web App
