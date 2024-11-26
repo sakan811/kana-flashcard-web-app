@@ -13,6 +13,8 @@ The web-app was built to run **locally**.
 
 [![Docker Build](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml)
 
+[![Push to Docker Hub](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-push.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-push.yml)
+
 [![Trivy Docker Image Scan](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/trivy-scan.yml)
 
 # How to Use the Web App 
@@ -26,11 +28,14 @@ The web-app was built to run **locally**.
 - Open **Terminal** console
 - Use `cd` command to navigate to the directory where you saved the `docker-compose.yml` file
   - For example: `cd /path/to/directory/`
-- Type ```docker-compose up``` and enter
+- Type ```docker-compose up -d``` and enter
+  - You can set Postgres port by running `export POSTGRES_PORT=port_number` before ```docker-compose up -d```:  
+    - For example:  
+      ```bash
+      export POSTGRES_PORT=5501
+      ```
+    - Default Postgres port is **5432**
 
 ### Run the Web App
 - Make sure that **Docker Desktop** is running
 - Navigate to http://localhost:3000/
-
-# Codebase Details
-[Click here](docs/DOCS.md) for a brief document.

@@ -56,7 +56,11 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
               {performanceData.map((item, index) => (
                 <tr key={index}>
                   {columns.map((column) => (
-                    <td key={column.key}>{item[column.key]}</td>
+                    <td key={column.key}>
+                      {column.key === 'accuracy'
+                        ? Math.round(item[column.key] as number)
+                        : item[column.key]}
+                    </td>
                   ))}
                 </tr>
               ))}
