@@ -11,8 +11,6 @@ The web-app was built to run **locally**.
 
 [![Frontend Test Demo](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend-demo.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-frontend-demo.yml)
 
-[![Docker Build](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml)
-
 [![Push to Docker Hub](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-push.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-push.yml)
 
 [![Trivy Docker Image Scan](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/trivy-scan.yml)
