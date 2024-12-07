@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import KanaPerformanceTable from '../../src/components/performanceTable/kanaPerformanceTable';
+import '@testing-library/jest-dom';
 
 const mockPerformanceData = [
   { key1: 'Value1', key2: 'Value2' },
@@ -24,6 +25,7 @@ describe('KanaPerformanceTable', () => {
         performanceData={mockPerformanceData}
         columns={mockColumns}
         title="Test Table"
+        kanaType="hiragana"
       />
     );
 
@@ -57,6 +59,7 @@ describe('KanaPerformanceTable', () => {
         performanceData={mockPerformanceData}
         columns={mockColumns}
         title="Test Table"
+        kanaType="hiragana"
       />
     );
 
@@ -71,5 +74,47 @@ describe('KanaPerformanceTable', () => {
 
     // Assert: Check that scrollIntoView has been called
     expect(scrollIntoViewMock).toHaveBeenCalled();
+  });
+
+  it('should render correct kana type based on prop', () => {
+    const hiraganaData = [{ hiragana: 'あ', romanji: 'a' }];
+    const katakanaData = [{ katakana: 'ア', romanji: 'a' }];
+
+    const hiraganaColumns = [
+      { key: 'hiragana', header: 'Hiragana' },
+      { key: 'romanji', header: 'Romanji' }
+    ];
+
+    const katakanaColumns = [
+      { key: 'katakana', header: 'Katakana' },
+      { key: 'romanji', header: 'Romanji' }
+    ];
+
+    const { rerender } = render(
+      <KanaPerformanceTable
+        performanceData={hiraganaData}
+        columns={hiraganaColumns}
+        title="Hiragana Table"
+        kanaType="hiragana"
+      />
+    );
+
+    fireEvent.click(screen.getByText('Show Performance Table'));
+    expect(screen.getByText('Hiragana')).toBeInTheDocument();
+    expect(screen.getByText('あ')).toBeInTheDocument();
+
+    rerender(
+      <KanaPerformanceTable
+        performanceData={katakanaData}
+        columns={katakanaColumns}
+        title="Katakana Table"
+        kanaType="katakana"
+      />
+    );
+
+    fireEvent.click(screen.getByText('Hide Performance Table'));
+    fireEvent.click(screen.getByText('Show Performance Table'));
+    expect(screen.getByText('Katakana')).toBeInTheDocument();
+    expect(screen.getByText('ア')).toBeInTheDocument();
   });
 });
