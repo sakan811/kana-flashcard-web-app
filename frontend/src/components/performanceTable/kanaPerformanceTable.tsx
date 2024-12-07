@@ -9,13 +9,14 @@ interface Column {
 }
 
 interface KanaPerformanceTableProps {
-  performanceData: Record<string, never>[];
+  performanceData: Record<string, string | number>[];
   columns: Column[];
   title: string;
+  kanaType: 'hiragana' | 'katakana';
 }
 
 const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
-    { performanceData, columns, title }
+    { performanceData, columns, title, kanaType }
 ) => {
   const [showTable, setShowTable] = useState<boolean>(false);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -46,24 +47,26 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
           <h2 className="kanaPerformanceTableTitle">{title}</h2>
           <Table striped bordered hover className="kanaPerformanceTable">
             <thead>
-              <tr>
-                {columns.map((column) => (
+            <tr>
+              {columns.map((column) => (
                   <th key={column.key}>{column.header}</th>
-                ))}
-              </tr>
+              ))}
+            </tr>
             </thead>
             <tbody>
-              {performanceData.map((item, index) => (
+            {performanceData.map((item, index) => (
                 <tr key={index}>
                   {columns.map((column) => (
-                    <td key={column.key}>
-                      {column.key === 'accuracy'
-                        ? Math.round(item[column.key] as number)
-                        : item[column.key]}
-                    </td>
+                      <td key={column.key}>
+                        {column.key === 'kana'
+                            ? item[kanaType]
+                            : column.key === 'accuracy'
+                                ? Math.round(item[column.key] as number)
+                                : item[column.key]}
+                      </td>
                   ))}
                 </tr>
-              ))}
+            ))}
             </tbody>
           </Table>
         </div>
