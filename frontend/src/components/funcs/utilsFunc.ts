@@ -6,15 +6,6 @@ export interface Character {
   weight: number;
 }
 
-export interface PerformanceData {
-  hiragana?: string;
-  katakana?: string;
-  romanji: string;
-  correct_answer: number;
-  total_answer: number;
-  accuracy: number;
-}
-
 /**
  * Selects a random character from the provided data based on their weights.
  *
