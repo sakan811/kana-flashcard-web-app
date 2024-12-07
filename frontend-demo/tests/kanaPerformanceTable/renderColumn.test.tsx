@@ -38,3 +38,31 @@ test('renders the correct table headers', () => {
   expect(headers[1]).toHaveTextContent('Accuracy');
   expect(headers[2]).toHaveTextContent('Total Answer');
 });
+
+test('renders correct kana in Kana column for both hiragana and katakana', () => {
+  const hiraganaData = [{ kana: 'あ', romanji: 'a', correct_answer: 1, accuracy: 100, total_answer: 10 }];
+  const katakanaData = [{ kana: 'ア', romanji: 'a', correct_answer: 1, accuracy: 100, total_answer: 10 }];
+
+  const { rerender } = render(
+    <KanaPerformanceTable
+      performanceData={hiraganaData}
+      columns={columns}
+      title="Hiragana Performance"
+    />
+  );
+
+  fireEvent.click(screen.getByText(/show performance table/i));
+  expect(screen.getByRole('cell', { name: 'あ' })).toBeInTheDocument();
+
+  rerender(
+    <KanaPerformanceTable
+      performanceData={katakanaData}
+      columns={columns}
+      title="Katakana Performance"
+    />
+  );
+
+  fireEvent.click(screen.getByText(/hide performance table/i));
+  fireEvent.click(screen.getByText(/show performance table/i));
+  expect(screen.getByRole('cell', { name: 'ア' })).toBeInTheDocument();
+});
