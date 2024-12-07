@@ -1,18 +1,10 @@
 import React, {useState, useEffect, useCallback, FormEvent, ChangeEvent} from 'react';
 import './showKana.css';
-import {getRandomCharacter, getHiraganaList, Character, PerformanceData, getKatakanaList} from "./funcs/utilsFunc";
+import {getRandomCharacter, getHiraganaList, Character, getKatakanaList} from "./funcs/utilsFunc";
 import KanaPerformanceTable from "./performanceTable/kanaPerformanceTable";
 import {updateKanaWeight, submitAnswer} from "./funcs/showKanaFunc";
 import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
-
-const tableColumns = [
-  { key: 'hiragana', header: 'Hiragana' },
-  { key: 'romanji', header: 'Romanji' },
-  { key: 'correct_answer', header: 'Correct Answers' },
-  { key: 'total_answer', header: 'Total Answers' },
-  { key: 'accuracy', header: 'Accuracy (%)' },
-];
 
 const RandomKana: React.FC = () => {
   const { kanaType } = useParams<{ kanaType: 'hiragana' | 'katakana' }>();
@@ -21,10 +13,18 @@ const RandomKana: React.FC = () => {
   // Choose the correct kana set based on the URL parameter
   const initialKanaCharacters: Character[] = kanaType === 'hiragana' ? getHiraganaList() : getKatakanaList();
 
+  const tableColumns = [
+    { key: kanaType === 'hiragana' ? 'hiragana' : 'katakana', header: kanaType === 'hiragana' ? 'Hiragana' : 'Katakana' },
+    { key: 'romanji', header: 'Romanji' },
+    { key: 'correct_answer', header: 'Correct Answers' },
+    { key: 'total_answer', header: 'Total Answers' },
+    { key: 'accuracy', header: 'Accuracy (%)' },
+  ];
+
   const [currentKana, setCurrentKana] = useState<Character>(initialKanaCharacters[0]);
   const [inputValue, setInputValue] = useState<string>('');
   const [message, setMessage] = useState<{ correct: string; incorrect: string }>({ correct: '', incorrect: '' });
-  const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
+  const [performanceData, setPerformanceData] = useState<Record<string, string | number>[]>([]);
 
   const tableTitle = kanaType
     ? `${kanaType.charAt(0).toUpperCase() + kanaType.slice(1)} Performance`
@@ -41,18 +41,19 @@ const RandomKana: React.FC = () => {
 
   const getKanaPerformance = useCallback(async () => {
     const validKanaTypes = ['hiragana', 'katakana'];
-    if (!validKanaTypes.includes(kanaType)) {
+    if (typeof kanaType === 'string' && validKanaTypes.includes(kanaType)) {
+      try {
+        const response = await axios.get(`http://localhost:5000/${kanaType}-performance`);
+        setPerformanceData(response.data);
+      } catch (error) {
+        console.error(`Error fetching ${kanaType} performance:`, error);
+        setPerformanceData([]);
+      }
+    }
+    else {
       console.error('Invalid kana type');
       setPerformanceData([]);
       return;
-    }
-  
-    try {
-      const response = await axios.get(`http://localhost:5000/${kanaType}-performance`);
-      setPerformanceData(response.data);
-    } catch (error) {
-      console.error(`Error fetching ${kanaType} performance:`, error);
-      setPerformanceData([]);
     }
   }, [kanaType, setPerformanceData]);
 
@@ -117,7 +118,14 @@ const RandomKana: React.FC = () => {
       </form>
       {message.correct && <p className="correctMsg">{message.correct}</p>}
       {message.incorrect && <p className="incorrectMsg" dangerouslySetInnerHTML={{ __html: message.incorrect }}></p>}
-      <KanaPerformanceTable performanceData={performanceData} columns={tableColumns} title={tableTitle} />
+      {kanaType &&
+        <KanaPerformanceTable
+          performanceData={performanceData}
+          columns={tableColumns}
+          title={tableTitle}
+          kanaType={kanaType}
+        />
+      }
     </>
   );
 };
