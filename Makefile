@@ -8,13 +8,13 @@ dev:
 build:
 	cd jp-kana-app && npm run build
 
-# Preview production build
-preview:
-	cd jp-kana-app && npm run preview
-
 # Run tests
 test:
 	cd jp-kana-app && npm test
+
+# lint
+lint:
+	cd jp-kana-app && npm run lint
 
 # Update all dependencies to latest version
 update-deps:
