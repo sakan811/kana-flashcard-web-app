@@ -71,11 +71,13 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+      <div className="flex items-center mb-8 relative">
+        <div className="absolute left-0">
+          <BackButton onClick={handleBackClick} disabled={isNavigatingRef.current} />
+        </div>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mx-auto w-full text-center">
           {kanaType === 'hiragana' ? 'Hiragana Flashcard' : 'Katakana Flashcard'}
         </h1>
-        <BackButton onClick={handleBackClick} disabled={isNavigatingRef.current} />
       </div>
       
       <MessageDisplay 
@@ -102,8 +104,8 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
         inputRef={inputRef}
       />
       
-      {message.correct && <p className="mt-4 text-green-600 dark:text-green-400 font-medium text-lg">{message.correct}</p>}
-      {message.incorrect && <p className="mt-4 text-red-600 dark:text-red-400 font-medium text-lg" dangerouslySetInnerHTML={{ __html: message.incorrect }}></p>}
+      {message.correct && <p className="mt-4 text-green-600 dark:text-green-400 font-medium text-lg text-center">{message.correct}</p>}
+      {message.incorrect && <p className="mt-4 text-red-600 dark:text-red-400 font-medium text-lg text-center" dangerouslySetInnerHTML={{ __html: message.incorrect }}></p>}
       
       <div className="mt-8">
         <KanaPerformanceTable
