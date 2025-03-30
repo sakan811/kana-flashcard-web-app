@@ -19,6 +19,7 @@ model Flashcard {
   updatedAt DateTime      @updatedAt
   progress  UserProgress[]
 
+  @@unique([kana, type], name: "kana_type")
   @@map("flashcards")
 }
 

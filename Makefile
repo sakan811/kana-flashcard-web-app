@@ -36,6 +36,9 @@ migrate:
 reset:
 	cd jp-kana-app && npx prisma migrate reset
 
+studio:
+	cd jp-kana-app && npx prisma studio
+
 # Help command
 help:
 	@echo "Available commands:"

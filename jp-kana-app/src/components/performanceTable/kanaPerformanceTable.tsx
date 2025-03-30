@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, memo} from 'react';
 import { KanaPerformanceData } from '../../lib/api-service';
 import { Character } from '../../types';
 
@@ -18,26 +18,30 @@ interface KanaPerformanceTableProps {
 // Map to store romanji values for kana characters
 const kanaToRomanjiMap: Record<string, string> = {};
 
-const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
-    { performanceData, columns, title }
-) => {
+const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(({ 
+    performanceData, 
+    columns, 
+    title 
+}) => {
   const [showTable, setShowTable] = useState<boolean>(false);
   const tableRef = useRef<HTMLDivElement>(null);
+  const mappingInitializedRef = useRef<boolean>(false);
 
   // Initialize the kana to romanji map if not done already
   useEffect(() => {
-    if (Object.keys(kanaToRomanjiMap).length === 0) {
-      try {
-        const characters: Character[] = JSON.parse(localStorage.getItem('kanaCharacters') || '[]');
-        if (characters.length > 0) {
-          characters.forEach(char => {
-            if (char.hiragana) kanaToRomanjiMap[char.hiragana] = char.romanji;
-            if (char.katakana) kanaToRomanjiMap[char.katakana] = char.romanji;
-          });
-        }
-      } catch (error) {
-        console.error('Error loading kana characters:', error);
+    if (mappingInitializedRef.current) return;
+    
+    try {
+      const characters: Character[] = JSON.parse(localStorage.getItem('kanaCharacters') || '[]');
+      if (characters.length > 0) {
+        characters.forEach(char => {
+          if (char.hiragana) kanaToRomanjiMap[char.hiragana] = char.romanji;
+          if (char.katakana) kanaToRomanjiMap[char.katakana] = char.romanji;
+        });
+        mappingInitializedRef.current = true;
       }
+    } catch (error) {
+      console.error('Error loading kana characters:', error);
     }
   }, []);
 
@@ -69,7 +73,10 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
   };
 
   // Sort the performance data by accuracy in ascending order
-  const sortedPerformanceData = [...performanceData].sort((a, b) => a.accuracy - b.accuracy);
+  const sortedPerformanceData = React.useMemo(() => 
+    [...performanceData].sort((a, b) => a.accuracy - b.accuracy),
+    [performanceData]
+  );
 
   return (
     <>
@@ -114,6 +121,9 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
       )}
     </>
   );
-};
+});
+
+// Add display name for debugging purposes
+KanaPerformanceTable.displayName = 'KanaPerformanceTable';
 
 export default KanaPerformanceTable;

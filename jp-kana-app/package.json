@@ -11,10 +11,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint . --fix",
     "test": "vitest",
     "update-deps": "npm update --save && npm update --save-dev",
     "prisma:generate": "prisma generate",
