@@ -40,13 +40,23 @@ export async function POST(request: NextRequest) {
       const performance = performanceData.find(p => p.kana === kanaValue);
       
       if (performance) {
-        const accuracy = performance.accuracy || 0;
-        // Weight is inversely proportional to accuracy - less accurate characters appear more often
-        const weight = 1 + ((100 - accuracy) / 25);
+        // Convert accuracy percentage to decimal (0-1 range)
+        const accuracyDecimal = performance.accuracy / 100;
+        
+        // Start with inverse accuracy (0% accuracy → 1.0, 100% accuracy → 0.0)
+        const inverseAccuracy = 1 - accuracyDecimal;
+        
+        // Apply exponential curve to prioritize lower accuracy kana more aggressively
+        const exponentialFactor = Math.pow(inverseAccuracy, 2);
+        
+        // Scale to 1-15 range and ensure minimum weight of 1
+        const weight = Math.max(1, 1 + 14 * exponentialFactor);
+        
         return { ...char, weight };
       }
       
-      return char;
+      // Default weight for untrained kana is higher to prioritize new characters
+      return { ...char, weight: 5 };
     });
     
     return NextResponse.json(charactersWithWeights);

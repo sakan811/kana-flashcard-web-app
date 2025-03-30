@@ -55,9 +55,25 @@ export async function GET(request: Request) {
         const totalAttempts = progress.correctCount + progress.incorrectCount;
         if (totalAttempts > 0) {
           const accuracy = progress.correctCount / totalAttempts;
-          // Lower accuracy means higher weight (1-10 scale)
-          // Inverse relationship: 100% accuracy = weight 1, 0% accuracy = weight 10
-          weight = Math.max(1, 10 * (1 - accuracy));
+          // Enhanced weight calculation:
+          // 1. Base inverse relationship: lower accuracy = higher weight
+          // 2. Apply exponential scaling to further prioritize low accuracy kana
+          // 3. Ensure weight is between 1-15 (wider range for better differentiation)
+          // 4. Apply minimum exposure threshold for well-learned kana
+          
+          // Start with inverse accuracy (0% accuracy → 1.0, 100% accuracy → 0.0)
+          const inverseAccuracy = 1 - accuracy;
+          
+          // Apply exponential curve to prioritize lower accuracy kana more aggressively
+          // Square the inverse accuracy to emphasize lower values
+          const exponentialFactor = Math.pow(inverseAccuracy, 2);
+          
+          // Scale to 1-15 range and ensure minimum weight of 1
+          weight = Math.max(1, 1 + 14 * exponentialFactor);
+          
+          // Apply minimum threshold - even well-known kana need occasional review
+          // This ensures all kana still have some chance of appearing
+          weight = Math.max(weight, 1);
         }
       }
       
