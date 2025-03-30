@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, FormEvent, ChangeEvent} from 'react';
+import React, {useState, useEffect, useCallback, useRef, FormEvent, ChangeEvent} from 'react';
 import './showKana.css';
 import {getRandomCharacter, getHiraganaList, getKatakanaList} from "./funcs/utilsFunc";
 import KanaPerformanceTable from "./performanceTable/kanaPerformanceTable";
@@ -16,6 +16,7 @@ interface KanaProps {
 const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack }) => {
   // Choose the correct kana set based on the kanaType parameter
   const initialKanaCharacters: Character[] = kanaType === 'hiragana' ? getHiraganaList() : getKatakanaList();
+  const isNavigatingRef = useRef(false);
 
   const tableColumns = [
     { key: kanaType === 'hiragana' ? 'hiragana' : 'katakana', header: kanaType === 'hiragana' ? 'Hiragana' : 'Katakana' },
@@ -39,7 +40,7 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
 
   // Function to fetch and update kana with weights
   const fetchAndUpdateKana = useCallback(async () => {
-    if (isLoading) return; // Prevent concurrent fetches
+    if (isLoading || isNavigatingRef.current) return; // Prevent operations during navigation
     
     setIsLoading(true);
     try {
@@ -55,48 +56,68 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
 
   // Function to get kana performance data
   const getKanaPerformance = useCallback(async () => {
-    if (isLoading) return; // Prevent concurrent fetches
+    if (isLoading || isNavigatingRef.current) return; // Prevent operations during navigation
     
     const validKanaTypes = ['hiragana', 'katakana'];
     if (validKanaTypes.includes(kanaType)) {
       setIsLoading(true);
       try {
         const data = await fetchKanaPerformance(DEFAULT_USER_ID, kanaType as 'hiragana' | 'katakana');
-        setPerformanceData(data);
+        // Only update state if component is still mounted and not navigating away
+        if (!isNavigatingRef.current) {
+          setPerformanceData(data);
+        }
       } catch (error) {
         console.error(`Error fetching ${kanaType} performance:`, error);
-        setPerformanceData([]);
+        if (!isNavigatingRef.current) {
+          setPerformanceData([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (!isNavigatingRef.current) {
+          setIsLoading(false);
+        }
       }
     } else {
       console.error('Invalid kana type');
-      setPerformanceData([]);
+      if (!isNavigatingRef.current) {
+        setPerformanceData([]);
+      }
     }
   }, [kanaType, isLoading]);
 
   // Initial data loading only once on component mount
   useEffect(() => {
     let isMounted = true;
+    isNavigatingRef.current = false;
     
     const loadInitialData = async () => {
       if (!isMounted) return;
       
-      await fetchAndUpdateKana();
-      await getKanaPerformance();
+      // Load initial data with a slight delay to improve first render performance
+      const timeoutId = setTimeout(async () => {
+        if (isMounted && !isNavigatingRef.current) {
+          await fetchAndUpdateKana();
+          await getKanaPerformance();
+        }
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
     };
     
-    loadInitialData();
+    const loadPromise = loadInitialData();
     
     return () => {
       isMounted = false;
+      isNavigatingRef.current = true;
+      // Clean up any pending promises
+      loadPromise.then(cleanup => cleanup && cleanup());
     };
   }, [kanaType, fetchAndUpdateKana, getKanaPerformance]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
-    if (isLoading) return; // Prevent submitting during loading
+    if (isLoading || isNavigatingRef.current) return; // Prevent submitting during loading or navigation
     
     const isCorrect = inputValue.toLowerCase() === currentKana.romanji;
 
@@ -104,25 +125,38 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
     try {
       await submitAnswer(kanaType, inputValue, currentKana, isCorrect);
 
-      setMessage({
-          correct: isCorrect ? 'Correct!' : '',
-          incorrect: !isCorrect ? `Incorrect. It is <b>${currentKana.romanji}</b>` : '',
-      });
+      if (!isNavigatingRef.current) {
+        setMessage({
+            correct: isCorrect ? 'Correct!' : '',
+            incorrect: !isCorrect ? `Incorrect. It is <b>${currentKana.romanji}</b>` : '',
+        });
 
-      await Promise.all([
-        getKanaPerformance(),
-        fetchAndUpdateKana(),
-      ]);
+        // Batch these operations to prevent multiple re-renders
+        await Promise.all([
+          getKanaPerformance(),
+          fetchAndUpdateKana(),
+        ]);
 
-      setInputValue('');
+        setInputValue('');
 
-      setTimeout(() => setMessage({ correct: '', incorrect: '' }), 1000);
-
+        const messageTimeoutId = setTimeout(() => {
+          if (!isNavigatingRef.current) {
+            setMessage({ correct: '', incorrect: '' });
+          }
+        }, 1000);
+        
+        // Clean up the timeout if component unmounts
+        return () => clearTimeout(messageTimeoutId);
+      }
     } catch (error) {
       console.error('Error:', error);
-      setMessage({ correct: '', incorrect: 'Submission failed. Please try again.'});
+      if (!isNavigatingRef.current) {
+        setMessage({ correct: '', incorrect: 'Submission failed. Please try again.'});
+      }
     } finally {
-      setIsLoading(false);
+      if (!isNavigatingRef.current) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -130,20 +164,33 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
     setInputValue(event.target.value);
   };
 
-  const handleBackClick = () => {
-    if (onNavigateBack) {
-      onNavigateBack();
-    } else {
-      // Fallback for React Router (to be removed when migrating to Next.js)
-      window.history.back();
-    }
-  };
+  const handleBackClick = useCallback(() => {
+    // Set navigating flag to prevent further state updates
+    isNavigatingRef.current = true;
+    
+    // Use requestAnimationFrame to avoid forcing layout during click event
+    requestAnimationFrame(() => {
+      if (onNavigateBack) {
+        onNavigateBack();
+      } else {
+        // Fallback for React Router (to be removed when migrating to Next.js)
+        window.history.back();
+      }
+    });
+  }, [onNavigateBack]);
 
   return (
     <div className="flex flex-col min-h-screen">
       <div className="titleContainer">
         <h1 className="title">{kanaType === 'hiragana' ? 'Hiragana Flashcard' : 'Katakana Flashcard'}</h1>
-        <button className="backButton" onClick={handleBackClick}>Back</button>
+        <button 
+          className="backButton" 
+          onClick={handleBackClick}
+          // Disable button during navigation to prevent multiple clicks
+          disabled={isNavigatingRef.current}
+        >
+          Back
+        </button>
       </div>
       
       <div className="kanaBox">
@@ -163,8 +210,14 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
           onChange={handleChange}
           autoComplete="off"
           autoFocus
+          disabled={isLoading || isNavigatingRef.current}
         />
-        <button type="submit" disabled={isLoading}>Submit</button>
+        <button 
+          type="submit" 
+          disabled={isLoading || isNavigatingRef.current}
+        >
+          Submit
+        </button>
       </form>
       
       {message.correct && <p className="correctMsg">{message.correct}</p>}
