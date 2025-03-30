@@ -27,6 +27,15 @@ clean:
 install:
 	cd jp-kana-app && npm install
 
+prisma:
+	cd jp-kana-app && npx prisma generate
+
+migrate:
+	cd jp-kana-app && npx prisma migrate dev
+
+reset:
+	cd jp-kana-app && npx prisma migrate reset
+
 # Help command
 help:
 	@echo "Available commands:"
