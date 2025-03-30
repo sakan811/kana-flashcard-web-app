@@ -102,12 +102,14 @@ button[type="submit"]:hover {
   color: forestgreen;
   font-size: 20px;
   font-weight: bold;
+  margin-top: 15px;
 }
 
 .incorrectMsg {
   text-align: center;
   color: red;
   font-size: 20px;
+  margin-top: 15px;
 }
 
 .backButton {
