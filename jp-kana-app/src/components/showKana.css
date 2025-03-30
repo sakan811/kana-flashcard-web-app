@@ -1,5 +1,5 @@
 .kanaCharacter {
-  font-size: 200px;
+  font-size: min(200px, 20vw);
   color: #000000;
   text-align: center;
   margin: 30px 0;
@@ -24,7 +24,7 @@ button:hover {
 
 .title {
   text-align: center;
-  font-size: 40px;
+  font-size: clamp(24px, 5vw, 40px);
   margin: 0;
   color: black;
 }
@@ -34,12 +34,14 @@ button:hover {
   text-align: center;
   margin: 0;
   padding: 20px;
+  position: relative;
 }
 
 .kanaBox {
   background-color: #E9E9E9;
-  width: 300px;
-  height: 430px;
+  width: min(300px, 90%);
+  height: auto;
+  min-height: 300px;
   padding: 20px;
   border-radius: 10px;
   margin: 30px auto;
@@ -48,22 +50,30 @@ button:hover {
 
 .kanaCard {
   background-color: #FFFFFF;
-  width: 270px;
-  height: 370px;
-  margin: 20px auto;
+  width: 100%;
+  height: auto;
+  min-height: 250px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .inputTitle {
   margin: 10px;
+  display: block;
 }
 
 #romanjiForm {
   text-align: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 #romanjiInput {
-  width: 10%;
-  padding: 5px;
+  width: min(200px, 80%);
+  padding: 10px;
   margin-bottom: 20px;
   font-size: 1em;
   border: 1px solid #CCCCCC;
@@ -72,8 +82,9 @@ button:hover {
 
 button[type="submit"] {
   display: block;
-  width: 5%;
+  width: min(120px, 40%);
   padding: 10px;
+  margin: 0 auto;
   font-size: 1em;
   background-color: #3D97DE;
   color: white;
@@ -101,13 +112,53 @@ button[type="submit"]:hover {
 
 .backButton {
   position: absolute;
-  top: 4.7%;
-  left: 1%;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
   background-color: transparent;
   color: black;
   border: none;
   cursor: pointer;
-  padding: 10px 20px;
-  font-size: 20px;
+  padding: 10px;
+  font-size: 16px;
   font-weight: bold;
+  display: inline-block;
+  margin: 0;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .backButton {
+    left: 10px;
+    font-size: 14px;
+  }
+  
+  #romanjiInput {
+    width: 60%;
+  }
+  
+  .kanaBox {
+    width: 85%;
+    min-height: 250px;
+  }
+  
+  .kanaCard {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .backButton {
+    top: 10px;
+    left: 10px;
+    transform: none;
+  }
+  
+  .title {
+    margin-top: 20px;
+  }
+  
+  .titleContainer {
+    padding-top: 40px;
+  }
 }

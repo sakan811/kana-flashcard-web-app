@@ -7,6 +7,23 @@ export interface Character {
 }
 
 /**
+ * Stores all kana characters in localStorage for use in other components
+ */
+const storeKanaCharacters = (): void => {
+  if (typeof window !== 'undefined') {
+    const hiragana = getHiraganaList();
+    const katakana = getKatakanaList();
+    const allKana = [...hiragana, ...katakana];
+    
+    try {
+      localStorage.setItem('kanaCharacters', JSON.stringify(allKana));
+    } catch (error) {
+      console.error('Error storing kana characters in localStorage:', error);
+    }
+  }
+};
+
+/**
  * Selects a random character from the provided data based on their weights.
  *
  * @param {Character[]} characterData - An array of objects representing characters.
@@ -45,7 +62,7 @@ export const getRandomCharacter = (characterData: Array<Character>): Character =
  * @returns {Character[]} - A list of hiragana characters.
  */
 export const getHiraganaList = (): Character[] => {
-  return [
+  const hiraganaList = [
     { hiragana: "あ", romanji: "a", weight: 1 },
     { hiragana: "い", romanji: "i", weight: 1 },
     { hiragana: "う", romanji: "u", weight: 1 },
@@ -93,6 +110,13 @@ export const getHiraganaList = (): Character[] => {
     { hiragana: "を", romanji: "wo", weight: 1 },
     { hiragana: "ん", romanji: "n", weight: 1 },
   ];
+  
+  // Store kana characters in localStorage on first access
+  if (typeof window !== 'undefined' && !localStorage.getItem('kanaCharacters')) {
+    storeKanaCharacters();
+  }
+  
+  return hiraganaList;
 };
 
 /**
@@ -101,7 +125,7 @@ export const getHiraganaList = (): Character[] => {
  * @returns {Character[]} - A list of katakana characters.
  */
 export const getKatakanaList = (): Character[] => {
-  return [
+  const katakanaList = [
     { katakana: "ア", romanji: "a", weight: 1 },
     { katakana: "イ", romanji: "i", weight: 1 },
     { katakana: "ウ", romanji: "u", weight: 1 },
@@ -149,5 +173,12 @@ export const getKatakanaList = (): Character[] => {
     { katakana: "ヲ", romanji: "wo", weight: 1 },
     { katakana: "ン", romanji: "n", weight: 1 },
   ];
+  
+  // Store kana characters in localStorage on first access
+  if (typeof window !== 'undefined' && !localStorage.getItem('kanaCharacters')) {
+    storeKanaCharacters();
+  }
+  
+  return katakanaList;
 };
 

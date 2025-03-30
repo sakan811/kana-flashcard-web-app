@@ -1,71 +1,106 @@
 import React, {useState, useEffect, useCallback, FormEvent, ChangeEvent} from 'react';
 import './showKana.css';
-import {getRandomCharacter, getHiraganaList, Character, getKatakanaList} from "./funcs/utilsFunc";
+import {getRandomCharacter, getHiraganaList, getKatakanaList} from "./funcs/utilsFunc";
 import KanaPerformanceTable from "./performanceTable/kanaPerformanceTable";
 import {updateKanaWeight, submitAnswer} from "./funcs/showKanaFunc";
-import {useNavigate, useParams} from "react-router-dom";
-import axios from "axios";
+import { getKanaPerformance as fetchKanaPerformance, KanaPerformanceData } from '../lib/api-service';
+import { DEFAULT_USER_ID } from '../constants';
+import { Character } from '../types';
 
-const RandomKana: React.FC = () => {
-  const { kanaType } = useParams<{ kanaType: 'hiragana' | 'katakana' }>();
-  const navigate = useNavigate();
+// Props interface for both React Router and Next.js compatibility
+interface KanaProps {
+  kanaType?: 'hiragana' | 'katakana';
+  onNavigateBack?: () => void;
+}
 
-  // Choose the correct kana set based on the URL parameter
+const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack }) => {
+  // Choose the correct kana set based on the kanaType parameter
   const initialKanaCharacters: Character[] = kanaType === 'hiragana' ? getHiraganaList() : getKatakanaList();
 
   const tableColumns = [
     { key: kanaType === 'hiragana' ? 'hiragana' : 'katakana', header: kanaType === 'hiragana' ? 'Hiragana' : 'Katakana' },
     { key: 'romanji', header: 'Romanji' },
-    { key: 'correct_answer', header: 'Correct Answers' },
-    { key: 'total_answer', header: 'Total Answers' },
+    { key: 'correctCount', header: 'Correct Answers' },
+    { key: 'totalCount', header: 'Total Answers' },
     { key: 'accuracy', header: 'Accuracy (%)' },
   ];
 
   const [currentKana, setCurrentKana] = useState<Character>(initialKanaCharacters[0]);
   const [inputValue, setInputValue] = useState<string>('');
   const [message, setMessage] = useState<{ correct: string; incorrect: string }>({ correct: '', incorrect: '' });
-  const [performanceData, setPerformanceData] = useState<Record<string, string | number>[]>([]);
+  const [performanceData, setPerformanceData] = useState<KanaPerformanceData[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const tableTitle = kanaType
-    ? `${kanaType.charAt(0).toUpperCase() + kanaType.slice(1)} Performance`
-    : 'Performance';
+  const tableTitle = `${kanaType.charAt(0).toUpperCase() + kanaType.slice(1)} Performance`;
 
   const getRandomKana = useCallback((kanaData: Character[]): Character => {
     return getRandomCharacter(kanaData) as Character;
   }, []);
 
+  // Function to fetch and update kana with weights
   const fetchAndUpdateKana = useCallback(async () => {
-    const updatedCharWeight = await updateKanaWeight(initialKanaCharacters, kanaType);
-    setCurrentKana(getRandomKana(updatedCharWeight));
-  }, [getRandomKana]);
+    if (isLoading) return; // Prevent concurrent fetches
+    
+    setIsLoading(true);
+    try {
+      const updatedCharWeight = await updateKanaWeight(initialKanaCharacters, kanaType);
+      setCurrentKana(getRandomKana(updatedCharWeight));
+    } catch (error) {
+      console.error('Error updating kana:', error);
+      setCurrentKana(getRandomKana(initialKanaCharacters));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [getRandomKana, initialKanaCharacters, kanaType, isLoading]);
 
+  // Function to get kana performance data
   const getKanaPerformance = useCallback(async () => {
+    if (isLoading) return; // Prevent concurrent fetches
+    
     const validKanaTypes = ['hiragana', 'katakana'];
-    if (typeof kanaType === 'string' && validKanaTypes.includes(kanaType)) {
+    if (validKanaTypes.includes(kanaType)) {
+      setIsLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5000/${kanaType}-performance`);
-        setPerformanceData(response.data);
+        const data = await fetchKanaPerformance(DEFAULT_USER_ID, kanaType as 'hiragana' | 'katakana');
+        setPerformanceData(data);
       } catch (error) {
         console.error(`Error fetching ${kanaType} performance:`, error);
         setPerformanceData([]);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    else {
+    } else {
       console.error('Invalid kana type');
       setPerformanceData([]);
-      return;
     }
-  }, [kanaType, setPerformanceData]);
+  }, [kanaType, isLoading]);
 
+  // Initial data loading only once on component mount
   useEffect(() => {
-    fetchAndUpdateKana();
-    getKanaPerformance();
-  }, [fetchAndUpdateKana, getKanaPerformance]);
+    let isMounted = true;
+    
+    const loadInitialData = async () => {
+      if (!isMounted) return;
+      
+      await fetchAndUpdateKana();
+      await getKanaPerformance();
+    };
+    
+    loadInitialData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [kanaType, fetchAndUpdateKana, getKanaPerformance]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    if (isLoading) return; // Prevent submitting during loading
+    
     const isCorrect = inputValue.toLowerCase() === currentKana.romanji;
 
+    setIsLoading(true);
     try {
       await submitAnswer(kanaType, inputValue, currentKana, isCorrect);
 
@@ -86,6 +121,8 @@ const RandomKana: React.FC = () => {
     } catch (error) {
       console.error('Error:', error);
       setMessage({ correct: '', incorrect: 'Submission failed. Please try again.'});
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,17 +130,28 @@ const RandomKana: React.FC = () => {
     setInputValue(event.target.value);
   };
 
+  const handleBackClick = () => {
+    if (onNavigateBack) {
+      onNavigateBack();
+    } else {
+      // Fallback for React Router (to be removed when migrating to Next.js)
+      window.history.back();
+    }
+  };
+
   return (
-    <>
-        <div className="titleContainer">
-            <h1 className="title">{kanaType === 'hiragana' ? 'Hiragana Flashcard' : 'Katakana Flashcard'}</h1>
-            <button className="backButton" onClick={() => navigate('/')}>Back</button>
-        </div>
-        <div className="kanaBox">
-            <div className="kanaCard">
-                <h1 className="kanaCharacter">{kanaType === 'hiragana' ? currentKana.hiragana : currentKana.katakana}</h1>
+    <div className="flex flex-col min-h-screen">
+      <div className="titleContainer">
+        <h1 className="title">{kanaType === 'hiragana' ? 'Hiragana Flashcard' : 'Katakana Flashcard'}</h1>
+        <button className="backButton" onClick={handleBackClick}>Back</button>
+      </div>
+      
+      <div className="kanaBox">
+        <div className="kanaCard">
+          <h1 className="kanaCharacter">{kanaType === 'hiragana' ? currentKana.hiragana : currentKana.katakana}</h1>
         </div>
       </div>
+      
       <form id="romanjiForm" onSubmit={handleSubmit}>
         <label htmlFor="romanjiInput" className="inputTitle">Enter Romanji:</label>
         <input
@@ -113,20 +161,25 @@ const RandomKana: React.FC = () => {
           placeholder="Type here..."
           value={inputValue}
           onChange={handleChange}
+          autoComplete="off"
+          autoFocus
         />
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={isLoading}>Submit</button>
       </form>
+      
       {message.correct && <p className="correctMsg">{message.correct}</p>}
       {message.incorrect && <p className="incorrectMsg" dangerouslySetInnerHTML={{ __html: message.incorrect }}></p>}
-      {kanaType &&
+      
+      <div className="mt-8">
         <KanaPerformanceTable
           performanceData={performanceData}
           columns={tableColumns}
           title={tableTitle}
           kanaType={kanaType}
         />
-      }
-    </>
+        {isLoading && <p className="text-center mt-2">Loading...</p>}
+      </div>
+    </div>
   );
 };
 

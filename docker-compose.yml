@@ -1,26 +1,60 @@
 version: '3.8'
 services:
+  # jp-kana-flashcard-app:
+  #   image: sakanbeer88/jp-kana-flashcard-app:latest
+  #   ports:
+  #     - "3000:80"
+  #   user: "1001:1001"
+  #   depends_on:
+  #     - supabase
+  #   environment:
+  #     - NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+  #     - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+
   jp-kana-flashcard-app:
-    image: sakanbeer88/jp-kana-flashcard-app:latest
+    build:
+      context: ./jp-kana-app
+      dockerfile: Dockerfile
+      args:
+        - VITE_POSTGRES_HOST=postgres
+        - VITE_POSTGRES_PORT=5432
+        - VITE_POSTGRES_USER=postgres
+        - VITE_POSTGRES_PASSWORD=postgres
+        - VITE_POSTGRES_DB=postgres
     ports:
       - "3000:80"
     user: "1001:1001"
-
-  db:
-    image: postgres:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
-      - POSTGRES_DB=kana_db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - db_data:/var/lib/postgresql/data
+      - VITE_POSTGRES_HOST=postgres
+      - VITE_POSTGRES_PORT=5432
+      - VITE_POSTGRES_USER=postgres
+      - VITE_POSTGRES_PASSWORD=postgres
+      - VITE_POSTGRES_DB=postgres
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+    entrypoint: >
+      sh -c "
+        npx prisma migrate deploy &&
+        nginx -g 'daemon off;'
+      "
+
+  postgres:
+    image: postgres:latest
     ports:
       - "7777:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  db_data:
+  postgres_data:

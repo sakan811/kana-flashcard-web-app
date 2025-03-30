@@ -1,6 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
-import { Table, Button } from 'react-bootstrap';
 import './kanaPerformanceTable.css';
+import { KanaPerformanceData } from '../../lib/api-service';
+import { Character } from '../../types';
 
 // Define types for the props
 interface Column {
@@ -9,17 +10,37 @@ interface Column {
 }
 
 interface KanaPerformanceTableProps {
-  performanceData: Record<string, string | number>[];
+  performanceData: KanaPerformanceData[];
   columns: Column[];
   title: string;
-  kanaType: 'hiragana' | 'katakana';
+  kanaType: 'hiragana' | 'katakana'; // Used in showKana.tsx to set column headers
 }
 
+// Map to store romanji values for kana characters
+const kanaToRomanjiMap: Record<string, string> = {};
+
 const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
-    { performanceData, columns, title, kanaType }
+    { performanceData, columns, title }
 ) => {
   const [showTable, setShowTable] = useState<boolean>(false);
   const tableRef = useRef<HTMLDivElement>(null);
+
+  // Initialize the kana to romanji map if not done already
+  useEffect(() => {
+    if (Object.keys(kanaToRomanjiMap).length === 0) {
+      try {
+        const characters: Character[] = JSON.parse(localStorage.getItem('kanaCharacters') || '[]');
+        if (characters.length > 0) {
+          characters.forEach(char => {
+            if (char.hiragana) kanaToRomanjiMap[char.hiragana] = char.romanji;
+            if (char.katakana) kanaToRomanjiMap[char.katakana] = char.romanji;
+          });
+        }
+      } catch (error) {
+        console.error('Error loading kana characters:', error);
+      }
+    }
+  }, []);
 
   const toggleTable = (): void => {
     setShowTable(prevShowTable => !prevShowTable);
@@ -31,44 +52,62 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
     }
   }, [showTable]); // Only runs when showTable changes
 
+  // Helper to get the correct property value
+  const getCellValue = (item: KanaPerformanceData, column: Column): React.ReactNode => {
+    switch (column.key) {
+      case 'hiragana':
+      case 'katakana':
+        return item.kana;
+      case 'romanji':
+        // Use the kanaToRomanjiMap to look up the romanji
+        return kanaToRomanjiMap[item.kana] || '';
+      case 'accuracy':
+        return Math.round(item.accuracy);
+      default:
+        // Access via string key for other performance properties like correctCount and totalCount
+        return item[column.key as keyof KanaPerformanceData];
+    }
+  };
+
   return (
     <>
       <div className="kanaPerformanceButtonContainer">
-        <Button
+        <button
           onClick={toggleTable}
-          variant="primary"
           className="kanaPerformanceButton"
         >
           {showTable ? 'Hide Performance Table' : 'Show Performance Table'}
-        </Button>
+        </button>
       </div>
       {showTable && (
         <div className="kanaPerformanceTableContainer" ref={tableRef}>
           <h2 className="kanaPerformanceTableTitle">{title}</h2>
-          <Table striped bordered hover className="kanaPerformanceTable">
-            <thead>
-            <tr>
-              {columns.map((column) => (
-                  <th key={column.key}>{column.header}</th>
-              ))}
-            </tr>
-            </thead>
-            <tbody>
-            {performanceData.map((item, index) => (
-                <tr key={index}>
+          <div className="table-responsive">
+            <table className="kanaPerformanceTable">
+              <thead>
+                <tr>
                   {columns.map((column) => (
-                      <td key={column.key}>
-                        {column.key === 'kana'
-                            ? item[kanaType]
-                            : column.key === 'accuracy'
-                                ? Math.round(item[column.key] as number)
-                                : item[column.key]}
-                      </td>
+                    <th key={column.key}>{column.header}</th>
                   ))}
                 </tr>
-            ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {performanceData.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.length} className="text-center">No performance data yet</td>
+                  </tr>
+                ) : (
+                  performanceData.map((item, index) => (
+                    <tr key={index}>
+                      {columns.map((column) => (
+                        <td key={column.key}>{getCellValue(item, column)}</td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </>

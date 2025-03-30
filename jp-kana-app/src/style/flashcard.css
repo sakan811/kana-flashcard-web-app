@@ -1,24 +1,11 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-/* Flashcard styling */
+/* Flashcard component styles */
 .flashcard {
   width: 200px;
   height: 300px;
-  perspective: 1000px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   cursor: pointer;
+  perspective: 1000px;
 }
 
 .flashcard-inner {
@@ -26,49 +13,53 @@ code {
   width: 100%;
   height: 100%;
   text-align: center;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border-radius: 0.5rem;
   transition: transform 0.6s;
   transform-style: preserve-3d;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  border-radius: 10px;
 }
 
 .flashcard.flipped .flashcard-inner {
   transform: rotateY(180deg);
 }
 
-.flashcard-front, .flashcard-back {
+.flashcard-front,
+.flashcard-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 0.5rem;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .flashcard-front {
-  background-color: #f8f9fa;
+  background-color: rgb(243 244 246);
   color: black;
 }
 
 .flashcard-back {
-  background-color: #007bff;
+  background-color: rgb(37 99 235);
   color: white;
   transform: rotateY(180deg);
 }
 
 .character {
-  font-size: 5rem;
+  font-size: 6rem;
 }
 
 .romaji {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
 }
 
 .flashcard-deck {
-  margin: 2rem auto;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
   max-width: 600px;
 }
 
@@ -83,10 +74,9 @@ code {
 }
 
 .counter {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
 }
 
-/* Responsive adjustments */
 @media (max-width: 576px) {
   .flashcard {
     width: 150px;
@@ -94,10 +84,10 @@ code {
   }
   
   .character {
-    font-size: 4rem;
+    font-size: 3.75rem;
   }
   
   .romaji {
-    font-size: 2rem;
+    font-size: 1.875rem;
   }
-}
+} 

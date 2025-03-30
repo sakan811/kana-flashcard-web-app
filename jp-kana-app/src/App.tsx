@@ -7,12 +7,16 @@ import Navigation from "./components/Navigation";
 const App: React.FC = () => {
   return (
     <Router>
-      <Navigation />
-      <div className="container py-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/:kanaType" element={<RandomKana />} />
-        </Routes>
+      <div className="flex flex-col min-h-screen">
+        <Navigation />
+        <main className="flex-grow">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/:kanaType" element={<RandomKana />} />
+            </Routes>
+          </div>
+        </main>
       </div>
     </Router>
   );

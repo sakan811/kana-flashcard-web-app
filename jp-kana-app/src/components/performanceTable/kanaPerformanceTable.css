@@ -4,12 +4,20 @@
   align-items: center;
   flex-direction: column;
   margin: 10px;
+  width: 100%;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .kanaPerformanceTable {
-  width: 50%;
-  margin-top: 10px;
-  border-collapse: separate;
+  width: 100%;
+  max-width: 800px;
+  margin: 10px auto;
+  border-collapse: collapse;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -17,11 +25,13 @@
 .kanaPerformanceTable td {
   padding: 10px;
   text-align: center;
+  border: 1px solid #ddd;
 }
 
 .kanaPerformanceTable th {
-  background-color: #007bff;
+  background-color: #3D97DE;
   color: white;
+  white-space: nowrap;
 }
 
 .kanaPerformanceTable tr:nth-child(even) {
@@ -33,15 +43,56 @@
 }
 
 .kanaPerformanceTableTitle {
-  margin: 5px;
+  margin: 15px 0;
+  font-size: clamp(18px, 4vw, 24px);
+  text-align: center;
 }
 
 .kanaPerformanceButton {
   margin: 20px;
+  padding: 10px 15px;
+  background-color: #3D97DE;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.kanaPerformanceButton:hover {
+  background-color: #2980b9;
 }
 
 .kanaPerformanceButtonContainer {
   display: flex;
   justify-content: center;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .kanaPerformanceTable th,
+  .kanaPerformanceTable td {
+    padding: 8px 5px;
+    font-size: 14px;
+  }
+  
+  .kanaPerformanceButton {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kanaPerformanceTable th,
+  .kanaPerformanceTable td {
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+  
+  .kanaPerformanceButton {
+    padding: 6px 10px;
+    font-size: 12px;
+    margin: 15px;
+  }
 }
 
