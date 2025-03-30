@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 import React, {useState, useRef, useEffect, memo} from 'react';
-import { KanaPerformanceData } from '../../lib/api-service';
-import { Character } from '../../types';
+import { Character, KanaPerformanceData } from '../../types';
 
 // Define types for the props
 interface Column {
