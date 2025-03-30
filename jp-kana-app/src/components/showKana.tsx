@@ -107,7 +107,6 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
           title={tableTitle}
           kanaType={kanaType}
         />
-        {isLoading && <p className="loading-text">Loading...</p>}
       </div>
     </div>
   );

@@ -17,13 +17,15 @@ const KanaDisplay: React.FC<KanaDisplayProps> = ({
   return (
     <div className="kanaBox">
       <div className="kanaCard">
-        <h1 className="kanaCharacter">
-          {isLoading && !isDataInitialized 
-            ? "Loading..." 
-            : kanaType === 'hiragana' 
+        {isLoading && !isDataInitialized ? (
+          <span className="kana-loading-text">Loading...</span>
+        ) : (
+          <h1 className="kanaCharacter">
+            {kanaType === 'hiragana' 
               ? currentKana.hiragana 
               : currentKana.katakana}
-        </h1>
+          </h1>
+        )}
       </div>
     </div>
   );

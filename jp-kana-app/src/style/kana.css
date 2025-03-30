@@ -173,6 +173,14 @@ button[type="submit"]:hover {
 .loading-text {
   text-align: center;
   margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #666;
+}
+
+.kana-loading-text {
+  font-size: 2rem;
+  color: #666;
+  text-align: center;
 }
 
 .resetButton {
