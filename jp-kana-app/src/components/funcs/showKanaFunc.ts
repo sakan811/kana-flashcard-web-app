@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {Character} from "@/components/funcs/utilsFunc";
+import {Character} from "./utilsFunc";
 
 interface ServerData {
   [key: string]: unknown;
