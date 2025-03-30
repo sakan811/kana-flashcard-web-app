@@ -70,9 +70,11 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
   };
 
   return (
-    <div className="kana-container">
-      <div className="titleContainer">
-        <h1 className="title">{kanaType === 'hiragana' ? 'Hiragana Flashcard' : 'Katakana Flashcard'}</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+          {kanaType === 'hiragana' ? 'Hiragana Flashcard' : 'Katakana Flashcard'}
+        </h1>
         <BackButton onClick={handleBackClick} disabled={isNavigatingRef.current} />
       </div>
       
@@ -100,8 +102,8 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
         inputRef={inputRef}
       />
       
-      {message.correct && <p className="correctMsg">{message.correct}</p>}
-      {message.incorrect && <p className="incorrectMsg" dangerouslySetInnerHTML={{ __html: message.incorrect }}></p>}
+      {message.correct && <p className="mt-4 text-green-600 dark:text-green-400 font-medium text-lg">{message.correct}</p>}
+      {message.incorrect && <p className="mt-4 text-red-600 dark:text-red-400 font-medium text-lg" dangerouslySetInnerHTML={{ __html: message.incorrect }}></p>}
       
       <div className="mt-8">
         <KanaPerformanceTable

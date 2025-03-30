@@ -2,8 +2,8 @@ import React, { RefObject, useEffect } from 'react';
 
 interface KanaInputProps {
   inputValue: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onChange: (_: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (_: React.FormEvent<HTMLFormElement>) => void;
   disabled: boolean;
   inputRef: RefObject<HTMLInputElement>;
 }
@@ -29,8 +29,8 @@ const KanaInput: React.FC<KanaInputProps> = ({
   }, [inputValue, disabled, inputRef]);
 
   return (
-    <form id="romanjiForm" onSubmit={onSubmit}>
-      <label htmlFor="romanjiInput" className="inputTitle">Enter Romanji:</label>
+    <form id="romanjiForm" onSubmit={onSubmit} className="flex flex-col items-center w-full max-w-md mx-auto mt-6">
+      <label htmlFor="romanjiInput" className="mb-2 text-lg font-medium text-gray-700 dark:text-gray-300">Enter Romanji:</label>
       <input
         type="text"
         id="romanjiInput"
@@ -42,10 +42,12 @@ const KanaInput: React.FC<KanaInputProps> = ({
         autoFocus
         disabled={disabled}
         ref={inputRef}
+        className="w-full px-4 py-2 text-lg border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white mb-4"
       />
       <button 
         type="submit" 
         disabled={disabled}
+        className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Submit
       </button>

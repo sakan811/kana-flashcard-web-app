@@ -80,36 +80,36 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(({
 
   return (
     <>
-      <div className="kanaPerformanceButtonContainer">
+      <div className="flex justify-center mt-6">
         <button
           onClick={toggleTable}
-          className="kanaPerformanceButton"
+          className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-md"
         >
           {showTable ? 'Hide Performance Table' : 'Show Performance Table'}
         </button>
       </div>
       {showTable && (
-        <div className="kanaPerformanceTableContainer" ref={tableRef}>
-          <h2 className="kanaPerformanceTableTitle">{title}</h2>
-          <div className="table-responsive">
-            <table className="kanaPerformanceTable">
+        <div className="mt-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" ref={tableRef}>
+          <h2 className="text-xl font-bold p-4 bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">{title}</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
-                <tr>
+                <tr className="bg-gray-50 dark:bg-gray-700">
                   {columns.map((column) => (
-                    <th key={column.key}>{column.header}</th>
+                    <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{column.header}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {sortedPerformanceData.length === 0 ? (
                   <tr>
-                    <td colSpan={columns.length} className="empty-table-message">No performance data yet</td>
+                    <td colSpan={columns.length} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No performance data yet</td>
                   </tr>
                 ) : (
                   sortedPerformanceData.map((item, index) => (
-                    <tr key={index}>
+                    <tr key={index} className={`${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-700'} hover:bg-gray-100 dark:hover:bg-gray-600`}>
                       {columns.map((column) => (
-                        <td key={column.key}>{getCellValue(item, column)}</td>
+                        <td key={column.key} className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">{getCellValue(item, column)}</td>
                       ))}
                     </tr>
                   ))
