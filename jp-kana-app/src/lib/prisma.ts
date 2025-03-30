@@ -37,4 +37,36 @@ export function getPrismaClient(): PrismaClient {
 
 // Export a singleton instance
 const prisma = getPrismaClient();
+
+// Helper functions for user progress
+export async function getUserProgressWithFlashcard(userId: string) {
+  return await prisma.userProgress.findMany({
+    where: { userId },
+    include: { flashcard: true },
+  });
+}
+
+export async function updateUserProgressRecord(userId: string, flashcardId: number, isCorrect: boolean) {
+  return await prisma.userProgress.upsert({
+    where: {
+      userId_flashcardId: {
+        userId,
+        flashcardId,
+      },
+    },
+    update: {
+      correctCount: { increment: isCorrect ? 1 : 0 },
+      incorrectCount: { increment: isCorrect ? 0 : 1 },
+      lastPracticed: new Date(),
+    },
+    create: {
+      userId,
+      flashcardId,
+      correctCount: isCorrect ? 1 : 0,
+      incorrectCount: isCorrect ? 0 : 1,
+      lastPracticed: new Date(),
+    },
+  });
+}
+
 export default prisma; 

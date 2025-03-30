@@ -96,7 +96,8 @@ export async function recordKanaPerformance(
   userId: string,
   kana: string,
   kanaType: 'hiragana' | 'katakana',
-  isCorrect: boolean
+  isCorrect: boolean,
+  flashcardId?: number
 ): Promise<void> {
   try {
     const response = await fetch(`/api/record-performance`, {
@@ -109,6 +110,7 @@ export async function recordKanaPerformance(
         kana,
         kanaType,
         isCorrect,
+        flashcardId,
       }),
     });
     

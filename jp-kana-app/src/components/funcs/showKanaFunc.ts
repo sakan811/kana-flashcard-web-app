@@ -105,6 +105,7 @@ export const submitAnswer = async (
     DEFAULT_USER_ID,
     kana,
     effectiveType,
-    isCorrect
+    isCorrect,
+    currentKana.id // Pass the flashcard ID if available
   );
 }

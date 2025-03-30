@@ -3,6 +3,7 @@
  */
 
 export interface Character {
+  id?: number;
   hiragana?: string;
   katakana?: string;
   romanji: string;
