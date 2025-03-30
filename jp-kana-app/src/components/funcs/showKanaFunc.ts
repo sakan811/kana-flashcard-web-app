@@ -12,6 +12,7 @@ import {
  * @param {Character[]} initialKanaCharacters - Initial Kana Weight
  * @param {"hiragana" | "katakana" | undefined} kanaType - Japanese Kana Type, e.g., Hiragana or Katakana.
  * @returns {Promise<Character[]>} - A list of Kana with updated weight.
+ * @throws {Error} If there is an issue with the database connection
  */
 export const updateKanaWeight = async (
     initialKanaCharacters: Array<Character>,
@@ -29,13 +30,13 @@ export const updateKanaWeight = async (
       return updateWeights(initialKanaCharacters, performanceData, type);
     } catch (updateError) {
       console.error("Error updating weights for %s:", type, updateError);
-      // Return the original list with initial weights if weight update fails
-      return initialKanaCharacters;
+      // Re-throw the error to be handled by the caller
+      throw updateError;
     }
   } catch (fetchError) {
     console.error("Error fetching %s data:", type, fetchError);
-    // Return the original list with initial weights if fetch fails
-    return initialKanaCharacters;
+    // Re-throw the error to be handled by the caller
+    throw fetchError;
   }
 };
 
@@ -81,6 +82,7 @@ export function updateWeights(
  * @param {Character} currentKana - Currently displayed Kana.
  * @param {boolean} isCorrect - Whether the answer is correct.
  * @returns {Promise<void>}
+ * @throws {Error} If there is an issue with the database connection
  */
 export const submitAnswer = async (
     kanaType: "hiragana" | "katakana" | undefined,
@@ -88,25 +90,22 @@ export const submitAnswer = async (
     currentKana: Character,
     isCorrect: boolean
 ): Promise<void> => {
-  try {
-    // Get the kana character based on type (defaulting to hiragana if undefined)
-    const effectiveType: "hiragana" | "katakana" = kanaType || 'hiragana';
-    const kana = effectiveType === 'hiragana' ? currentKana.hiragana : currentKana.katakana;
-    
-    // Skip if kana is undefined
-    if (!kana) {
-      console.error('Kana is undefined, cannot record performance');
-      return;
-    }
-    
-    // Record the performance using the API service
-    await recordKanaPerformance(
-      DEFAULT_USER_ID,
-      kana,
-      effectiveType,
-      isCorrect
-    );
-  } catch (error) {
-    console.error('Error recording answer:', error);
+  // Get the kana character based on type (defaulting to hiragana if undefined)
+  const effectiveType: "hiragana" | "katakana" = kanaType || 'hiragana';
+  const kana = effectiveType === 'hiragana' ? currentKana.hiragana : currentKana.katakana;
+  
+  // Skip if kana is undefined
+  if (!kana) {
+    const error = new Error('Kana is undefined, cannot record performance');
+    console.error(error);
+    throw error;
   }
+  
+  // Record the performance using the API service (will throw if there's an error)
+  await recordKanaPerformance(
+    DEFAULT_USER_ID,
+    kana,
+    effectiveType,
+    isCorrect
+  );
 }

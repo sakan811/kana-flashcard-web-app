@@ -162,3 +162,15 @@ button[type="submit"]:hover {
     padding-top: 40px;
   }
 }
+
+/* Added classes for replacing Tailwind */
+.kana-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.loading-text {
+  text-align: center;
+  margin-top: 0.5rem;
+} 

@@ -1,5 +1,6 @@
+'use client';
+
 import React, {useState, useEffect, useCallback, useRef, FormEvent, ChangeEvent} from 'react';
-import './showKana.css';
 import {getRandomCharacter, getHiraganaList, getKatakanaList} from "./funcs/utilsFunc";
 import KanaPerformanceTable from "./performanceTable/kanaPerformanceTable";
 import {updateKanaWeight, submitAnswer} from "./funcs/showKanaFunc";
@@ -7,16 +8,17 @@ import { getKanaPerformance as fetchKanaPerformance, KanaPerformanceData } from 
 import { DEFAULT_USER_ID } from '../constants';
 import { Character } from '../types';
 
-// Props interface for both React Router and Next.js compatibility
+// Props interface for Next.js compatibility
 interface KanaProps {
-  kanaType?: 'hiragana' | 'katakana';
-  onNavigateBack?: () => void;
+  kanaType: 'hiragana' | 'katakana';
+  onNavigateBack: () => void;
 }
 
-const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack }) => {
+const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
   // Choose the correct kana set based on the kanaType parameter
   const initialKanaCharacters: Character[] = kanaType === 'hiragana' ? getHiraganaList() : getKatakanaList();
   const isNavigatingRef = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const tableColumns = [
     { key: kanaType === 'hiragana' ? 'hiragana' : 'katakana', header: kanaType === 'hiragana' ? 'Hiragana' : 'Katakana' },
@@ -28,9 +30,14 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
 
   const [currentKana, setCurrentKana] = useState<Character>(initialKanaCharacters[0]);
   const [inputValue, setInputValue] = useState<string>('');
-  const [message, setMessage] = useState<{ correct: string; incorrect: string }>({ correct: '', incorrect: '' });
+  const [message, setMessage] = useState<{ correct: string; incorrect: string; error: string }>({ 
+    correct: '', 
+    incorrect: '',
+    error: '' 
+  });
   const [performanceData, setPerformanceData] = useState<KanaPerformanceData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasError, setHasError] = useState<boolean>(false);
 
   const tableTitle = `${kanaType.charAt(0).toUpperCase() + kanaType.slice(1)} Performance`;
 
@@ -46,9 +53,11 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
     try {
       const updatedCharWeight = await updateKanaWeight(initialKanaCharacters, kanaType);
       setCurrentKana(getRandomKana(updatedCharWeight));
+      setHasError(false);
     } catch (error) {
       console.error('Error updating kana:', error);
-      setCurrentKana(getRandomKana(initialKanaCharacters));
+      setMessage(prev => ({ ...prev, error: 'Database connection error. Please check your configuration.' }));
+      setHasError(true);
     } finally {
       setIsLoading(false);
     }
@@ -66,11 +75,14 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
         // Only update state if component is still mounted and not navigating away
         if (!isNavigatingRef.current) {
           setPerformanceData(data);
+          setHasError(false);
         }
       } catch (error) {
         console.error(`Error fetching ${kanaType} performance:`, error);
         if (!isNavigatingRef.current) {
           setPerformanceData([]);
+          setMessage(prev => ({ ...prev, error: 'Database connection error. Please check your configuration.' }));
+          setHasError(true);
         }
       } finally {
         if (!isNavigatingRef.current) {
@@ -117,7 +129,7 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
-    if (isLoading || isNavigatingRef.current) return; // Prevent submitting during loading or navigation
+    if (isLoading || isNavigatingRef.current || hasError) return; // Prevent submitting during loading, navigation or if there's an error
     
     const isCorrect = inputValue.toLowerCase() === currentKana.romanji;
 
@@ -129,6 +141,7 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
         setMessage({
             correct: isCorrect ? 'Correct!' : '',
             incorrect: !isCorrect ? `Incorrect. It is <b>${currentKana.romanji}</b>` : '',
+            error: ''
         });
 
         // Batch these operations to prevent multiple re-renders
@@ -138,10 +151,15 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
         ]);
 
         setInputValue('');
+        
+        // Focus the input element after submission
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
 
         const messageTimeoutId = setTimeout(() => {
           if (!isNavigatingRef.current) {
-            setMessage({ correct: '', incorrect: '' });
+            setMessage(prev => ({ ...prev, correct: '', incorrect: '' }));
           }
         }, 1000);
         
@@ -151,7 +169,12 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
     } catch (error) {
       console.error('Error:', error);
       if (!isNavigatingRef.current) {
-        setMessage({ correct: '', incorrect: 'Submission failed. Please try again.'});
+        setMessage({ 
+          correct: '', 
+          incorrect: '', 
+          error: 'Database connection error. Please check your configuration.'
+        });
+        setHasError(true);
       }
     } finally {
       if (!isNavigatingRef.current) {
@@ -170,17 +193,12 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
     
     // Use requestAnimationFrame to avoid forcing layout during click event
     requestAnimationFrame(() => {
-      if (onNavigateBack) {
-        onNavigateBack();
-      } else {
-        // Fallback for React Router (to be removed when migrating to Next.js)
-        window.history.back();
-      }
+      onNavigateBack();
     });
   }, [onNavigateBack]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="kana-container">
       <div className="titleContainer">
         <h1 className="title">{kanaType === 'hiragana' ? 'Hiragana Flashcard' : 'Katakana Flashcard'}</h1>
         <button 
@@ -192,6 +210,13 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
           Back
         </button>
       </div>
+      
+      {message.error && (
+        <div className="error-message">
+          <strong className="error-message-title">Error:</strong>
+          <span className="error-message-content"> {message.error}</span>
+        </div>
+      )}
       
       <div className="kanaBox">
         <div className="kanaCard">
@@ -210,11 +235,12 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
           onChange={handleChange}
           autoComplete="off"
           autoFocus
-          disabled={isLoading || isNavigatingRef.current}
+          disabled={isLoading || isNavigatingRef.current || hasError}
+          ref={inputRef}
         />
         <button 
           type="submit" 
-          disabled={isLoading || isNavigatingRef.current}
+          disabled={isLoading || isNavigatingRef.current || hasError}
         >
           Submit
         </button>
@@ -230,7 +256,7 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType = 'hiragana', onNavigateBack
           title={tableTitle}
           kanaType={kanaType}
         />
-        {isLoading && <p className="text-center mt-2">Loading...</p>}
+        {isLoading && <p className="loading-text">Loading...</p>}
       </div>
     </div>
   );

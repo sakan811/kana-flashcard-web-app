@@ -11,6 +11,9 @@ export async function GET(request: NextRequest) {
   }
   
   try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
     const performances = await prisma.userKanaPerformance.findMany({
       where: {
         userId: userId,
@@ -29,6 +32,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(performanceData);
   } catch (error) {
     console.error(`Error getting ${kanaType} performance:`, error);
-    return NextResponse.json({ error: 'Failed to fetch performance data' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Database connection error. Please check your database configuration and environment variables.' }, 
+      { status: 500 }
+    );
   }
 } 

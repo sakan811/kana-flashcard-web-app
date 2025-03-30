@@ -1,13 +1,15 @@
+'use client';
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 const Navigation: React.FC = () => {
   return (
-    <nav className="bg-gray-100 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="text-xl font-bold text-gray-800">
+    <nav className="nav">
+      <div className="nav-container">
+        <div className="nav-content">
+          <div className="nav-item">
+            <Link href="/" className="nav-link">
               Kana Flashcards
             </Link>
           </div>

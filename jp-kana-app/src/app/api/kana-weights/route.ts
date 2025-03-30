@@ -14,6 +14,9 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
     // Get all performance data for this user and kana type
     const performances = await prisma.userKanaPerformance.findMany({
       where: {
@@ -50,7 +53,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error getting kana weights:', error);
     return NextResponse.json(
-      { error: 'Failed to calculate kana weights' },
+      { error: 'Database connection error. Please check your database configuration and environment variables.' },
       { status: 500 }
     );
   }

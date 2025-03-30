@@ -1,0 +1,23 @@
+.error-message {
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.error-message-title {
+  font-weight: bold;
+}
+
+.error-message-content {
+  display: block;
+}
+
+@media (min-width: 640px) {
+  .error-message-content {
+    display: inline;
+  }
+} 

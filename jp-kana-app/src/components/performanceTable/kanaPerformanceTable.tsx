@@ -1,5 +1,4 @@
 import React, {useState, useRef, useEffect} from 'react';
-import './kanaPerformanceTable.css';
 import { KanaPerformanceData } from '../../lib/api-service';
 import { Character } from '../../types';
 
@@ -69,6 +68,9 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
     }
   };
 
+  // Sort the performance data by accuracy in ascending order
+  const sortedPerformanceData = [...performanceData].sort((a, b) => a.accuracy - b.accuracy);
+
   return (
     <>
       <div className="kanaPerformanceButtonContainer">
@@ -92,12 +94,12 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = (
                 </tr>
               </thead>
               <tbody>
-                {performanceData.length === 0 ? (
+                {sortedPerformanceData.length === 0 ? (
                   <tr>
-                    <td colSpan={columns.length} className="text-center">No performance data yet</td>
+                    <td colSpan={columns.length} className="empty-table-message">No performance data yet</td>
                   </tr>
                 ) : (
-                  performanceData.map((item, index) => (
+                  sortedPerformanceData.map((item, index) => (
                     <tr key={index}>
                       {columns.map((column) => (
                         <td key={column.key}>{getCellValue(item, column)}</td>

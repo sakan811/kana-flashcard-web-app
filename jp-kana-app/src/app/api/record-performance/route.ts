@@ -13,6 +13,9 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
     await prisma.userKanaPerformance.upsert({
       where: {
         userId_kana: {
@@ -39,7 +42,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error recording kana performance:', error);
     return NextResponse.json(
-      { error: 'Failed to record performance' },
+      { error: 'Database connection error. Please check your database configuration and environment variables.' },
       { status: 500 }
     );
   }
