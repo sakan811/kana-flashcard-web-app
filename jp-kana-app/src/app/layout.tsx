@@ -25,11 +25,6 @@ export default function RootLayout({
               {children}
             </div>
           </main>
-          <footer className="footer">
-            <div className="footer-container">
-              &copy; {new Date().getFullYear()} Japanese Kana Flashcard App
-            </div>
-          </footer>
         </div>
       </body>
     </html>
