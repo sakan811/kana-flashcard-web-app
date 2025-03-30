@@ -46,10 +46,13 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
     await handleSubmitAnswer(inputValue);
     setInputValue('');
     
-    // Focus the input element after submission
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    // Focus the input element after submission with a small delay
+    // to allow the DOM to update first
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 50);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

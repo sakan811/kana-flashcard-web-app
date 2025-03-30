@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React, { RefObject, useEffect } from 'react';
 
 interface KanaInputProps {
   inputValue: string;
@@ -15,6 +15,19 @@ const KanaInput: React.FC<KanaInputProps> = ({
   disabled,
   inputRef
 }) => {
+  // Use effect to keep focus on the input field
+  useEffect(() => {
+    // Focus the input field on component mount and after every value change/reset
+    if (inputRef.current && !disabled) {
+      // Use a small delay to ensure DOM has updated completely
+      const focusTimer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 10);
+      
+      return () => clearTimeout(focusTimer);
+    }
+  }, [inputValue, disabled, inputRef]);
+
   return (
     <form id="romanjiForm" onSubmit={onSubmit}>
       <label htmlFor="romanjiInput" className="inputTitle">Enter Romanji:</label>
