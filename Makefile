@@ -36,3 +36,4 @@ help:
 	@echo "  make test       - Run tests"
 	@echo "  make update-deps - Update all dependencies"
 	@echo "  make clean      - Clean build artifacts"
+	@echo "  make install    - Install dependencies"
