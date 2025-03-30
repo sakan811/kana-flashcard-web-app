@@ -2,8 +2,8 @@ import React, { RefObject, useEffect } from 'react';
 
 interface KanaInputProps {
   inputValue: string;
-  onChange: (_: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (_: React.FormEvent<HTMLFormElement>) => void;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
   disabled: boolean;
   inputRef: RefObject<HTMLInputElement>;
 }
