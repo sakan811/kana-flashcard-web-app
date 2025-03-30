@@ -1,10 +1,9 @@
-import { Character } from "./utilsFunc";
-import { DEFAULT_USER_ID } from "../../constants";
+import { Character, KanaPerformanceData } from '../../types';
+import { DEFAULT_USER_ID } from '../../constants';
 import { 
   getKanaPerformance, 
-  recordKanaPerformance, 
-  KanaPerformanceData 
-} from "../../lib/api-service";
+  recordKanaPerformance as apiRecordPerformance
+} from '../../lib/api-service';
 
 /**
  * Update each Kana's weight.
@@ -102,7 +101,7 @@ export const submitAnswer = async (
   }
   
   // Record the performance using the API service (will throw if there's an error)
-  await recordKanaPerformance(
+  await apiRecordPerformance(
     DEFAULT_USER_ID,
     kana,
     effectiveType,

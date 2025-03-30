@@ -1,4 +1,4 @@
-import { Character } from './utils';
+import { Character } from '../types';
 import { 
   getKanaWithWeights as fetchKanaWithWeights,
   recordKanaPerformance as recordPerformance

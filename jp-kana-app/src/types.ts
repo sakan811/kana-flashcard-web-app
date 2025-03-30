@@ -15,4 +15,10 @@ export interface KanaPerformanceData {
   correctCount: number;
   totalCount: number;
   accuracy: number;
+}
+
+export interface KanaMessage {
+  correct: string;
+  incorrect: string;
+  error: string;
 } 

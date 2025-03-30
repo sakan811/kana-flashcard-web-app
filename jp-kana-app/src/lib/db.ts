@@ -1,14 +1,5 @@
 import prisma from './prisma';
-import { Character } from './utils';
-
-// Type definition for kana performance data
-export type KanaPerformanceData = {
-  kana: string;
-  kanaType: string;
-  correctCount: number;
-  totalCount: number;
-  accuracy: number;
-};
+import { Character, KanaPerformanceData } from '../types';
 
 // Type for the UserKanaPerformance model
 interface UserKanaPerformance {

@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import RandomKana from '../../components/showKana';
 
 export default function HiraganaPage() {
   const router = useRouter();
-  
-  const handleNavigateBack = useCallback(() => {
-    // Navigate to the home page
+
+  const handleNavigateBack = () => {
     router.push('/');
-  }, [router]);
-  
+  };
+
   return <RandomKana kanaType="hiragana" onNavigateBack={handleNavigateBack} />;
 } 

@@ -1,10 +1,5 @@
-// Define an interface for the character data objects
-export interface Character {
-  hiragana?: string;
-  katakana?: string;
-  romanji: string;
-  weight: number;
-}
+import { Character } from '../types';
+import { HIRAGANA_DATA, KATAKANA_DATA } from '../constants';
 
 /**
  * Selects a random character from the provided data based on their weights.
@@ -39,21 +34,7 @@ export const getRandomCharacter = (characterData: Array<Character>): Character =
  * @returns {Character[]} - A list of hiragana characters.
  */
 export const getHiraganaList = (): Character[] => {
-  return [
-    { hiragana: "あ", romanji: "a", weight: 1 },
-    { hiragana: "い", romanji: "i", weight: 1 },
-    { hiragana: "う", romanji: "u", weight: 1 },
-    { hiragana: "え", romanji: "e", weight: 1 },
-    { hiragana: "お", romanji: "o", weight: 1 },
-    // More characters...
-    { hiragana: "か", romanji: "ka", weight: 1 },
-    { hiragana: "き", romanji: "ki", weight: 1 },
-    { hiragana: "く", romanji: "ku", weight: 1 },
-    { hiragana: "け", romanji: "ke", weight: 1 },
-    { hiragana: "こ", romanji: "ko", weight: 1 },
-    // Add the rest as needed
-    { hiragana: "ん", romanji: "n", weight: 1 },
-  ];
+  return HIRAGANA_DATA;
 };
 
 /**
@@ -62,19 +43,5 @@ export const getHiraganaList = (): Character[] => {
  * @returns {Character[]} - A list of katakana characters.
  */
 export const getKatakanaList = (): Character[] => {
-  return [
-    { katakana: "ア", romanji: "a", weight: 1 },
-    { katakana: "イ", romanji: "i", weight: 1 },
-    { katakana: "ウ", romanji: "u", weight: 1 },
-    { katakana: "エ", romanji: "e", weight: 1 },
-    { katakana: "オ", romanji: "o", weight: 1 },
-    // More characters...
-    { katakana: "カ", romanji: "ka", weight: 1 },
-    { katakana: "キ", romanji: "ki", weight: 1 },
-    { katakana: "ク", romanji: "ku", weight: 1 },
-    { katakana: "ケ", romanji: "ke", weight: 1 },
-    { katakana: "コ", romanji: "ko", weight: 1 },
-    // Add the rest as needed
-    { katakana: "ン", romanji: "n", weight: 1 },
-  ];
+  return KATAKANA_DATA;
 }; 

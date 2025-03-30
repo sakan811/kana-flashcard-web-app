@@ -1,16 +1,8 @@
 /**
  * API service for interacting with the backend from browser environments
  */
-import { Character } from '../types';
-
-// No need for API_BASE_URL with Next.js App Router - APIs are relative to the base URL
-export interface KanaPerformanceData {
-  kana: string;
-  kanaType: string;
-  correctCount: number;
-  totalCount: number;
-  accuracy: number;
-}
+import { Character, KanaPerformanceData } from '../types';
+import { CACHE_DURATION } from '../constants';
 
 // Simple cache for performance data
 interface CacheEntry {
@@ -19,7 +11,6 @@ interface CacheEntry {
 }
 
 const performanceCache: Record<string, CacheEntry> = {};
-const CACHE_DURATION = 5000; // 5 seconds in milliseconds
 
 /**
  * Fetch a random kana based on user performance

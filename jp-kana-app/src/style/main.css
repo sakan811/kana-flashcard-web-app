@@ -107,6 +107,11 @@ code {
   flex-grow: 1;
 }
 
+/* Margin utilities */
+.mt-8 {
+  margin-top: 2rem;
+}
+
 .error-message {
   background-color: #fee2e2;
   border: 1px solid #ef4444;
