@@ -1,11 +1,11 @@
-import { useState, useRef } from "react";
-import { Character, KanaMessage, KanaPerformanceData, KanaType } from "@/types";
+import { useState, useRef, useCallback } from "react";
+import { Character, KanaMessage, KanaPerformanceData, KanaType } from "@/types/kana";
 import { createFallbackCharacter } from "../utils/kanaUtils";
 
 export const useKanaState = (kanaType: KanaType) => {
   const defaultCharacter: Character = {
     kana: "",
-    romanji: "",
+    romaji: "",
     type: kanaType,
     weight: 1,
   };
@@ -26,13 +26,14 @@ export const useKanaState = (kanaType: KanaType) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
   const [isDataInitialized, setIsDataInitialized] = useState<boolean>(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
   const safelyExitLoadingState = () => {
     if (!mountedRef.current) return;
 
     setIsLoading(false);
     setCurrentKana((current) => {
-      if (!current || !current.romanji) {
+      if (!current || !current.romaji) {
         return createFallbackCharacter(kanaType);
       }
       return current;
@@ -43,6 +44,18 @@ export const useKanaState = (kanaType: KanaType) => {
   const clearErrorMessage = () => {
     setMessage((prev) => ({ ...prev, error: "" }));
   };
+
+  const checkAnswer = useCallback(() => {
+    if (!currentKana || !currentKana.romaji) {
+      return;
+    }
+
+    const isAnswerCorrect =
+      currentKana.romaji.toLowerCase() === inputValue.toLowerCase();
+    setIsCorrect(isAnswerCorrect);
+
+    // ... existing code ...
+  }, [currentKana, inputValue]);
 
   return {
     currentKana,
@@ -64,5 +77,8 @@ export const useKanaState = (kanaType: KanaType) => {
     mountedRef,
     safelyExitLoadingState,
     clearErrorMessage,
+    isCorrect,
+    setIsCorrect,
+    checkAnswer,
   };
 };

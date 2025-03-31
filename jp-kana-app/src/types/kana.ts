@@ -8,7 +8,7 @@ export interface Character {
   kana?: string;
   hiragana?: string;
   katakana?: string;
-  romanji: string;
+  romaji: string;
   type?: KanaType;
   weight: number;
   createdAt?: Date;

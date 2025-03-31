@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
-import { KanaType } from "@/types";
+import { KanaType } from "@/types/kana";
 
 // Define interfaces for character data
 interface Character {
   kana: string;
-  romanji: string;
+  romaji: string;
   type: KanaType;
 }
 
@@ -19,68 +19,68 @@ export async function POST() {
 
       // Hiragana characters
       const hiraganaCharacters: Character[] = [
-        { kana: "あ", romanji: "a", type: "hiragana" },
-        { kana: "い", romanji: "i", type: "hiragana" },
-        { kana: "う", romanji: "u", type: "hiragana" },
-        { kana: "え", romanji: "e", type: "hiragana" },
-        { kana: "お", romanji: "o", type: "hiragana" },
+        { kana: "あ", romaji: "a", type: KanaType.hiragana },
+        { kana: "い", romaji: "i", type: KanaType.hiragana },
+        { kana: "う", romaji: "u", type: KanaType.hiragana },
+        { kana: "え", romaji: "e", type: KanaType.hiragana },
+        { kana: "お", romaji: "o", type: KanaType.hiragana },
         // K-row
-        { kana: "か", romanji: "ka", type: "hiragana" },
-        { kana: "き", romanji: "ki", type: "hiragana" },
-        { kana: "く", romanji: "ku", type: "hiragana" },
-        { kana: "け", romanji: "ke", type: "hiragana" },
-        { kana: "こ", romanji: "ko", type: "hiragana" },
+        { kana: "か", romaji: "ka", type: KanaType.hiragana },
+        { kana: "き", romaji: "ki", type: KanaType.hiragana },
+        { kana: "く", romaji: "ku", type: KanaType.hiragana },
+        { kana: "け", romaji: "ke", type: KanaType.hiragana },
+        { kana: "こ", romaji: "ko", type: KanaType.hiragana },
         // S-row
-        { kana: "さ", romanji: "sa", type: "hiragana" },
-        { kana: "し", romanji: "shi", type: "hiragana" },
-        { kana: "す", romanji: "su", type: "hiragana" },
-        { kana: "せ", romanji: "se", type: "hiragana" },
-        { kana: "そ", romanji: "so", type: "hiragana" },
+        { kana: "さ", romaji: "sa", type: KanaType.hiragana },
+        { kana: "し", romaji: "shi", type: KanaType.hiragana },
+        { kana: "す", romaji: "su", type: KanaType.hiragana },
+        { kana: "せ", romaji: "se", type: KanaType.hiragana },
+        { kana: "そ", romaji: "so", type: KanaType.hiragana },
         // T-row
-        { kana: "た", romanji: "ta", type: "hiragana" },
-        { kana: "ち", romanji: "chi", type: "hiragana" },
-        { kana: "つ", romanji: "tsu", type: "hiragana" },
-        { kana: "て", romanji: "te", type: "hiragana" },
-        { kana: "と", romanji: "to", type: "hiragana" },
+        { kana: "た", romaji: "ta", type: KanaType.hiragana },
+        { kana: "ち", romaji: "chi", type: KanaType.hiragana },
+        { kana: "つ", romaji: "tsu", type: KanaType.hiragana },
+        { kana: "て", romaji: "te", type: KanaType.hiragana },
+        { kana: "と", romaji: "to", type: KanaType.hiragana },
         // N-row
-        { kana: "な", romanji: "na", type: "hiragana" },
-        { kana: "に", romanji: "ni", type: "hiragana" },
-        { kana: "ぬ", romanji: "nu", type: "hiragana" },
-        { kana: "ね", romanji: "ne", type: "hiragana" },
-        { kana: "の", romanji: "no", type: "hiragana" },
+        { kana: "な", romaji: "na", type: KanaType.hiragana },
+        { kana: "に", romaji: "ni", type: KanaType.hiragana },
+        { kana: "ぬ", romaji: "nu", type: KanaType.hiragana },
+        { kana: "ね", romaji: "ne", type: KanaType.hiragana },
+        { kana: "の", romaji: "no", type: KanaType.hiragana },
       ];
 
       // Katakana characters
       const katakanaCharacters: Character[] = [
-        { kana: "ア", romanji: "a", type: "katakana" },
-        { kana: "イ", romanji: "i", type: "katakana" },
-        { kana: "ウ", romanji: "u", type: "katakana" },
-        { kana: "エ", romanji: "e", type: "katakana" },
-        { kana: "オ", romanji: "o", type: "katakana" },
+        { kana: "ア", romaji: "a", type: KanaType.katakana },
+        { kana: "イ", romaji: "i", type: KanaType.katakana },
+        { kana: "ウ", romaji: "u", type: KanaType.katakana },
+        { kana: "エ", romaji: "e", type: KanaType.katakana },
+        { kana: "オ", romaji: "o", type: KanaType.katakana },
         // K-row
-        { kana: "カ", romanji: "ka", type: "katakana" },
-        { kana: "キ", romanji: "ki", type: "katakana" },
-        { kana: "ク", romanji: "ku", type: "katakana" },
-        { kana: "ケ", romanji: "ke", type: "katakana" },
-        { kana: "コ", romanji: "ko", type: "katakana" },
+        { kana: "カ", romaji: "ka", type: KanaType.katakana },
+        { kana: "キ", romaji: "ki", type: KanaType.katakana },
+        { kana: "ク", romaji: "ku", type: KanaType.katakana },
+        { kana: "ケ", romaji: "ke", type: KanaType.katakana },
+        { kana: "コ", romaji: "ko", type: KanaType.katakana },
         // S-row
-        { kana: "サ", romanji: "sa", type: "katakana" },
-        { kana: "シ", romanji: "shi", type: "katakana" },
-        { kana: "ス", romanji: "su", type: "katakana" },
-        { kana: "セ", romanji: "se", type: "katakana" },
-        { kana: "ソ", romanji: "so", type: "katakana" },
+        { kana: "サ", romaji: "sa", type: KanaType.katakana },
+        { kana: "シ", romaji: "shi", type: KanaType.katakana },
+        { kana: "ス", romaji: "su", type: KanaType.katakana },
+        { kana: "セ", romaji: "se", type: KanaType.katakana },
+        { kana: "ソ", romaji: "so", type: KanaType.katakana },
         // T-row
-        { kana: "タ", romanji: "ta", type: "katakana" },
-        { kana: "チ", romanji: "chi", type: "katakana" },
-        { kana: "ツ", romanji: "tsu", type: "katakana" },
-        { kana: "テ", romanji: "te", type: "katakana" },
-        { kana: "ト", romanji: "to", type: "katakana" },
+        { kana: "タ", romaji: "ta", type: KanaType.katakana },
+        { kana: "チ", romaji: "chi", type: KanaType.katakana },
+        { kana: "ツ", romaji: "tsu", type: KanaType.katakana },
+        { kana: "テ", romaji: "te", type: KanaType.katakana },
+        { kana: "ト", romaji: "to", type: KanaType.katakana },
         // N-row
-        { kana: "ナ", romanji: "na", type: "katakana" },
-        { kana: "ニ", romanji: "ni", type: "katakana" },
-        { kana: "ヌ", romanji: "nu", type: "katakana" },
-        { kana: "ネ", romanji: "ne", type: "katakana" },
-        { kana: "ノ", romanji: "no", type: "katakana" },
+        { kana: "ナ", romaji: "na", type: KanaType.katakana },
+        { kana: "ニ", romaji: "ni", type: KanaType.katakana },
+        { kana: "ヌ", romaji: "nu", type: KanaType.katakana },
+        { kana: "ネ", romaji: "ne", type: KanaType.katakana },
+        { kana: "ノ", romaji: "no", type: KanaType.katakana },
       ];
 
       // Create all flashcards

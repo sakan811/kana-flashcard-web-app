@@ -1,14 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { Character } from "@/types";
 import { getRandomCharacter } from "@/lib/utils";
+import { Character, KanaType } from "@/types/kana";
 
 describe("Utility Functions", () => {
   describe("Character Validation", () => {
     it("should validate hiragana character", () => {
       const character: Character = {
         kana: "あ",
-        romanji: "a",
-        type: "hiragana",
+        romaji: "a",
+        type: KanaType.hiragana,
         weight: 1,
       };
       expect(character.kana).toMatch(/^[\u3040-\u309F]$/);
@@ -17,21 +17,21 @@ describe("Utility Functions", () => {
     it("should validate katakana character", () => {
       const character: Character = {
         kana: "ア",
-        romanji: "a",
-        type: "katakana",
+        romaji: "a",
+        type: KanaType.katakana,
         weight: 1,
       };
       expect(character.kana).toMatch(/^[\u30A0-\u30FF]$/);
     });
 
-    it("should validate romanji format", () => {
+    it("should validate romaji format", () => {
       const character: Character = {
         kana: "あ",
-        romanji: "a",
-        type: "hiragana",
+        romaji: "a",
+        type: KanaType.hiragana,
         weight: 1,
       };
-      expect(character.romanji).toMatch(/^[a-z]+$/);
+      expect(character.romaji).toMatch(/^[a-z]+$/);
     });
   });
 
@@ -82,20 +82,20 @@ describe("Utility Functions", () => {
     const mockCharacters: Character[] = [
       {
         kana: "あ",
-        romanji: "a",
-        type: "hiragana",
+        romaji: "a",
+        type: KanaType.hiragana,
         weight: 1,
       },
       {
         kana: "い",
-        romanji: "i",
-        type: "hiragana",
+        romaji: "i",
+        type: KanaType.hiragana,
         weight: 2,
       },
       {
         kana: "う",
-        romanji: "u",
-        type: "hiragana",
+        romaji: "u",
+        type: KanaType.hiragana,
         weight: 3,
       },
     ];
@@ -109,8 +109,8 @@ describe("Utility Functions", () => {
       const result = getRandomCharacter([]);
       expect(result).toEqual({
         kana: "",
-        romanji: "",
-        type: "hiragana",
+        romaji: "",
+        type: KanaType.hiragana,
         weight: 1,
       });
     });

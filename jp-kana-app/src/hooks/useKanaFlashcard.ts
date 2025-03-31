@@ -1,11 +1,11 @@
-import { useEffect, useCallback, MutableRefObject } from "react";
+import { useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
+import { Character, KanaType } from "@/types/kana";
+import { submitAnswer } from "@/lib/flashcard-service";
 import {
   getKanaPerformance as fetchKanaPerformance,
   getRandomKana as fetchRandomKana,
 } from "@/lib/api-service";
-import { submitAnswer } from "@/lib/kana-performance";
-import { KanaType, Character } from "@/types";
 import { DEFAULT_USER_ID } from "@/constants";
 import { useKanaState } from "./useKanaState";
 import {
@@ -16,7 +16,7 @@ import {
 
 export function useKanaFlashcard(
   kanaType: KanaType,
-  isNavigatingRef: MutableRefObject<boolean>,
+  isNavigatingRef: { current: boolean }
 ) {
   const { data: session } = useSession();
   const userId = session?.user?.id || DEFAULT_USER_ID;
@@ -158,17 +158,19 @@ export function useKanaFlashcard(
       if (isNavigatingRef.current || !mountedRef.current) return;
 
       try {
+        const isAnswerCorrect =
+          currentKana.romaji.toLowerCase() === answer.toLowerCase();
+
         const kanaDisplay = currentKana.kana;
-        const isCorrect =
-          currentKana.romanji.toLowerCase() === answer.toLowerCase();
+        const message = isAnswerCorrect
+          ? `Correct! "${kanaDisplay}" is "${currentKana.romaji}"`
+          : isAnswerCorrect === false
+          ? `Incorrect. "${kanaDisplay}" is "${currentKana.romaji}", not "${answer}"`
+          : "";
 
         setMessage({
-          correct: isCorrect
-            ? `Correct! "${kanaDisplay}" is "${currentKana.romanji}"`
-            : "",
-          incorrect: !isCorrect
-            ? `Incorrect. "${kanaDisplay}" is "${currentKana.romanji}", not "${answer}"`
-            : "",
+          correct: isAnswerCorrect ? message : "",
+          incorrect: !isAnswerCorrect ? message : "",
           error: "",
         });
 
@@ -178,7 +180,7 @@ export function useKanaFlashcard(
           }
         }, 3000);
 
-        await submitAnswer(kanaType, answer, currentKana, isCorrect, userId);
+        await submitAnswer(kanaType, answer, currentKana, isAnswerCorrect);
         await fetchNextKana();
         await getKanaPerformance();
 

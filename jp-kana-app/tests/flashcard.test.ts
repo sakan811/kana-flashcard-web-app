@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { prisma } from "./setup";
 import { updateKanaWeight, submitAnswer } from "../src/lib/flashcard-service";
 import { createUser } from "../src/lib/auth";
-import { Character } from "@/types";
+import { Character, KanaType } from "../src/types/kana";
 
 describe("Flashcard Service", () => {
   const testUser = {
@@ -11,9 +11,9 @@ describe("Flashcard Service", () => {
   };
 
   const mockCharacters: Character[] = [
-    { kana: "あ", romanji: "a", type: "hiragana", weight: 1 },
-    { kana: "い", romanji: "i", type: "hiragana", weight: 1 },
-    { kana: "う", romanji: "u", type: "hiragana", weight: 1 },
+    { kana: "あ", romaji: "a", type: KanaType.hiragana, weight: 1 },
+    { kana: "い", romaji: "i", type: KanaType.hiragana, weight: 1 },
+    { kana: "う", romaji: "u", type: KanaType.hiragana, weight: 1 },
   ];
 
   beforeEach(async () => {
@@ -64,11 +64,11 @@ describe("Flashcard Service", () => {
     it("should handle empty kana character", async () => {
       const invalidCharacter: Character = {
         kana: "",
-        romanji: "a",
-        type: "hiragana",
+        romaji: "a",
+        type: KanaType.hiragana,
         weight: 1,
       };
-      await submitAnswer("hiragana", "a", invalidCharacter, true);
+      await submitAnswer(KanaType.hiragana, "a", invalidCharacter, true);
       // Should handle empty kana gracefully
     });
   });
