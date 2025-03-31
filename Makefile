@@ -11,6 +11,9 @@ dev:
 build:
 	cd $(APP_DIR) && npm run build
 
+start:
+	cd $(APP_DIR) && npm run start
+
 # Run tests
 test:
 	cd $(APP_DIR) && npm test

@@ -232,7 +232,11 @@ export async function POST() {
   } catch (error) {
     console.error("Error initializing database:", error);
     return NextResponse.json(
-      { error: "Failed to initialize database" },
+      { 
+        success: false,
+        error: "Failed to initialize database",
+        message: error instanceof Error ? error.message : "Unknown error occurred" 
+      },
       { status: 500 },
     );
   }

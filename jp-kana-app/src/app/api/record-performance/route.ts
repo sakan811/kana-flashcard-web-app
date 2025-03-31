@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
-import { KanaType } from "../../../types/kana";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -17,7 +16,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
 
-    // Check if user exists first
+    // Check if user exists
     const user = await prisma.user.findUnique({
       where: { id: userId }
     });
@@ -29,13 +28,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Using a transaction to ensure consistency across both tables
+    // Using a transaction to ensure consistency across all operations
     await prisma.$transaction(async (tx) => {
       // Update UserKanaPerformance table
       await tx.userKanaPerformance.upsert({
         where: {
           userId_kana: {
-            userId: userId,
+            userId: user.id,
             kana: kana,
           },
         },
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           lastPracticed: new Date(),
         },
         create: {
-          userId: userId,
+          userId: user.id,
           kana: kana,
           kanaType: kanaType,
           correctCount: isCorrect ? 1 : 0,
@@ -56,18 +55,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
       // If flashcardId is provided, also update UserProgress table
       if (flashcardId) {
-        const flashcard = await tx.flashcard.findUnique({
-          where: { id: flashcardId }
-        });
-
-        if (!flashcard) {
-          throw new Error("Flashcard not found");
-        }
-
         await tx.userProgress.upsert({
           where: {
             userId_flashcardId: {
-              userId: userId,
+              userId: user.id,
               flashcardId: flashcardId,
             },
           },
@@ -77,7 +68,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             lastPracticed: new Date(),
           },
           create: {
-            userId: userId,
+            userId: user.id,
             flashcardId: flashcardId,
             correctCount: isCorrect ? 1 : 0,
             incorrectCount: isCorrect ? 0 : 1,
@@ -91,9 +82,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (error) {
     console.error("Error recording performance:", error);
     return NextResponse.json(
-      {
-        error: "Database operation failed",
-      },
+      { error: "Failed to record performance" },
       { status: 500 },
     );
   }
