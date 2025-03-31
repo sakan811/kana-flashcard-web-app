@@ -19,6 +19,13 @@ test:
 lint:
 	cd $(APP_DIR) && npm run lint
 
+# format
+format:
+	cd $(APP_DIR) && npm run format
+
+lint-format:
+	cd $(APP_DIR) && npm run lint && npm run format
+
 # Update all dependencies to latest version
 update-deps:
 	cd $(APP_DIR) && npm update --save && npm update --save-dev
