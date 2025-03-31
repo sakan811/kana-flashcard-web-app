@@ -14,7 +14,11 @@ export async function POST() {
   try {
     // Start a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Clear existing flashcards
+      // Clear existing user progress first due to foreign key constraints
+      await tx.userProgress.deleteMany();
+      // Clear user kana performance records
+      await tx.userKanaPerformance.deleteMany();
+      // Then clear existing flashcards
       await tx.flashcard.deleteMany();
 
       // Hiragana characters
