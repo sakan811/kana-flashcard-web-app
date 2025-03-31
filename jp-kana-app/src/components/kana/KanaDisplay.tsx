@@ -1,15 +1,13 @@
 import React from "react";
-import { Character } from "../../types";
+import { Character } from "@/types";
 
 interface KanaDisplayProps {
-  kanaType: "hiragana" | "katakana";
   currentKana: Character;
   isLoading: boolean;
   isDataInitialized: boolean;
 }
 
 const KanaDisplay: React.FC<KanaDisplayProps> = ({
-  kanaType,
   currentKana,
   isLoading,
   isDataInitialized,
@@ -23,9 +21,7 @@ const KanaDisplay: React.FC<KanaDisplayProps> = ({
           </span>
         ) : (
           <h1 className="text-8xl font-bold text-gray-900 dark:text-white">
-            {kanaType === "hiragana"
-              ? currentKana.hiragana
-              : currentKana.katakana}
+            {currentKana.kana}
           </h1>
         )}
       </div>

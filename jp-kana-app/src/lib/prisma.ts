@@ -37,9 +37,7 @@ export function getPrismaClient(): PrismaClient {
 const prisma = getPrismaClient();
 
 // Helper functions for user progress
-export async function getUserProgressWithFlashcard(
-  userId: string,
-): Promise<
+export async function getUserProgressWithFlashcard(userId: string): Promise<
   (UserProgress & {
     flashcard: { id: number; kana: string; romaji: string; type: string };
   })[]

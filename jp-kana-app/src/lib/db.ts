@@ -1,19 +1,6 @@
 import prisma from "./prisma";
 import { Character, KanaPerformanceData, UserKanaPerformance } from "../types";
 
-// Type for the UserKanaPerformance model
-interface UserKanaPerformance {
-  id: number;
-  userId: string;
-  kana: string;
-  kanaType: string;
-  correctCount: number;
-  totalCount: number;
-  lastPracticed: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 /**
  * Get all flashcards, optionally filtered by type
  */

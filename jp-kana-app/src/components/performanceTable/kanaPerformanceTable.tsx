@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Character, KanaPerformanceData } from "../../types";
+import { Character, KanaPerformanceData, KanaType } from "@/types";
 
 // Define types for the props
 interface Column {
@@ -12,11 +12,11 @@ interface KanaPerformanceTableProps {
   performanceData: KanaPerformanceData[];
   columns: Column[];
   title: string;
-  kanaType: "hiragana" | "katakana"; // Used in showKana.tsx to set column headers
+  kanaType: KanaType;
 }
 
-// Map to store romanji values for kana characters
-const kanaToRomanjiMap: Record<string, string> = {};
+// Map to store romaji values for kana characters
+const kanaToRomajiMap: Record<string, string> = {};
 
 const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
   ({ performanceData, columns, title }) => {
@@ -24,7 +24,7 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
     const tableRef = useRef<HTMLDivElement>(null);
     const mappingInitializedRef = useRef<boolean>(false);
 
-    // Initialize the kana to romanji map if not done already
+    // Initialize the kana to romaji map if not done already
     useEffect(() => {
       if (mappingInitializedRef.current) return;
 
@@ -34,8 +34,7 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
         );
         if (characters.length > 0) {
           characters.forEach((char) => {
-            if (char.hiragana) kanaToRomanjiMap[char.hiragana] = char.romanji;
-            if (char.katakana) kanaToRomanjiMap[char.katakana] = char.romanji;
+            kanaToRomajiMap[char.kana] = char.romaji;
           });
           mappingInitializedRef.current = true;
         }
@@ -62,15 +61,26 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
       switch (column.key) {
         case "hiragana":
         case "katakana":
+        case "kana":
           return item.kana;
-        case "romanji":
-          // Use the kanaToRomanjiMap to look up the romanji
-          return kanaToRomanjiMap[item.kana] || "";
+        case "romaji":
+          // Use the kanaToRomajiMap to look up the romaji
+          return kanaToRomajiMap[item.kana] || "";
         case "accuracy":
           return Math.round(item.accuracy);
+        case "lastPracticed":
+        case "createdAt":
+        case "updatedAt":
+          // Convert Date objects to string
+          const dateValue = item[column.key as keyof KanaPerformanceData];
+          if (dateValue instanceof Date) {
+            return dateValue.toLocaleDateString();
+          }
+          return String(dateValue);
         default:
           // Access via string key for other performance properties like correctCount and totalCount
-          return item[column.key as keyof KanaPerformanceData];
+          const value = item[column.key as keyof KanaPerformanceData];
+          return typeof value === "object" ? String(value) : value;
       }
     };
 

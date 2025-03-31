@@ -1,26 +1,26 @@
-import { Character, KanaPerformanceData } from "../../types";
-import { DEFAULT_USER_ID } from "../../constants";
+import { Character, KanaPerformanceData, KanaType } from "@/types";
+import { DEFAULT_USER_ID } from "@/constants";
 import {
   getKanaPerformance,
   recordKanaPerformance as apiRecordPerformance,
-} from "../../lib/api-service";
+} from "@/lib/api-service";
 
 /**
  * Update each Kana's weight.
  *
  * @param {Character[]} initialKanaCharacters - Initial Kana Weight
- * @param {"hiragana" | "katakana" | undefined} kanaType - Japanese Kana Type, e.g., Hiragana or Katakana.
+ * @param {KanaType | undefined} kanaType - Japanese Kana Type
  * @param {string} userId - User ID for fetching performance data
  * @returns {Promise<Character[]>} - A list of Kana with updated weight.
  * @throws {Error} If there is an issue with the database connection
  */
 export const updateKanaWeight = async (
   initialKanaCharacters: Array<Character>,
-  kanaType: "hiragana" | "katakana" | undefined,
+  kanaType: KanaType | undefined,
   userId: string = DEFAULT_USER_ID,
 ): Promise<Character[]> => {
   // Default to hiragana if kanaType is undefined
-  const type: "hiragana" | "katakana" = kanaType || "hiragana";
+  const type: KanaType = kanaType || "hiragana";
 
   try {
     // Get performance data through the API service
@@ -28,7 +28,7 @@ export const updateKanaWeight = async (
 
     try {
       // Update weights based on the fetched data
-      return updateWeights(initialKanaCharacters, performanceData, type);
+      return updateWeights(initialKanaCharacters, performanceData);
     } catch (updateError) {
       console.error("Error updating weights for %s:", type, updateError);
       // Re-throw the error to be handled by the caller
@@ -45,21 +45,16 @@ export const updateKanaWeight = async (
  * Update weight of each Kana.
  * @param {Character[]} initialKanaCharacters - Initial array of Kana objects with their default weights.
  * @param {KanaPerformanceData[]} performanceData - Array of objects containing user performance data for each Kana from the database.
- * @param {"hiragana" | "katakana"} kanaType - The type of Kana (e.g., 'Hiragana' or 'Katakana') that is being processed.
  * @returns {Character[]} - A new array of Kana objects with the updated weight values.
  */
 export function updateWeights(
   initialKanaCharacters: Character[],
   performanceData: KanaPerformanceData[],
-  kanaType: "hiragana" | "katakana",
 ): Character[] {
   // Use map to iterate over each Kana character in the initial array
   return initialKanaCharacters.map((char: Character): Character => {
     // Find the corresponding data item in the performance data
-    const dataItem = performanceData.find(
-      (item) =>
-        item.kana === (kanaType === "hiragana" ? char.hiragana : char.katakana),
-    );
+    const dataItem = performanceData.find((item) => item.kana === char.kana);
 
     // If a matching data item is found, calculate the new weight
     if (dataItem) {
@@ -79,8 +74,8 @@ export function updateWeights(
 
 /**
  * Submit users' answer to the database
- * @param {"hiragana" | "katakana" | undefined} kanaType - The type of Kana (e.g., 'Hiragana' or 'Katakana') that is being processed.
- * @param {string} inputValue - Users' answer of the displayed Kana as a Romanji.
+ * @param {KanaType | undefined} kanaType - The type of Kana that is being processed.
+ * @param {string} inputValue - Users' answer of the displayed Kana as Romaji.
  * @param {Character} currentKana - Currently displayed Kana.
  * @param {boolean} isCorrect - Whether the answer is correct.
  * @param {string} userId - User ID for recording performance.
@@ -88,16 +83,15 @@ export function updateWeights(
  * @throws {Error} If there is an issue with the database connection
  */
 export const submitAnswer = async (
-  kanaType: "hiragana" | "katakana" | undefined,
+  kanaType: KanaType | undefined,
   inputValue: string,
   currentKana: Character,
   isCorrect: boolean,
   userId: string = DEFAULT_USER_ID,
 ): Promise<void> => {
   // Get the kana character based on type (defaulting to hiragana if undefined)
-  const effectiveType: "hiragana" | "katakana" = kanaType || "hiragana";
-  const kana =
-    effectiveType === "hiragana" ? currentKana.hiragana : currentKana.katakana;
+  const effectiveType: KanaType = kanaType || "hiragana";
+  const kana = currentKana.kana;
 
   // Skip if kana is undefined
   if (!kana) {

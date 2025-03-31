@@ -1,8 +1,15 @@
+import { KanaType as PrismaKanaType } from "@prisma/client";
+
+export type KanaType = PrismaKanaType;
+
 export interface Character {
-  hiragana?: string;
-  katakana?: string;
-  romanji: string;
+  id: number;
+  kana: string;
+  romaji: string;
+  type: KanaType;
   weight: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface KanaMessage {
@@ -12,12 +19,15 @@ export interface KanaMessage {
 }
 
 export interface KanaPerformanceData {
+  id: number;
+  userId: string;
   kana: string;
-  kanaType: "hiragana" | "katakana";
-  romanji?: string;
+  kanaType: KanaType;
   correctCount: number;
   totalCount: number;
   accuracy: number;
+  percentage: number;
+  lastPracticed: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
-
-export type KanaType = "hiragana" | "katakana";

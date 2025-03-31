@@ -1,11 +1,14 @@
-import { Character, KanaType } from "../types/kana";
+import { Character, KanaType } from "@/types";
 
 export const createFallbackCharacter = (kanaType: KanaType): Character => {
   return {
-    hiragana: kanaType === "hiragana" ? "あ" : undefined,
-    katakana: kanaType === "katakana" ? "ア" : undefined,
-    romanji: "a",
+    id: 0,
+    kana: kanaType === "hiragana" ? "あ" : "ア",
+    romaji: "a",
+    type: kanaType,
     weight: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 };
 

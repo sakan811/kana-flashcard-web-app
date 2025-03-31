@@ -3,16 +3,16 @@ import { useSession } from "next-auth/react";
 import {
   getKanaPerformance as fetchKanaPerformance,
   getRandomKana as fetchRandomKana,
-} from "../lib/api-service";
-import { submitAnswer } from "../components/funcs/showKanaFunc";
-import { KanaType, Character } from "../types/kana";
-import { DEFAULT_USER_ID } from "../constants";
+} from "@/lib/api-service";
+import { submitAnswer } from "@/components/funcs/showKanaFunc";
+import { KanaType, Character } from "@/types";
+import { DEFAULT_USER_ID } from "@/constants";
 import { useKanaState } from "./useKanaState";
 import {
   isRecentlyShown,
   updateKanaHistory,
   createFallbackCharacter,
-} from "../utils/kanaUtils";
+} from "@/utils/kanaUtils";
 
 export function useKanaFlashcard(
   kanaType: KanaType,
@@ -53,8 +53,7 @@ export function useKanaFlashcard(
             continue;
           }
 
-          const kanaValue =
-            kanaType === "hiragana" ? randomKana.hiragana : randomKana.katakana;
+          const kanaValue = randomKana.kana;
 
           if (
             !kanaValue ||
@@ -159,17 +158,16 @@ export function useKanaFlashcard(
       if (isNavigatingRef.current || !mountedRef.current) return;
 
       try {
-        const kanaDisplay =
-          kanaType === "hiragana" ? currentKana.hiragana : currentKana.katakana;
+        const kanaDisplay = currentKana.kana;
         const isCorrect =
-          currentKana.romanji.toLowerCase() === answer.toLowerCase();
+          currentKana.romaji.toLowerCase() === answer.toLowerCase();
 
         setMessage({
           correct: isCorrect
-            ? `Correct! "${kanaDisplay}" is "${currentKana.romanji}"`
+            ? `Correct! "${kanaDisplay}" is "${currentKana.romaji}"`
             : "",
           incorrect: !isCorrect
-            ? `Incorrect. "${kanaDisplay}" is "${currentKana.romanji}", not "${answer}"`
+            ? `Incorrect. "${kanaDisplay}" is "${currentKana.romaji}", not "${answer}"`
             : "",
           error: "",
         });

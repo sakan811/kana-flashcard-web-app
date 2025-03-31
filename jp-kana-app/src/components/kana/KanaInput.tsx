@@ -30,20 +30,20 @@ const KanaInput: React.FC<KanaInputProps> = ({
 
   return (
     <form
-      id="romanjiForm"
+      id="romajiForm"
       onSubmit={onSubmit}
       className="flex flex-col items-center w-full max-w-md mx-auto mt-6"
     >
       <label
-        htmlFor="romanjiInput"
+        htmlFor="romajiInput"
         className="mb-2 text-lg font-medium text-gray-700 dark:text-gray-300"
       >
-        Enter Romanji:
+        Enter Romaji:
       </label>
       <input
         type="text"
-        id="romanjiInput"
-        name="romanjiInput"
+        id="romajiInput"
+        name="romajiInput"
         placeholder="Type here..."
         value={inputValue}
         onChange={onChange}
