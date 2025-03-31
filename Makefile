@@ -42,6 +42,9 @@ reset:
 studio:
 	cd $(APP_DIR) && npx prisma studio
 
+compose-dev:
+	docker compose -f docker-compose.dev.yml up --build
+
 compose-up:
 	docker compose up -d
 

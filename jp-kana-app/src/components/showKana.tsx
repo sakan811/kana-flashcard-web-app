@@ -21,6 +21,20 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
   const isNavigatingRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const {
+    currentKana,
+    performanceData,
+    inputValue,
+    setInputValue,
+    isLoading,
+    hasError,
+    message,
+    isDataInitialized,
+    handleSubmitAnswer,
+    handleRetry,
+    clearErrorMessage
+  } = useKanaFlashcard(kanaType, isNavigatingRef);
+
   // Redirect to login if not authenticated
   React.useEffect(() => {
     if (status === 'unauthenticated') {
@@ -50,20 +64,6 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
       </div>
     );
   }
-
-  const {
-    currentKana,
-    performanceData,
-    inputValue,
-    setInputValue,
-    isLoading,
-    hasError,
-    message,
-    isDataInitialized,
-    handleSubmitAnswer,
-    handleRetry,
-    clearErrorMessage
-  } = useKanaFlashcard(kanaType, isNavigatingRef);
 
   const tableColumns = [
     { key: kanaType === 'hiragana' ? 'hiragana' : 'katakana', header: kanaType === 'hiragana' ? 'Hiragana' : 'Katakana' },

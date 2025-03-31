@@ -64,9 +64,9 @@ export default function SignupPage() {
       // Redirect to home
       router.replace('/');
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Signup error:', error);
-      setError(error.message || 'An unexpected error occurred');
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
       setIsLoading(false);
     }
   };
