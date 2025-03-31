@@ -52,6 +52,8 @@ export function useKanaFlashcard(
   } = useKanaState(kanaType);
 
   const getRandomKana = useCallback(async (): Promise<Character> => {
+    if (!userId) return createFallbackCharacter(kanaType);
+
     try {
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
@@ -82,7 +84,6 @@ export function useKanaFlashcard(
           }
         }
       }
-
       return createFallbackCharacter(kanaType);
     } catch {
       return createFallbackCharacter(kanaType);
@@ -90,7 +91,7 @@ export function useKanaFlashcard(
   }, [kanaType, userId, previousKanaRef]);
 
   const getKanaPerformance = useCallback(async () => {
-    if (isNavigatingRef.current || !mountedRef.current) return;
+    if (isNavigatingRef.current || !mountedRef.current || !userId) return;
 
     try {
       const data = await fetchKanaPerformance(userId, kanaType);
@@ -162,45 +163,27 @@ export function useKanaFlashcard(
   ]);
 
   const handleSubmitAnswer = useCallback(
-    async (answer: string) => {
-      if (isNavigatingRef.current || !mountedRef.current || !userId) return;
-
-      try {
-        const isAnswerCorrect =
-          currentKana.romaji.toLowerCase() === answer.toLowerCase();
-
-        const kanaDisplay = currentKana.kana;
-        const message = isAnswerCorrect
-          ? `Correct! "${kanaDisplay}" is "${currentKana.romaji}"`
-          : isAnswerCorrect === false
-            ? `Incorrect. "${kanaDisplay}" is "${currentKana.romaji}", not "${answer}"`
-            : "";
-
-        setMessage({
-          correct: isAnswerCorrect ? message : "",
-          incorrect: !isAnswerCorrect ? message : "",
-          error: "",
-        });
-
-        const messageTimeout = setTimeout(() => {
-          if (!isNavigatingRef.current && mountedRef.current) {
-            setMessage((prev) => ({ ...prev, correct: "", incorrect: "" }));
-          }
-        }, 3000);
-
-        if (userId) {
-          await submitAnswer(kanaType, answer, currentKana, isAnswerCorrect);
-          await fetchNextKana();
-          await getKanaPerformance();
-        }
-
-        clearTimeout(messageTimeout);
-      } catch {
+    async (answer: string, isCorrect: boolean) => {
+      if (!userId) {
         setMessage((prev) => ({
           ...prev,
-          error: "Error submitting your answer. Please try again.",
+          error: "No authenticated user found",
         }));
-        setHasError(true);
+        return;
+      }
+
+      if (isNavigatingRef.current || !mountedRef.current) return;
+
+      try {
+        await submitAnswer(
+          userId,
+          kanaType,
+          answer,
+          currentKana,
+          isCorrect
+        );
+
+        await getKanaPerformance();
 
         const errorTimeout = setTimeout(() => {
           if (!isNavigatingRef.current && mountedRef.current) {
@@ -210,18 +193,23 @@ export function useKanaFlashcard(
         }, 1500);
 
         return () => clearTimeout(errorTimeout);
+      } catch (error) {
+        console.error("Error submitting answer:", error);
+        setMessage((prev) => ({
+          ...prev,
+          error: "Failed to record answer. Please try again.",
+        }));
       }
     },
     [
       currentKana,
-      fetchNextKana,
-      getKanaPerformance,
       kanaType,
       isNavigatingRef,
       mountedRef,
       setMessage,
       setHasError,
       userId,
+      getKanaPerformance
     ],
   );
 
