@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useRef } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import KanaPerformanceTable from './performanceTable/kanaPerformanceTable';
 import { useKanaFlashcard } from '../hooks/useKanaFlashcard';
 import KanaDisplay from './kana/KanaDisplay';
@@ -14,8 +16,40 @@ interface KanaProps {
 }
 
 const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
+  const { status } = useSession();
+  const router = useRouter();
   const isNavigatingRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Redirect to login if not authenticated
+  React.useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <p className="text-xl text-gray-600 dark:text-gray-300">Loading...</p>
+      </div>
+    );
+  }
+
+  // Show error if not authenticated
+  if (status === 'unauthenticated') {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
+          Authentication Required
+        </h1>
+        <p className="text-xl mb-10 max-w-2xl text-gray-600 dark:text-gray-300">
+          Please sign in to access the flashcards.
+        </p>
+      </div>
+    );
+  }
 
   const {
     currentKana,

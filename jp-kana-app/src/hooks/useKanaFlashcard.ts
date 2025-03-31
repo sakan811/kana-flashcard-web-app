@@ -6,6 +6,7 @@ import {
 import { submitAnswer } from '../components/funcs/showKanaFunc';
 import { Character, KanaPerformanceData } from '../types';
 import { DEFAULT_USER_ID } from '../constants';
+import { useSession } from 'next-auth/react';
 
 interface KanaMessage {
   correct: string;
@@ -17,6 +18,9 @@ export function useKanaFlashcard(
   kanaType: 'hiragana' | 'katakana',
   isNavigatingRef: MutableRefObject<boolean>
 ) {
+  const { data: session } = useSession();
+  const userId = session?.user?.id || DEFAULT_USER_ID;
+  
   // Initialize with a default empty character
   const defaultCharacter: Character = { romanji: "", weight: 1 };
   const isInitialLoadRef = useRef(true);
@@ -90,7 +94,7 @@ export function useKanaFlashcard(
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
           console.log(`Fetch attempt ${attempt + 1} for ${kanaType}`);
-          const randomKana = await fetchRandomKana(DEFAULT_USER_ID, kanaType);
+          const randomKana = await fetchRandomKana(userId, kanaType);
           
           if (!randomKana || typeof randomKana !== 'object') {
             console.error('Invalid kana data received:', randomKana);
@@ -125,7 +129,7 @@ export function useKanaFlashcard(
       console.error('Error in getRandomKana:', error);
       return createFallbackCharacter();
     }
-  }, [kanaType, isRecentlyShown, updateKanaHistory, createFallbackCharacter]);
+  }, [kanaType, isRecentlyShown, updateKanaHistory, createFallbackCharacter, userId]);
 
   // Function to get kana performance data
   const getKanaPerformance = useCallback(async () => {
@@ -142,7 +146,7 @@ export function useKanaFlashcard(
     }
     
     try {
-      const data = await fetchKanaPerformance(DEFAULT_USER_ID, kanaType);
+      const data = await fetchKanaPerformance(userId, kanaType);
       console.log(`Got ${data.length} performance records`);
       // Only update state if component is still mounted and not navigating away
       if (!isNavigatingRef.current && mountedRef.current) {
@@ -157,7 +161,7 @@ export function useKanaFlashcard(
         setHasError(true);
       }
     }
-  }, [kanaType, isNavigatingRef]);
+  }, [kanaType, isNavigatingRef, userId]);
 
   // Function to fetch next kana
   const fetchNextKana = useCallback(async () => {
@@ -231,68 +235,53 @@ export function useKanaFlashcard(
   }, [getRandomKana, isNavigatingRef, createFallbackCharacter, safelyExitLoadingState, kanaType]);
 
   // Handle submitting an answer
-  const handleSubmitAnswer = useCallback(async (input: string) => {
-    if (isLoading || isNavigatingRef.current || hasError || !mountedRef.current) return; // Prevent submitting during loading, navigation or if there's an error
-    
-    const isCorrect = input.toLowerCase() === currentKana.romanji;
-
-    setIsLoading(true);
-    
-    // Safety timeout for submission
-    const safetyTimeout = setTimeout(() => {
-      console.log("Safety timeout triggered during answer submission");
-      safelyExitLoadingState();
-    }, 2000);
+  const handleSubmitAnswer = useCallback(async (answer: string) => {
+    if (isNavigatingRef.current || !mountedRef.current) return;
     
     try {
-      await submitAnswer(kanaType, input, currentKana, isCorrect);
-
-      if (!isNavigatingRef.current && mountedRef.current) {
-        setMessage({
-          correct: isCorrect ? 'Correct!' : '',
-          incorrect: !isCorrect ? `Incorrect. It is <b>${currentKana.romanji}</b>` : '',
-          error: ''
-        });
-
-        // Fetch new performance data and the next kana
-        try {
-          await getKanaPerformance();
-        } catch (perfError) {
-          console.error('Error getting performance after answer:', perfError);
-          // Continue even if performance fetch fails
+      const kanaDisplay = kanaType === 'hiragana' ? currentKana.hiragana : currentKana.katakana;
+      const isCorrect = currentKana.romanji.toLowerCase() === answer.toLowerCase();
+      
+      console.log(`Submitting answer for ${kanaDisplay}: ${answer} (Correct: ${isCorrect})`);
+      setMessage({
+        correct: isCorrect ? `Correct! "${kanaDisplay}" is "${currentKana.romanji}"` : '',
+        incorrect: !isCorrect ? `Incorrect. "${kanaDisplay}" is "${currentKana.romanji}", not "${answer}"` : '',
+        error: ''
+      });
+      
+      // Clear success/error message after 3 seconds
+      setTimeout(() => {
+        if (!isNavigatingRef.current && mountedRef.current) {
+          setMessage(prev => ({ ...prev, correct: '', incorrect: '' }));
         }
-        
-        try {
-          await fetchNextKana();
-        } catch (nextKanaError) {
-          console.error('Error getting next kana after answer:', nextKanaError);
-          // Ensure we still update UI state even if fetching next kana fails
-          safelyExitLoadingState();
-        }
-
-        const messageTimeoutId = setTimeout(() => {
-          if (!isNavigatingRef.current && mountedRef.current) {
-            setMessage(prev => ({ ...prev, correct: '', incorrect: '' }));
-          }
-        }, 1000);
-        
-        return () => clearTimeout(messageTimeoutId);
-      }
+      }, 3000);
+      
+      // Record the answer in the database
+      await submitAnswer(kanaType, answer, currentKana, isCorrect, userId);
+      
+      // Fetch new kana after submitting
+      console.log("Fetching next kana after submission");
+      await fetchNextKana();
+      
+      // Update performance data after submitting
+      await getKanaPerformance();
     } catch (error) {
       console.error('Error submitting answer:', error);
-      if (!isNavigatingRef.current && mountedRef.current) {
-        setMessage({ 
-          correct: '', 
-          incorrect: '', 
-          error: 'Database connection error. Please check your configuration.'
-        });
-        setHasError(true);
-        setIsLoading(false);
-      }
-    } finally {
-      clearTimeout(safetyTimeout);
+      setMessage(prev => ({ 
+        ...prev, 
+        error: 'Error submitting your answer. Please try again.' 
+      }));
+      setHasError(true);
+      
+      // Clear error message after 1.5 seconds
+      setTimeout(() => {
+        if (!isNavigatingRef.current && mountedRef.current) {
+          setMessage(prev => ({ ...prev, error: '' }));
+          setHasError(false);
+        }
+      }, 1500);
     }
-  }, [currentKana, fetchNextKana, getKanaPerformance, hasError, isLoading, isNavigatingRef, kanaType, safelyExitLoadingState]);
+  }, [currentKana, fetchNextKana, getKanaPerformance, kanaType, isNavigatingRef, userId]);
 
   // Clear error message
   const clearErrorMessage = useCallback(() => {

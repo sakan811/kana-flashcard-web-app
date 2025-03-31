@@ -10,19 +10,21 @@ import {
  *
  * @param {Character[]} initialKanaCharacters - Initial Kana Weight
  * @param {"hiragana" | "katakana" | undefined} kanaType - Japanese Kana Type, e.g., Hiragana or Katakana.
+ * @param {string} userId - User ID for fetching performance data
  * @returns {Promise<Character[]>} - A list of Kana with updated weight.
  * @throws {Error} If there is an issue with the database connection
  */
 export const updateKanaWeight = async (
     initialKanaCharacters: Array<Character>,
-    kanaType: "hiragana" | "katakana" | undefined
+    kanaType: "hiragana" | "katakana" | undefined,
+    userId: string = DEFAULT_USER_ID
 ): Promise<Character[]> => {
   // Default to hiragana if kanaType is undefined
   const type: "hiragana" | "katakana" = kanaType || 'hiragana';
 
   try {
     // Get performance data through the API service
-    const performanceData = await getKanaPerformance(DEFAULT_USER_ID, type);
+    const performanceData = await getKanaPerformance(userId, type);
 
     try {
       // Update weights based on the fetched data
@@ -80,6 +82,7 @@ export function updateWeights(
  * @param {string} inputValue - Users' answer of the displayed Kana as a Romanji.
  * @param {Character} currentKana - Currently displayed Kana.
  * @param {boolean} isCorrect - Whether the answer is correct.
+ * @param {string} userId - User ID for recording performance.
  * @returns {Promise<void>}
  * @throws {Error} If there is an issue with the database connection
  */
@@ -87,7 +90,8 @@ export const submitAnswer = async (
     kanaType: "hiragana" | "katakana" | undefined,
     inputValue: string,
     currentKana: Character,
-    isCorrect: boolean
+    isCorrect: boolean,
+    userId: string = DEFAULT_USER_ID
 ): Promise<void> => {
   // Get the kana character based on type (defaulting to hiragana if undefined)
   const effectiveType: "hiragana" | "katakana" = kanaType || 'hiragana';
@@ -102,7 +106,7 @@ export const submitAnswer = async (
   
   // Record the performance using the API service (will throw if there's an error)
   await apiRecordPerformance(
-    DEFAULT_USER_ID,
+    userId,
     kana,
     effectiveType,
     isCorrect,
