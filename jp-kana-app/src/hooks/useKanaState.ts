@@ -32,6 +32,7 @@ export const useKanaState = (kanaType: KanaType) => {
   const [hasError, setHasError] = useState<boolean>(false);
   const [isDataInitialized, setIsDataInitialized] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [isProcessingAnswer, setIsProcessingAnswer] = useState<boolean>(false);
 
   const safelyExitLoadingState = () => {
     if (!mountedRef.current) return;
@@ -110,5 +111,7 @@ export const useKanaState = (kanaType: KanaType) => {
     isCorrect,
     setIsCorrect,
     checkAnswer,
+    isProcessingAnswer,
+    setIsProcessingAnswer,
   };
 };

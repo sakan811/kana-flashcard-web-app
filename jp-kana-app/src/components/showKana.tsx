@@ -31,12 +31,14 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
     handleSubmitAnswer,
     handleRetry,
     clearErrorMessage,
+    isProcessingAnswer,
   } = useKanaFlashcard(kanaType, isNavigatingRef);
 
   const { inputRef, handleSubmit, handleChange, disabled } = useKanaForm({
     onSubmit: handleSubmitAnswer,
     setInputValue,
     disabled: isLoading || isNavigatingRef.current || hasError,
+    isProcessingAnswer,
   });
 
   const handleBackClick = () => {

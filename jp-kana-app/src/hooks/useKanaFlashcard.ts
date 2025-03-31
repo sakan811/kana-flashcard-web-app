@@ -49,6 +49,8 @@ export function useKanaFlashcard(
     mountedRef,
     safelyExitLoadingState,
     clearErrorMessage,
+    isProcessingAnswer,
+    setIsProcessingAnswer,
   } = useKanaState(kanaType);
 
   const getRandomKana = useCallback(async (): Promise<Character> => {
@@ -123,6 +125,7 @@ export function useKanaFlashcard(
     if (isNavigatingRef.current || !mountedRef.current) return;
 
     setIsLoading(true);
+    setIsProcessingAnswer(false); // Reset processing state when fetching new kana
 
     const safetyTimeout = setTimeout(() => {
       safelyExitLoadingState();
@@ -160,6 +163,7 @@ export function useKanaFlashcard(
     mountedRef,
     setIsLoading,
     setIsDataInitialized,
+    setIsProcessingAnswer,
   ]);
 
   const handleSubmitAnswer = useCallback(
@@ -172,7 +176,10 @@ export function useKanaFlashcard(
         return;
       }
 
-      if (isNavigatingRef.current || !mountedRef.current || !currentKana.romaji) return;
+      if (isNavigatingRef.current || !mountedRef.current || !currentKana.romaji || isLoading || isProcessingAnswer) return;
+      
+      // Set processing state to true to prevent multiple submissions
+      setIsProcessingAnswer(true);
       
       // Validate the user input against the current kana
       const isCorrect = answer.toLowerCase() === currentKana.romaji.toLowerCase();
@@ -219,6 +226,7 @@ export function useKanaFlashcard(
             
             // After showing feedback, fetch the next kana
             fetchNextKana();
+            // Note: setIsProcessingAnswer(false) is handled in fetchNextKana
           }
         }, 1500);
 
@@ -229,6 +237,7 @@ export function useKanaFlashcard(
           ...prev,
           error: "Failed to record answer. Please try again.",
         }));
+        setIsProcessingAnswer(false); // Reset processing state on error
       }
     },
     [
@@ -240,13 +249,17 @@ export function useKanaFlashcard(
       setHasError,
       userId,
       getKanaPerformance,
-      fetchNextKana
+      fetchNextKana,
+      isLoading,
+      isProcessingAnswer,
+      setIsProcessingAnswer
     ],
   );
 
   const handleRetry = useCallback(() => {
     setHasError(false);
     setIsLoading(true);
+    setIsProcessingAnswer(false); // Reset processing state when retrying
 
     const safetyTimeout = setTimeout(() => {
       safelyExitLoadingState();
@@ -269,6 +282,7 @@ export function useKanaFlashcard(
     setHasError,
     setIsLoading,
     setMessage,
+    setIsProcessingAnswer,
   ]);
 
   useEffect(() => {
@@ -390,5 +404,6 @@ export function useKanaFlashcard(
     handleSubmitAnswer,
     handleRetry,
     clearErrorMessage,
+    isProcessingAnswer,
   };
 }
