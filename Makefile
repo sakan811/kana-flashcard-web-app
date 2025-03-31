@@ -60,21 +60,3 @@ compose-down:
 
 compose-clean:
 	docker compose down --volumes --remove-orphans
-
-# Help command
-help:
-	@echo "Available commands:"
-	@echo "  make dev        - Start development server"
-	@echo "  make build      - Build for production"
-	@echo "  make preview    - Preview production build"
-	@echo "  make test       - Run tests"
-	@echo "  make update-deps - Update all dependencies"
-	@echo "  make clean      - Clean build artifacts"
-	@echo "  make install    - Install dependencies"
-	@echo "  make compose-up - Start docker compose"
-	@echo "  make compose-down - Stop docker compose"
-	@echo "  make prisma - Generate Prisma client"
-	@echo "  make migrate - Run Prisma migrations"
-	@echo "  make reset - Reset Prisma migrations"
-	@echo "  make studio - Open Prisma Studio"
-	@echo "  make compose-clean - Stop and remove containers and volumes for this project"
