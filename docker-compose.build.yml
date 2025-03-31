@@ -11,7 +11,7 @@ services:
       - NEXTAUTH_SECRET=your-secret-key-here
       - NEXTAUTH_URL=http://localhost:3000
       - NODE_ENV=production
-    command: sh -c "npx prisma migrate deploy && npm start"
+    command: sh -c "npx prisma migrate deploy && node .next/standalone/server.js"
     depends_on:
       jp-kana-flashcard-app-db:
         condition: service_healthy
@@ -41,4 +41,4 @@ services:
 
 volumes:
   postgres_data:
-  jp-kana-next-cache: 
+  jp-kana-next-cache:
