@@ -1,5 +1,5 @@
 import prisma from "./prisma";
-import { Character, KanaPerformanceData } from "../types";
+import { Character, KanaPerformanceData, UserKanaPerformance } from "../types";
 
 // Type for the UserKanaPerformance model
 interface UserKanaPerformance {
@@ -17,11 +17,19 @@ interface UserKanaPerformance {
 /**
  * Get all flashcards, optionally filtered by type
  */
-export async function getFlashcards(type?: "hiragana" | "katakana") {
+export async function getFlashcards(
+  type?: "hiragana" | "katakana",
+): Promise<Character[]> {
   try {
-    return await prisma.flashcard.findMany({
+    const flashcards = await prisma.flashcard.findMany({
       where: type ? { type: type } : undefined,
     });
+
+    return flashcards.map((flashcard) => ({
+      ...flashcard,
+      romanji: flashcard.romaji,
+      weight: 1, // Default weight
+    }));
   } catch (error) {
     console.error("Error fetching flashcards:", error);
     return [];
@@ -31,12 +39,26 @@ export async function getFlashcards(type?: "hiragana" | "katakana") {
 /**
  * Get all progress for a specific user
  */
-export async function getUserProgress(userId: string) {
+export async function getUserProgress(
+  userId: string,
+): Promise<UserKanaPerformance[]> {
   try {
-    return await prisma.userProgress.findMany({
+    const progress = await prisma.userProgress.findMany({
       where: { userId },
       include: { flashcard: true },
     });
+
+    return progress.map((p) => ({
+      id: p.id,
+      userId: p.userId,
+      kana: p.flashcard.kana,
+      kanaType: p.flashcard.type,
+      correctCount: p.correctCount,
+      totalCount: p.correctCount + p.incorrectCount,
+      lastPracticed: p.lastPracticed,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    }));
   } catch (error) {
     console.error("Error fetching user progress:", error);
     return [];
@@ -50,7 +72,7 @@ export async function updateUserProgress(
   userId: string,
   flashcardId: number,
   isCorrect: boolean,
-) {
+): Promise<void> {
   try {
     // Upsert (create or update) user progress
     await prisma.userProgress.upsert({

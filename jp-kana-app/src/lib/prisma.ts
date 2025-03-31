@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, UserProgress } from "@prisma/client";
 
 // This approach ensures the Prisma Client is only initialized once
 // and properly handles both development and production environments
@@ -20,7 +20,7 @@ export function getPrismaClient(): PrismaClient {
         );
         throw new Error("PrismaClient cannot be used in the browser.");
       },
-    });
+    }) as PrismaClient;
   }
 
   // We're on the server, so we can use PrismaClient
@@ -37,7 +37,13 @@ export function getPrismaClient(): PrismaClient {
 const prisma = getPrismaClient();
 
 // Helper functions for user progress
-export async function getUserProgressWithFlashcard(userId: string) {
+export async function getUserProgressWithFlashcard(
+  userId: string,
+): Promise<
+  (UserProgress & {
+    flashcard: { id: number; kana: string; romaji: string; type: string };
+  })[]
+> {
   return await prisma.userProgress.findMany({
     where: { userId },
     include: { flashcard: true },
@@ -48,7 +54,7 @@ export async function updateUserProgressRecord(
   userId: string,
   flashcardId: number,
   isCorrect: boolean,
-) {
+): Promise<UserProgress> {
   return await prisma.userProgress.upsert({
     where: {
       userId_flashcardId: {

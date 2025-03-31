@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
 import { KanaType } from "@prisma/client";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
     const { userId, kana, kanaType, isCorrect, flashcardId } = body;
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error recording kana performance:", error);
+    console.error("Error recording performance:", error);
     return NextResponse.json(
       {
         error:

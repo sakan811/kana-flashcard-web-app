@@ -54,21 +54,23 @@ export const createUser = async (
 };
 
 // Function to get a user by email
-export const getUserByEmail = async (email: string) => {
+export const getUserByEmail = async (email: string): Promise<User | null> => {
   return prisma.user.findUnique({
     where: { email },
   });
 };
 
 // Function to check if user is authenticated, redirect if not
-export const requireAuth = async (authOptions: NextAuthOptions) => {
+export const requireAuth = async (
+  authOptions: NextAuthOptions,
+): Promise<User> => {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     redirect("/login");
   }
 
-  return session.user;
+  return session.user as User;
 };
 
 // Function to check if user is authenticated, return status

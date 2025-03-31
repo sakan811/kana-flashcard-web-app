@@ -20,7 +20,7 @@ const katakanaList: Character[] = [
   // Add more katakana characters as needed
 ];
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
   try {
     // Extract userId from query parameters
     const { searchParams } = new URL(request.url);

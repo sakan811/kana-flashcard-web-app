@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma, { updateUserProgressRecord } from "../../../lib/prisma";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
     const { userId, flashcardId, kana, kanaType, isCorrect } = body;

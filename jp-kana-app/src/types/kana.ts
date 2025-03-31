@@ -12,8 +12,8 @@ export interface KanaMessage {
 }
 
 export interface KanaPerformanceData {
-  hiragana?: string;
-  katakana?: string;
+  kana: string;
+  kanaType: "hiragana" | "katakana";
   romanji?: string;
   correctCount: number;
   totalCount: number;

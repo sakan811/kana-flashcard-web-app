@@ -6,9 +6,6 @@ const nextConfig = {
   eslint: {
     dirs: ["tests", "src"],
   },
-  typescript: {
-    dirs: ["tests", "src"],
-  },
   output: "standalone",
 };
 

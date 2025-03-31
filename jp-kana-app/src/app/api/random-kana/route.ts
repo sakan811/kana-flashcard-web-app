@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
 import { KanaType } from "@prisma/client";
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
   try {
     // Extract parameters
     const { searchParams } = new URL(request.url);

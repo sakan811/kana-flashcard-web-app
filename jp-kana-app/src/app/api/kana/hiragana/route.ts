@@ -21,7 +21,7 @@ const hiraganaList: Character[] = [
   // Add more hiragana characters as needed
 ];
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
   try {
     // Extract userId from query parameters
     const { searchParams } = new URL(request.url);
