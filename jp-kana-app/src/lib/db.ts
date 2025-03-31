@@ -9,9 +9,7 @@ import {
 /**
  * Get all flashcards, optionally filtered by type
  */
-export async function getFlashcards(
-  type?: KanaType,
-): Promise<Character[]> {
+export async function getFlashcards(type?: KanaType): Promise<Character[]> {
   try {
     const flashcards = await prisma.flashcard.findMany({
       where: type ? { type: type } : undefined,

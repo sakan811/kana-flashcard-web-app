@@ -12,5 +12,10 @@ export default function HiraganaPage() {
     router.push("/");
   };
 
-  return <RandomKana kanaType={KanaType.hiragana} onNavigateBack={handleNavigateBack} />;
+  return (
+    <RandomKana
+      kanaType={KanaType.hiragana}
+      onNavigateBack={handleNavigateBack}
+    />
+  );
 }

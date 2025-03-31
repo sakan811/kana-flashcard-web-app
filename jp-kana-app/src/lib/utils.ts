@@ -1,4 +1,4 @@
-import { Character, KanaType } from "@/types/kana";
+import { Character } from "@/types/kana";
 import { HIRAGANA_CHARACTERS, KATAKANA_CHARACTERS } from "@/constants";
 
 /**

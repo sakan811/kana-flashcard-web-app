@@ -12,5 +12,10 @@ export default function KatakanaPage() {
     router.push("/");
   };
 
-  return <RandomKana kanaType={KanaType.katakana} onNavigateBack={handleNavigateBack} />;
+  return (
+    <RandomKana
+      kanaType={KanaType.katakana}
+      onNavigateBack={handleNavigateBack}
+    />
+  );
 }

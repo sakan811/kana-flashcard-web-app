@@ -5,7 +5,6 @@ const nextConfig = {
   reactStrictMode: true,
   eslint: {
     dirs: ["tests", "src"],
-    ignoreDuringBuilds: true,
   },
   output: "standalone",
   distDir: ".next",
