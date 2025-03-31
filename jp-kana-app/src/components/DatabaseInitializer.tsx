@@ -10,6 +10,7 @@ const DatabaseInitializer = () => {
   useEffect(() => {
     const initializeDatabase = async () => {
       try {
+        console.log("Initializing kana database...");
         const response = await fetch("/api/init-database", {
           method: "POST",
           headers: {
@@ -19,6 +20,7 @@ const DatabaseInitializer = () => {
         const data = await response.json();
 
         if (data.success) {
+          console.log(`Database initialized with ${data.count} kana characters.`);
           console.log("Database initialization complete:", data.message);
         } else {
           console.error("Error initializing database:", data.message);
@@ -31,7 +33,7 @@ const DatabaseInitializer = () => {
     initializeDatabase();
   }, []);
 
-  // This component doesn't render anything
+  // This component doesn't render anything visible to avoid disrupting the UI
   return null;
 };
 

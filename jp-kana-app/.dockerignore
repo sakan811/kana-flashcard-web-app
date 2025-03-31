@@ -1,20 +1,48 @@
+# Node dependencies
 /node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 **/*.log
+
+# Testing
 /tests
+/coverage
+.nyc_output
+__tests__
+**/*.test.js
+**/*.spec.js
+
+# Environment and config
 .env
 .env.*
 !.env.example
+.npmrc
+
+# Development tools
 .git
 .gitignore
 .github
 .next
 .idea
 .vscode
-coverage
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-README.md
+.eslintcache
+.prettierignore
+.stylelintignore
+*.md
+!README.md
+**/*.tsbuildinfo
 .DS_Store
+
+# Build outputs
 build
+dist
+out
+
+# Editors
 .codiumai
+
+# Cache
+.npm
+.eslintcache
+.cache
