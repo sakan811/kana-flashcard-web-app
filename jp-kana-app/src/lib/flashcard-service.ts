@@ -1,4 +1,4 @@
-import { Character, KanaType } from "@/types";
+import { Character, KanaType } from "@/types/kana";
 import { recordKanaPerformance } from "./api-service";
 import { DEFAULT_USER_ID } from "../constants";
 
@@ -40,8 +40,8 @@ export async function submitAnswer(
   try {
     await recordKanaPerformance(
       DEFAULT_USER_ID,
-      currentKana.kana,
-      kanaType || "hiragana",
+      currentKana.kana || "",
+      kanaType || KanaType.hiragana,
       isCorrect,
       currentKana.id,
     );

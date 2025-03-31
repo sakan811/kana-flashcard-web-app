@@ -5,25 +5,32 @@ import {
   recordKanaPerformance,
   getKanaWithWeights,
 } from "../src/lib/api-service";
-import { Character, KanaPerformanceData } from "@/types";
+import { Character, KanaPerformanceData, KanaType } from "@/types/kana";
 
 // Mock fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 describe("API Service", () => {
-  const testCharacter: Character = {
+  const mockCharacter: Character = {
     kana: "あ",
-    romanji: "a",
-    type: "hiragana",
+    romaji: "a",
+    type: KanaType.hiragana,
     weight: 1,
   };
 
-  const testPerformanceData: KanaPerformanceData = {
+  const mockPerformanceData: KanaPerformanceData = {
+    id: 1,
+    userId: "test-user",
     kana: "あ",
-    accuracy: 50,
+    kanaType: KanaType.hiragana,
     correctCount: 5,
     totalCount: 10,
+    accuracy: 0.5,
+    percentage: 50,
+    lastPracticed: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   beforeEach(() => {
@@ -37,12 +44,12 @@ describe("API Service", () => {
         json: () =>
           Promise.resolve({
             success: true,
-            data: testCharacter,
+            data: mockCharacter,
           }),
       });
 
       const result = await getRandomKana("test-user", "hiragana");
-      expect(result).toEqual(testCharacter);
+      expect(result).toEqual(mockCharacter);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining("/api/random-kana"),
       );
@@ -62,11 +69,11 @@ describe("API Service", () => {
     it("should fetch performance data successfully", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve([testPerformanceData]),
+        json: () => Promise.resolve([mockPerformanceData]),
       });
 
       const result = await getKanaPerformance("test-user", "hiragana");
-      expect(result).toEqual([testPerformanceData]);
+      expect(result).toEqual([mockPerformanceData]);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining("/api/kana-performance"),
       );
@@ -75,7 +82,7 @@ describe("API Service", () => {
     it("should use cached data when available", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve([testPerformanceData]),
+        json: () => Promise.resolve([mockPerformanceData]),
       });
 
       // First call
@@ -83,7 +90,7 @@ describe("API Service", () => {
       // Second call should use cache
       const result = await getKanaPerformance("test-user", "hiragana");
 
-      expect(result).toEqual([testPerformanceData]);
+      expect(result).toEqual([mockPerformanceData]);
       expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
@@ -118,7 +125,7 @@ describe("API Service", () => {
 
   describe("getKanaWithWeights", () => {
     it("should fetch kana with weights successfully", async () => {
-      const characters = [testCharacter];
+      const characters = [mockCharacter];
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve(characters),
@@ -140,7 +147,7 @@ describe("API Service", () => {
     });
 
     it("should handle API errors", async () => {
-      const characters = [testCharacter];
+      const characters = [mockCharacter];
       mockFetch.mockResolvedValueOnce({
         ok: false,
         statusText: "Server Error",

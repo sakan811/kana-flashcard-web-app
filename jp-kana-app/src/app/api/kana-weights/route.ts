@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
-import { Character } from "../../../types";
+import { Character } from "@/types/kana";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {

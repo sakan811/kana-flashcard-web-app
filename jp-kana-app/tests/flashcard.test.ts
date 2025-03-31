@@ -45,13 +45,13 @@ describe("Flashcard Service", () => {
 
   describe("submitAnswer", () => {
     it("should record correct answer for hiragana", async () => {
-      await submitAnswer("hiragana", "a", mockCharacters[0], true);
+      await submitAnswer(KanaType.hiragana, "a", mockCharacters[0], true);
       // Note: We can't directly test the database state here as it's handled by the API
       // The test verifies that the function executes without throwing errors
     });
 
     it("should record incorrect answer for katakana", async () => {
-      await submitAnswer("katakana", "wrong", mockCharacters[0], false);
+      await submitAnswer(KanaType.katakana, "wrong", mockCharacters[0], false);
       // Note: We can't directly test the database state here as it's handled by the API
       // The test verifies that the function executes without throwing errors
     });

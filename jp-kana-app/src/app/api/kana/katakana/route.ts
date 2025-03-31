@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { Character } from "@/types";
+import { Character, KanaType } from "@/types/kana";
 
 const katakanaData: Character[] = [
-  { kana: "ア", romanji: "a", type: "katakana", weight: 1 },
-  { kana: "イ", romanji: "i", type: "katakana", weight: 1 },
-  { kana: "ウ", romanji: "u", type: "katakana", weight: 1 },
-  { kana: "エ", romanji: "e", type: "katakana", weight: 1 },
-  { kana: "オ", romanji: "o", type: "katakana", weight: 1 },
+  { kana: "ア", romaji: "a", type: KanaType.katakana, weight: 1 },
+  { kana: "イ", romaji: "i", type: KanaType.katakana, weight: 1 },
+  { kana: "ウ", romaji: "u", type: KanaType.katakana, weight: 1 },
+  { kana: "エ", romaji: "e", type: KanaType.katakana, weight: 1 },
+  { kana: "オ", romaji: "o", type: KanaType.katakana, weight: 1 },
 ];
 
 export async function GET() {
@@ -14,7 +14,7 @@ export async function GET() {
     const data = await Promise.all(
       katakanaData.map(async (card) => ({
         kana: card.kana,
-        romanji: card.romanji,
+        romaji: card.romaji,
         type: card.type,
         weight: card.weight,
       })),

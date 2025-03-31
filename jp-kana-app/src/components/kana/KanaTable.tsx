@@ -1,6 +1,6 @@
 import React from "react";
 import KanaPerformanceTable from "../performanceTable/kanaPerformanceTable";
-import { KanaType, KanaPerformanceData } from "@/types";
+import { KanaType, KanaPerformanceData } from "@/types/kana";
 import { getKanaTableColumns } from "@/config/tableColumns";
 
 interface KanaTableProps {

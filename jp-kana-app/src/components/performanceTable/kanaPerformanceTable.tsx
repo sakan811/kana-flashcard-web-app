@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useRef, useEffect, memo } from "react";
-import { Character, KanaPerformanceData, KanaType } from "@/types";
+import { Character, KanaPerformanceData, KanaType } from "@/types/kana";
 
 // Define types for the props
 interface Column {
@@ -35,7 +35,7 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
         if (characters.length > 0) {
           characters.forEach((char) => {
             if (char.kana) {
-              kanaToRomajiMap[char.kana] = char.romanji;
+              kanaToRomajiMap[char.kana] = char.romaji;
             }
           });
           mappingInitializedRef.current = true;

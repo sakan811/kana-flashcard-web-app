@@ -2,7 +2,8 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import RandomKana from "../../components/showKana";
+import RandomKana from "@/components/showKana";
+import { KanaType } from "@/types/kana";
 
 export default function KatakanaPage() {
   const router = useRouter();
@@ -11,5 +12,5 @@ export default function KatakanaPage() {
     router.push("/");
   };
 
-  return <RandomKana kanaType="katakana" onNavigateBack={handleNavigateBack} />;
+  return <RandomKana kanaType={KanaType.katakana} onNavigateBack={handleNavigateBack} />;
 }

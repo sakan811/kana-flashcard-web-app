@@ -1,5 +1,5 @@
 import React from "react";
-import { KanaMessage } from "@/types";
+import { KanaMessage } from "@/types/kana";
 
 interface MessageDisplayProps {
   message: KanaMessage;

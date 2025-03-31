@@ -1,4 +1,4 @@
-import { KanaType } from "@/types";
+import { KanaType } from "@/types/kana";
 
 export interface TableColumn {
   key: string;

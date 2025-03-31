@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
-import { Character } from "@/types";
+import { Character, KanaType } from "@/types/kana";
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -80,7 +80,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       return {
         id: card.id,
         kana: card.kana,
-        romanji: card.romaji,
+        romaji: card.romaji,
         type: card.type,
         weight,
         correctCount: progress?.correctCount || 0,
@@ -119,9 +119,10 @@ export async function GET(request: Request): Promise<NextResponse> {
       totalCount: number;
       accuracy: number;
     } = {
+      id: selectedCard.id,
       kana: selectedCard.kana,
-      romanji: selectedCard.romanji,
-      type: selectedCard.type,
+      romaji: selectedCard.romaji,
+      type: selectedCard.type as KanaType | undefined,
       weight: selectedCard.weight,
       correctCount: selectedCard.correctCount,
       totalCount: selectedCard.totalCount,

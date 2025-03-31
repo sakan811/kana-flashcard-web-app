@@ -1,5 +1,5 @@
-import { Character } from "../types";
-import { HIRAGANA_DATA, KATAKANA_DATA } from "../constants";
+import { Character, KanaType } from "@/types/kana";
+import { HIRAGANA_CHARACTERS, KATAKANA_CHARACTERS } from "@/constants";
 
 /**
  * Selects a random character from the provided data based on their weights.
@@ -46,7 +46,7 @@ export const getRandomCharacter = (
  * @returns {Character[]} - A list of hiragana characters.
  */
 export const getHiraganaList = (): Character[] => {
-  return HIRAGANA_DATA;
+  return HIRAGANA_CHARACTERS;
 };
 
 /**
@@ -55,5 +55,5 @@ export const getHiraganaList = (): Character[] => {
  * @returns {Character[]} - A list of katakana characters.
  */
 export const getKatakanaList = (): Character[] => {
-  return KATAKANA_DATA;
+  return KATAKANA_CHARACTERS;
 };

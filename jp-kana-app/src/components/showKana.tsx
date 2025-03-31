@@ -9,7 +9,7 @@ import MessageDisplay from "./kana/MessageDisplay";
 import AuthGuard from "./auth/AuthGuard";
 import KanaHeader from "./kana/KanaHeader";
 import KanaTable from "./kana/KanaTable";
-import { KanaType } from "@/types";
+import { KanaType } from "@/types/kana";
 
 interface KanaProps {
   kanaType: KanaType;

@@ -1,16 +1,16 @@
 import prisma from "./prisma";
 import {
   Character,
+  KanaType,
   KanaPerformanceData,
   UserKanaPerformance,
-  KanaType,
-} from "../types";
+} from "@/types/kana";
 
 /**
  * Get all flashcards, optionally filtered by type
  */
 export async function getFlashcards(
-  type?: "hiragana" | "katakana",
+  type?: KanaType,
 ): Promise<Character[]> {
   try {
     const flashcards = await prisma.flashcard.findMany({
@@ -19,7 +19,8 @@ export async function getFlashcards(
 
     return flashcards.map((flashcard) => ({
       ...flashcard,
-      romanji: flashcard.romaji,
+      romaji: flashcard.romaji,
+      type: flashcard.type as KanaType,
       weight: 1, // Default weight
     }));
   } catch (error) {
@@ -44,7 +45,7 @@ export async function getUserProgress(
       id: p.id,
       userId: p.userId,
       kana: p.flashcard.kana,
-      kanaType: p.flashcard.type,
+      kanaType: p.flashcard.type as KanaType,
       correctCount: p.correctCount,
       totalCount: p.correctCount + p.incorrectCount,
       lastPracticed: p.lastPracticed,
@@ -102,12 +103,12 @@ export async function updateUserProgress(
 export async function recordKanaPerformance(
   userId: string,
   kana: string,
-  kanaType: "hiragana" | "katakana" | undefined,
+  kanaType: KanaType | undefined,
   isCorrect: boolean,
 ): Promise<void> {
   try {
     // Default to hiragana if kanaType is undefined
-    const effectiveKanaType: "hiragana" | "katakana" = kanaType || "hiragana";
+    const effectiveKanaType: KanaType = kanaType || KanaType.hiragana;
 
     await prisma.userKanaPerformance.upsert({
       where: {
@@ -140,7 +141,7 @@ export async function recordKanaPerformance(
  */
 export async function getKanaPerformance(
   userId: string,
-  kanaType: "hiragana" | "katakana",
+  kanaType: KanaType,
 ): Promise<KanaPerformanceData[]> {
   try {
     const performances = await prisma.userKanaPerformance.findMany({
@@ -150,26 +151,21 @@ export async function getKanaPerformance(
       },
     });
 
-    return performances.map((perf) => {
-      // Ensure kanaType is cast to KanaType
-      const performanceKanaType: KanaType = perf.kanaType as KanaType;
-
-      return {
-        id: perf.id,
-        userId: perf.userId,
-        kana: perf.kana,
-        kanaType: performanceKanaType,
-        correctCount: perf.correctCount,
-        totalCount: perf.totalCount,
-        accuracy:
-          perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
-        percentage:
-          perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
-        lastPracticed: perf.lastPracticed,
-        createdAt: perf.createdAt,
-        updatedAt: perf.updatedAt,
-      };
-    });
+    return performances.map((perf) => ({
+      id: perf.id,
+      userId: perf.userId,
+      kana: perf.kana,
+      kanaType: perf.kanaType as KanaType,
+      correctCount: perf.correctCount,
+      totalCount: perf.totalCount,
+      accuracy:
+        perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
+      percentage:
+        perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
+      lastPracticed: perf.lastPracticed,
+      createdAt: perf.createdAt,
+      updatedAt: perf.updatedAt,
+    }));
   } catch (error) {
     console.error(`Error getting ${kanaType} performance:`, error);
     return [];
@@ -182,7 +178,7 @@ export async function getKanaPerformance(
 export async function getKanaWithWeights(
   characters: Character[],
   userId: string,
-  kanaType: "hiragana" | "katakana",
+  kanaType: KanaType,
 ): Promise<Character[]> {
   try {
     const performanceData = await getKanaPerformance(userId, kanaType);

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { prisma } from "./setup";
 import { createUser } from "../src/lib/auth";
-import { Character } from "@/types";
+import { Character, KanaType } from "@/types/kana";
 
 describe("Database Operations", () => {
   const testUser = {
@@ -11,8 +11,8 @@ describe("Database Operations", () => {
 
   const testCharacter: Character = {
     kana: "あ",
-    romanji: "a",
-    type: "hiragana",
+    romaji: "a",
+    type: KanaType.hiragana,
     weight: 1,
   };
 
@@ -46,7 +46,7 @@ describe("Database Operations", () => {
       const flashcard = await prisma.flashcard.create({
         data: {
           kana: testCharacter.kana!,
-          romaji: testCharacter.romanji,
+          romaji: testCharacter.romaji,
           type: "hiragana",
         },
       });
@@ -75,7 +75,7 @@ describe("Database Operations", () => {
       const flashcard = await prisma.flashcard.create({
         data: {
           kana: testCharacter.kana!,
-          romaji: testCharacter.romanji,
+          romaji: testCharacter.romaji,
           type: "hiragana",
         },
       });
@@ -110,7 +110,7 @@ describe("Database Operations", () => {
       const flashcard = await prisma.flashcard.create({
         data: {
           kana: testCharacter.kana!,
-          romaji: testCharacter.romanji,
+          romaji: testCharacter.romaji,
           type: "hiragana",
         },
       });
@@ -143,7 +143,7 @@ describe("Database Operations", () => {
       const flashcard = await prisma.flashcard.create({
         data: {
           kana: testCharacter.kana!,
-          romaji: testCharacter.romanji,
+          romaji: testCharacter.romaji,
           type: "hiragana",
         },
       });

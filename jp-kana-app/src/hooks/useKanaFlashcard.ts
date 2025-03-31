@@ -202,17 +202,7 @@ export function useKanaFlashcard(
         return () => clearTimeout(errorTimeout);
       }
     },
-    [
-      currentKana,
-      fetchNextKana,
-      getKanaPerformance,
-      kanaType,
-      isNavigatingRef,
-      userId,
-      mountedRef,
-      setMessage,
-      setHasError,
-    ],
+    [currentKana, fetchNextKana, getKanaPerformance, kanaType, isNavigatingRef, mountedRef, setMessage, setHasError],
   );
 
   const handleRetry = useCallback(() => {

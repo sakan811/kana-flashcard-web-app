@@ -1,6 +1,6 @@
 import React from "react";
 import BackButton from "../ui/BackButton";
-import { KanaType } from "@/types";
+import { KanaType } from "@/types/kana";
 
 interface KanaHeaderProps {
   kanaType: KanaType;

@@ -1,10 +1,10 @@
-import { Character, KanaType } from "@/types";
+import { Character, KanaType } from "@/types/kana";
 
 export const createFallbackCharacter = (kanaType: KanaType): Character => {
   return {
     id: 0,
     kana: kanaType === "hiragana" ? "あ" : "ア",
-    romanji: "a",
+    romaji: "a",
     type: kanaType,
     weight: 1,
   };

@@ -5,7 +5,7 @@
  * @module kana-performance
  */
 
-import { Character, KanaPerformanceData, KanaType } from "@/types";
+import { Character, KanaPerformanceData, KanaType } from "@/types/kana";
 import { DEFAULT_USER_ID } from "@/constants";
 import {
   getKanaPerformance,
@@ -27,7 +27,7 @@ export const updateKanaWeight = async (
   userId: string = DEFAULT_USER_ID,
 ): Promise<Character[]> => {
   // Default to hiragana if kanaType is undefined
-  const type: KanaType = kanaType || "hiragana";
+  const type: KanaType = kanaType || KanaType.hiragana;
 
   try {
     // Get performance data through the API service
@@ -97,7 +97,7 @@ export const submitAnswer = async (
   userId: string = DEFAULT_USER_ID,
 ): Promise<void> => {
   // Get the kana character based on type (defaulting to hiragana if undefined)
-  const effectiveType: KanaType = kanaType || "hiragana";
+  const effectiveType: KanaType = kanaType || KanaType.hiragana;
   const kana = currentKana.kana;
 
   // Skip if kana is undefined
@@ -116,3 +116,15 @@ export const submitAnswer = async (
     currentKana.id, // Pass the flashcard ID if available
   );
 };
+
+export async function getKanaPerformanceData(
+  userId: string = DEFAULT_USER_ID,
+  kanaType: KanaType = KanaType.hiragana,
+): Promise<KanaPerformanceData[]> {
+  try {
+    return await getKanaPerformance(userId, kanaType);
+  } catch (error) {
+    console.error("Error fetching kana performance:", error);
+    return [];
+  }
+}
