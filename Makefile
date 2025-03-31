@@ -39,6 +39,15 @@ reset:
 studio:
 	cd jp-kana-app && npx prisma studio
 
+compose-up:
+	docker compose up -d
+
+compose-down:
+	docker compose down
+
+compose-clean:
+	docker compose down --rmi all
+
 # Help command
 help:
 	@echo "Available commands:"
@@ -49,3 +58,6 @@ help:
 	@echo "  make update-deps - Update all dependencies"
 	@echo "  make clean      - Clean build artifacts"
 	@echo "  make install    - Install dependencies"
+	@echo "  make compose-up - Start docker compose"
+	@echo "  make compose-down - Stop docker compose"
+	@echo "  make compose-clean - Stop and remove all containers and images"

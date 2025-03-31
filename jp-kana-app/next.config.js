@@ -13,6 +13,7 @@ const nextConfig = {
     // your project has type errors.
     ignoreBuildErrors: true,
   },
+  output: 'standalone',
 };
 
 module.exports = nextConfig; 

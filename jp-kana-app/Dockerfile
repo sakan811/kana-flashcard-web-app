@@ -1,70 +1,77 @@
-# Use the official Node.js image as the base image for building the application
-FROM node:20-alpine AS build
+# Use the official Node.js image as the base image
+FROM node:20-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json into the working directory
-COPY package*.json ./
+# Install dependencies first (for better caching)
+COPY package.json package-lock.json ./
+RUN npm ci --only=production
 
-# Install dependencies
-RUN npm install
+# Copy prisma schema for client generation
+COPY prisma ./prisma/
 
-# Copy the rest of the application code into the container
-COPY . .
-
-# Build the application with environment variables
-ARG VITE_POSTGRES_HOST
-ARG VITE_POSTGRES_PORT
-ARG VITE_POSTGRES_USER
-ARG VITE_POSTGRES_PASSWORD
-ARG VITE_POSTGRES_DB
-
-# Set default values for environment variables
-ENV VITE_POSTGRES_HOST=${VITE_POSTGRES_HOST:-postgres}
-ENV VITE_POSTGRES_PORT=${VITE_POSTGRES_PORT:-5432}
-ENV VITE_POSTGRES_USER=${VITE_POSTGRES_USER:-postgres}
-ENV VITE_POSTGRES_PASSWORD=${VITE_POSTGRES_PASSWORD:-postgres}
-ENV VITE_POSTGRES_DB=${VITE_POSTGRES_DB:-postgres}
-
-# Set DATABASE_URL for Prisma
-ENV DATABASE_URL=postgresql://${VITE_POSTGRES_USER}:${VITE_POSTGRES_PASSWORD}@${VITE_POSTGRES_HOST}:${VITE_POSTGRES_PORT}/${VITE_POSTGRES_DB}
-
-# Generate Prisma client
+# Generate Prisma client (do this before copying all code for better layer caching)
 RUN npx prisma generate
 
-# Build the application
-RUN npx vite build
+# Copy the rest of the application code
+COPY . .
 
-# Use a smaller image to serve the application
-FROM nginx:alpine
+# Set up environment variables for Prisma
+ARG DATABASE_URL
+ARG NEXTAUTH_SECRET
+ARG NEXTAUTH_URL
 
-# Install necessary packages for creating users and running Prisma
-RUN apk add --no-cache shadow nodejs npm
+# Set default values for environment variables
+ENV DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres?schema=public}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-key-here}
+ENV NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+ENV NODE_ENV=production
 
-# Create a non-root user and group with a specific UID and GID
-RUN groupadd -g 1001 appgroup && useradd -u 1001 -g appgroup -s /bin/sh -m appuser
+# Build the Next.js application
+RUN npm run build
 
-# Copy the built application from the build stage
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy Prisma files for migrations
-COPY --from=build /app/node_modules/.prisma /usr/share/nginx/html/node_modules/.prisma
-COPY --from=build /app/node_modules/@prisma /usr/share/nginx/html/node_modules/@prisma
-COPY --from=build /app/prisma /usr/share/nginx/html/prisma
-COPY --from=build /app/package.json /usr/share/nginx/html/package.json
-
-# Copy custom nginx.conf with /tmp for pid location
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Change ownership of nginx directories to non-root user
-RUN chown -R appuser:appgroup /usr/share/nginx/html /var/cache/nginx /var/run
+# Production image, copy all the files and run next
+FROM node:20-alpine AS runner
 
 # Set working directory
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
-# Switch to the non-root user
-USER appuser
+# Install only production dependencies
+COPY package.json package-lock.json ./
+RUN npm ci --only=production --ignore-scripts
 
-# Expose port 80 to access the application
-EXPOSE 80
+# Create a non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy necessary files from the builder stage
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Set environment variables (will be overridden by runtime values)
+ENV NODE_ENV=production
+ENV DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres?schema=public}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-key-here}
+ENV NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+
+# Set proper ownership
+RUN chown -R nextjs:nodejs /app
+
+# Switch to non-root user
+USER nextjs
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget -qO- http://localhost:3000/ || exit 1
+
+# Expose the port Next.js runs on
+EXPOSE 3000
+
+# Run the Next.js application
+CMD ["node", "server.js"]

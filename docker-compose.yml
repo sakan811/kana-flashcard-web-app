@@ -16,29 +16,32 @@ services:
       context: ./jp-kana-app
       dockerfile: Dockerfile
       args:
-        - VITE_POSTGRES_HOST=postgres
-        - VITE_POSTGRES_PORT=5432
-        - VITE_POSTGRES_USER=postgres
-        - VITE_POSTGRES_PASSWORD=postgres
-        - VITE_POSTGRES_DB=postgres
+        - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres?schema=public
+        - NEXTAUTH_SECRET=your-secret-key-here
+        - NEXTAUTH_URL=http://localhost:3000
     ports:
-      - "3000:80"
+      - "3000:3000"
     user: "1001:1001"
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      - VITE_POSTGRES_HOST=postgres
-      - VITE_POSTGRES_PORT=5432
-      - VITE_POSTGRES_USER=postgres
-      - VITE_POSTGRES_PASSWORD=postgres
-      - VITE_POSTGRES_DB=postgres
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
-    entrypoint: >
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres?schema=public
+      - NEXTAUTH_SECRET=your-secret-key-here
+      - NEXTAUTH_URL=http://localhost:3000
+      - NODE_ENV=production
+    command: >
       sh -c "
         npx prisma migrate deploy &&
-        nginx -g 'daemon off;'
+        node server.js
       "
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   postgres:
     image: postgres:latest
@@ -50,6 +53,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
