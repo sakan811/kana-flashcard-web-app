@@ -47,7 +47,7 @@ model UserProgress {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   
   user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  flashcard     Flashcard @relation(fields: [flashcardId], references: [id])
+  flashcard     Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
 
   @@unique([userId, flashcardId])
   @@map("user_progress")
@@ -73,4 +73,4 @@ model UserKanaPerformance {
 enum KanaType {
   hiragana
   katakana
-} 
+}
