@@ -30,7 +30,7 @@ describe("Flashcard Service", () => {
         { ...mockCharacters[2], weight: 1 },
       ];
 
-      const updatedCharacters = await updateKanaWeight(characters, "hiragana");
+      const updatedCharacters = await updateKanaWeight(characters);
       expect(updatedCharacters).toBeDefined();
       expect(updatedCharacters.length).toBe(characters.length);
       expect(updatedCharacters[0].weight).toBeDefined();
@@ -38,7 +38,7 @@ describe("Flashcard Service", () => {
 
     it("should handle errors gracefully", async () => {
       const characters: Character[] = [mockCharacters[0]];
-      const updatedCharacters = await updateKanaWeight(characters, "hiragana");
+      const updatedCharacters = await updateKanaWeight(characters);
       expect(updatedCharacters).toEqual(characters); // Should return original characters on error
     });
   });

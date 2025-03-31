@@ -1,6 +1,7 @@
-import { KanaType as PrismaKanaType } from "@prisma/client";
-
-export type KanaType = PrismaKanaType;
+export enum KanaType {
+  hiragana = "hiragana",
+  katakana = "katakana"
+}
 
 export interface Character {
   id?: number;

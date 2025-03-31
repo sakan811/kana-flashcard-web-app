@@ -1,4 +1,5 @@
-import { PrismaClient, UserProgress } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import type { UserProgress, Flashcard } from "@prisma/client";
 
 // This approach ensures the Prisma Client is only initialized once
 // and properly handles both development and production environments
@@ -39,7 +40,7 @@ const prisma = getPrismaClient();
 // Helper functions for user progress
 export async function getUserProgressWithFlashcard(userId: string): Promise<
   (UserProgress & {
-    flashcard: { id: number; kana: string; romaji: string; type: string };
+    flashcard: Flashcard;
   })[]
 > {
   return await prisma.userProgress.findMany({

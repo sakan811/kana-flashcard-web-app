@@ -72,13 +72,15 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
           return Math.round(item.accuracy);
         case "lastPracticed":
         case "createdAt":
-        case "updatedAt":
-          // Convert Date objects to string
+        case "updatedAt": {
+          // Convert date string to Date object and format it
           const dateValue = item[column.key as keyof KanaPerformanceData];
-          if (dateValue instanceof Date) {
-            return dateValue.toLocaleDateString();
+          if (dateValue && typeof dateValue === "string") {
+            const date = new Date(dateValue);
+            return date.toLocaleDateString();
           }
           return String(dateValue);
+        }
         default:
           // Access via string key for other performance properties like correctCount and totalCount
           const value = item[column.key as keyof KanaPerformanceData];

@@ -1,8 +1,5 @@
-import { Character } from "../types";
-import {
-  getKanaWithWeights as fetchKanaWithWeights,
-  recordKanaPerformance as recordPerformance,
-} from "./api-service";
+import { Character, KanaType } from "@/types";
+import { recordKanaPerformance } from "./api-service";
 import { DEFAULT_USER_ID } from "../constants";
 
 /**
@@ -13,22 +10,16 @@ import { DEFAULT_USER_ID } from "../constants";
  * @returns Updated character weights
  */
 export async function updateKanaWeight(
-  initialCharacters: Character[],
-  kanaType?: "hiragana" | "katakana",
+  characters: Character[],
 ): Promise<Character[]> {
-  // Default to hiragana if undefined
-  const effectiveType: "hiragana" | "katakana" = kanaType || "hiragana";
-
   try {
-    // Use API service to get kana with weights
-    return await fetchKanaWithWeights(
-      initialCharacters,
-      DEFAULT_USER_ID,
-      effectiveType,
-    );
+    return characters.map((char) => ({
+      ...char,
+      weight: Math.random() * 2 + 1, // Random weight between 1-3
+    }));
   } catch (error) {
-    console.error(`Error updating kana weights:`, error);
-    return initialCharacters;
+    console.error("Error updating kana weights:", error);
+    return characters;
   }
 }
 
@@ -41,28 +32,19 @@ export async function updateKanaWeight(
  * @param isCorrect Whether the answer was correct
  */
 export async function submitAnswer(
-  kanaType: "hiragana" | "katakana" | undefined,
-  inputValue: string,
+  kanaType: KanaType | undefined,
+  answer: string,
   currentKana: Character,
   isCorrect: boolean,
 ): Promise<void> {
-  // Default to hiragana if undefined
-  const effectiveType: "hiragana" | "katakana" = kanaType || "hiragana";
-
   try {
-    // Store performance data using API service
-    const kana =
-      effectiveType === "hiragana"
-        ? currentKana.hiragana
-        : currentKana.katakana;
-
-    // Skip if kana is undefined
-    if (!kana) {
-      console.error("Kana is undefined, cannot record performance");
-      return;
-    }
-
-    await recordPerformance(DEFAULT_USER_ID, kana, effectiveType, isCorrect);
+    await recordKanaPerformance(
+      DEFAULT_USER_ID,
+      currentKana.kana,
+      kanaType || "hiragana",
+      isCorrect,
+      currentKana.id,
+    );
   } catch (error) {
     console.error("Error submitting answer:", error);
     throw error;
