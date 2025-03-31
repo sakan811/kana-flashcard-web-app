@@ -10,7 +10,12 @@ const DatabaseInitializer = () => {
   useEffect(() => {
     const initializeDatabase = async () => {
       try {
-        const response = await fetch("/api/init-database");
+        const response = await fetch("/api/init-database", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const data = await response.json();
 
         if (data.success) {
