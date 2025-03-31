@@ -34,7 +34,9 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
         );
         if (characters.length > 0) {
           characters.forEach((char) => {
-            kanaToRomajiMap[char.kana] = char.romaji;
+            if (char.kana) {
+              kanaToRomajiMap[char.kana] = char.romanji;
+            }
           });
           mappingInitializedRef.current = true;
         }

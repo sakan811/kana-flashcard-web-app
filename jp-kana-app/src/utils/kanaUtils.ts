@@ -4,7 +4,7 @@ export const createFallbackCharacter = (kanaType: KanaType): Character => {
   return {
     id: 0,
     kana: kanaType === "hiragana" ? "あ" : "ア",
-    romaji: "a",
+    romanji: "a",
     type: kanaType,
     weight: 1,
     createdAt: new Date(),

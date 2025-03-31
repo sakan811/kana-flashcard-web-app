@@ -13,7 +13,6 @@
     "allowJs": true, // Allow JavaScript files to be compiled
     "checkJs": true, // Type-check JavaScript files
     "outDir": "./dist", // Redirect output structure to the `dist` directory
-    "rootDir": "./src", // Specify the root directory of input files
     "resolveJsonModule": true, // Include modules imported with .json extension
     "noEmit": true,
     // Prevent output files from being created (useful when type-checking without generating files)

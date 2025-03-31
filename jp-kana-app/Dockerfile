@@ -14,8 +14,14 @@ COPY prisma ./prisma/
 # Generate Prisma client (do this before copying all code for better layer caching)
 RUN npx prisma generate
 
+# Copy the tsconfig.json first to ensure TypeScript settings are available
+COPY tsconfig.json ./
+
 # Copy the rest of the application code
 COPY . .
+
+# Ensure proper directory structure for src folder as defined in tsconfig paths
+RUN mkdir -p src
 
 # Set up environment variables for Prisma
 ARG DATABASE_URL
@@ -28,7 +34,7 @@ ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-key-here}
 ENV NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
 ENV NODE_ENV=production
 
-# Build the Next.js application
+# Build the Next.js application (includes TypeScript compilation)
 RUN npm run build
 
 # Production image, copy all the files and run next

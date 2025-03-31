@@ -3,13 +3,15 @@ import { KanaType as PrismaKanaType } from "@prisma/client";
 export type KanaType = PrismaKanaType;
 
 export interface Character {
-  id: number;
-  kana: string;
-  romaji: string;
-  type: KanaType;
+  id?: number;
+  kana?: string;
+  hiragana?: string;
+  katakana?: string;
+  romanji: string;
+  type?: KanaType;
   weight: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface KanaMessage {
@@ -27,6 +29,18 @@ export interface KanaPerformanceData {
   totalCount: number;
   accuracy: number;
   percentage: number;
+  lastPracticed: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserKanaPerformance {
+  id: number;
+  userId: string;
+  kana: string;
+  kanaType: KanaType;
+  correctCount: number;
+  totalCount: number;
   lastPracticed: Date;
   createdAt: Date;
   updatedAt: Date;

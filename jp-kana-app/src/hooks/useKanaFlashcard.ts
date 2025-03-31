@@ -160,14 +160,14 @@ export function useKanaFlashcard(
       try {
         const kanaDisplay = currentKana.kana;
         const isCorrect =
-          currentKana.romaji.toLowerCase() === answer.toLowerCase();
+          currentKana.romanji.toLowerCase() === answer.toLowerCase();
 
         setMessage({
           correct: isCorrect
-            ? `Correct! "${kanaDisplay}" is "${currentKana.romaji}"`
+            ? `Correct! "${kanaDisplay}" is "${currentKana.romanji}"`
             : "",
           incorrect: !isCorrect
-            ? `Incorrect. "${kanaDisplay}" is "${currentKana.romaji}", not "${answer}"`
+            ? `Incorrect. "${kanaDisplay}" is "${currentKana.romanji}", not "${answer}"`
             : "",
           error: "",
         });

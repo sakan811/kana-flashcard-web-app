@@ -1,5 +1,10 @@
 import prisma from "./prisma";
-import { Character, KanaPerformanceData, UserKanaPerformance } from "../types";
+import {
+  Character,
+  KanaPerformanceData,
+  UserKanaPerformance,
+  KanaType,
+} from "../types";
 
 /**
  * Get all flashcards, optionally filtered by type
@@ -145,14 +150,26 @@ export async function getKanaPerformance(
       },
     });
 
-    return performances.map((perf: UserKanaPerformance) => ({
-      kana: perf.kana,
-      kanaType: perf.kanaType,
-      correctCount: perf.correctCount,
-      totalCount: perf.totalCount,
-      accuracy:
-        perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
-    }));
+    return performances.map((perf) => {
+      // Ensure kanaType is cast to KanaType
+      const performanceKanaType: KanaType = perf.kanaType as KanaType;
+
+      return {
+        id: perf.id,
+        userId: perf.userId,
+        kana: perf.kana,
+        kanaType: performanceKanaType,
+        correctCount: perf.correctCount,
+        totalCount: perf.totalCount,
+        accuracy:
+          perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
+        percentage:
+          perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
+        lastPracticed: perf.lastPracticed,
+        createdAt: perf.createdAt,
+        updatedAt: perf.updatedAt,
+      };
+    });
   } catch (error) {
     console.error(`Error getting ${kanaType} performance:`, error);
     return [];

@@ -37,7 +37,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // Calculate weights for each character
     const charactersWithWeights = characters.map((char: Character) => {
-      const kanaValue = kanaType === "hiragana" ? char.hiragana : char.katakana;
+      // Use the appropriate property based on kana type
+      let kanaValue;
+      if (kanaType === "hiragana" && char.hiragana) {
+        kanaValue = char.hiragana;
+      } else if (kanaType === "katakana" && char.katakana) {
+        kanaValue = char.katakana;
+      } else if (char.kana) {
+        kanaValue = char.kana;
+      } else {
+        // Fallback if no kana value is available
+        return { ...char, weight: 5 };
+      }
+
       const performance = performanceData.find((p) => p.kana === kanaValue);
 
       if (performance) {
