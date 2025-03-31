@@ -17,7 +17,7 @@ services:
     command: >
       sh -c "
         npx prisma migrate deploy &&
-        npm start
+        node .next/standalone/server.js
       "
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]

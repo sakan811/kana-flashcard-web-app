@@ -1,59 +1,63 @@
-# Build stage
-FROM node:20-alpine AS builder
-
+# Build dependencies stage
+FROM node:20-alpine AS deps
 WORKDIR /app
-
-# Install dependencies required for build
 RUN apk add --no-cache openssl libc6-compat
 
-# Copy only necessary files for build
+# Install dependencies with cache optimization
 COPY package*.json ./
+RUN npm ci --only=production
 COPY prisma ./prisma/
-COPY .env.example ./.env
-COPY next.config.js ./
-COPY tsconfig.json ./
-COPY postcss.config.mjs ./
-COPY tailwind.config.js ./
-COPY public ./public/
-COPY src ./src/
+RUN npx prisma generate
 
-# Install dependencies, generate prisma, build, and clean up in a single layer
-RUN npm ci && \
-    npx prisma generate --schema=./prisma/schema.prisma && \
-    npm run build && \
-    npm prune --production && \
+# Builder stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Copy deps from previous stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/prisma ./prisma
+
+# Copy source files
+COPY . .
+
+# Build application
+RUN npm run build && \
+    rm -rf node_modules && \
+    npm ci --only=production && \
     npm cache clean --force
 
 # Production stage
 FROM node:20-alpine AS runner
-
 WORKDIR /app
 
-# Set production environment
 ENV NODE_ENV=production
+# Add node_modules/.bin to PATH and set NODE_PATH
+ENV PATH=/app/node_modules/.bin:$PATH
+ENV NODE_PATH=/app/.next/standalone/node_modules
 
-# Install only required runtime dependencies
-RUN apk add --no-cache openssl && \
-    addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs --ingroup nodejs && \
-    chown -R nextjs:nodejs /app
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs --ingroup nodejs
 
-# Copy only the necessary built files and production dependencies
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+# Copy only necessary files from builder
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
-# Create cache directory with correct permissions
-RUN mkdir -p .next/cache && chown -R nextjs:nodejs .next
+# Set correct permissions
+RUN mkdir -p .next/cache && chown -R nextjs:nodejs .
 
-# Switch to non-root user
 USER nextjs
 
-# Expose port and add healthcheck
 EXPOSE 3000
+
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget -qO- http://localhost:3000/ || exit 1
 
-CMD ["npm", "start"]
+CMD ["node", ".next/standalone/server.js"]
