@@ -8,9 +8,7 @@
     "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file
     "baseUrl": ".", // Base directory to resolve non-relative module names
     "paths": {
-      "@/*": [
-        "src/*"
-      ] // Set up path alias for `src` directory
+      "@/*": ["src/*"] // Set up path alias for `src` directory
     },
     "allowJs": true, // Allow JavaScript files to be compiled
     "checkJs": true, // Type-check JavaScript files
@@ -20,14 +18,9 @@
     "noEmit": true,
     // Prevent output files from being created (useful when type-checking without generating files)
     "jsx": "preserve",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "moduleResolution": "node", // Specify module resolution strategy
-    "isolatedModules": true // Error on non-isolated modules
-    ,
+    "isolatedModules": true, // Error on non-isolated modules
     "incremental": true,
     "plugins": [
       {
@@ -35,11 +28,6 @@
       }
     ]
   },
-  "include": [
-    "src/**/*",
-    ".next/types/**/*.ts"
-  ], // Include all .ts, .tsx, and .js files within the `src` folder
-  "exclude": [
-    "node_modules"
-  ] // Exclude the `node_modules` folder from compilation
+  "include": ["src/**/*", ".next/types/**/*.ts"], // Include all .ts, .tsx, and .js files within the `src` folder
+  "exclude": ["node_modules"] // Exclude the `node_modules` folder from compilation
 }

@@ -1,19 +1,22 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
+import React from "react";
+import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
 
 const Navigation: React.FC = () => {
   const { data: session, status } = useSession();
-  const isLoading = status === 'loading';
+  const isLoading = status === "loading";
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-md">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <Link href="/" className="text-xl font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+            <Link
+              href="/"
+              className="text-xl font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+            >
               Kana Flashcards
             </Link>
           </div>
@@ -27,7 +30,7 @@ const Navigation: React.FC = () => {
                   {session.user?.name || session.user?.email}
                 </span>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/' })}
+                  onClick={() => signOut({ callbackUrl: "/" })}
                   className="text-sm px-3 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 transition-colors"
                 >
                   Sign out
@@ -56,4 +59,4 @@ const Navigation: React.FC = () => {
   );
 };
 
-export default Navigation; 
+export default Navigation;

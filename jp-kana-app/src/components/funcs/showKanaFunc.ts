@@ -1,9 +1,9 @@
-import { Character, KanaPerformanceData } from '../../types';
-import { DEFAULT_USER_ID } from '../../constants';
-import { 
-  getKanaPerformance, 
-  recordKanaPerformance as apiRecordPerformance
-} from '../../lib/api-service';
+import { Character, KanaPerformanceData } from "../../types";
+import { DEFAULT_USER_ID } from "../../constants";
+import {
+  getKanaPerformance,
+  recordKanaPerformance as apiRecordPerformance,
+} from "../../lib/api-service";
 
 /**
  * Update each Kana's weight.
@@ -15,12 +15,12 @@ import {
  * @throws {Error} If there is an issue with the database connection
  */
 export const updateKanaWeight = async (
-    initialKanaCharacters: Array<Character>,
-    kanaType: "hiragana" | "katakana" | undefined,
-    userId: string = DEFAULT_USER_ID
+  initialKanaCharacters: Array<Character>,
+  kanaType: "hiragana" | "katakana" | undefined,
+  userId: string = DEFAULT_USER_ID,
 ): Promise<Character[]> => {
   // Default to hiragana if kanaType is undefined
-  const type: "hiragana" | "katakana" = kanaType || 'hiragana';
+  const type: "hiragana" | "katakana" = kanaType || "hiragana";
 
   try {
     // Get performance data through the API service
@@ -49,16 +49,17 @@ export const updateKanaWeight = async (
  * @returns {Character[]} - A new array of Kana objects with the updated weight values.
  */
 export function updateWeights(
-    initialKanaCharacters: Character[],
-    performanceData: KanaPerformanceData[],
-    kanaType: "hiragana" | "katakana"
+  initialKanaCharacters: Character[],
+  performanceData: KanaPerformanceData[],
+  kanaType: "hiragana" | "katakana",
 ): Character[] {
-    // Use map to iterate over each Kana character in the initial array
-    return initialKanaCharacters.map((char: Character): Character => {
-      // Find the corresponding data item in the performance data
-      const dataItem = performanceData.find(
-        item => item.kana === (kanaType === 'hiragana' ? char.hiragana : char.katakana)
-      );
+  // Use map to iterate over each Kana character in the initial array
+  return initialKanaCharacters.map((char: Character): Character => {
+    // Find the corresponding data item in the performance data
+    const dataItem = performanceData.find(
+      (item) =>
+        item.kana === (kanaType === "hiragana" ? char.hiragana : char.katakana),
+    );
 
     // If a matching data item is found, calculate the new weight
     if (dataItem) {
@@ -87,29 +88,30 @@ export function updateWeights(
  * @throws {Error} If there is an issue with the database connection
  */
 export const submitAnswer = async (
-    kanaType: "hiragana" | "katakana" | undefined,
-    inputValue: string,
-    currentKana: Character,
-    isCorrect: boolean,
-    userId: string = DEFAULT_USER_ID
+  kanaType: "hiragana" | "katakana" | undefined,
+  inputValue: string,
+  currentKana: Character,
+  isCorrect: boolean,
+  userId: string = DEFAULT_USER_ID,
 ): Promise<void> => {
   // Get the kana character based on type (defaulting to hiragana if undefined)
-  const effectiveType: "hiragana" | "katakana" = kanaType || 'hiragana';
-  const kana = effectiveType === 'hiragana' ? currentKana.hiragana : currentKana.katakana;
-  
+  const effectiveType: "hiragana" | "katakana" = kanaType || "hiragana";
+  const kana =
+    effectiveType === "hiragana" ? currentKana.hiragana : currentKana.katakana;
+
   // Skip if kana is undefined
   if (!kana) {
-    const error = new Error('Kana is undefined, cannot record performance');
+    const error = new Error("Kana is undefined, cannot record performance");
     console.error(error);
     throw error;
   }
-  
+
   // Record the performance using the API service (will throw if there's an error)
   await apiRecordPerformance(
     userId,
     kana,
     effectiveType,
     isCorrect,
-    currentKana.id // Pass the flashcard ID if available
+    currentKana.id, // Pass the flashcard ID if available
   );
-}
+};

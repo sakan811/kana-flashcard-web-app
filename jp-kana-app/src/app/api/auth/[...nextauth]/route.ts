@@ -1,8 +1,8 @@
-import { NextAuthOptions } from 'next-auth';
-import NextAuth from 'next-auth/next';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { PrismaClient } from '@prisma/client';
-import { comparePassword } from '@/lib/auth';
+import { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth/next";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaClient } from "@prisma/client";
+import { comparePassword } from "@/lib/auth";
 
 // For process in server component
 declare const process: {
@@ -19,7 +19,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
-    }
+    };
   }
 }
 
@@ -28,10 +28,10 @@ const prisma = new PrismaClient();
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
 
           const isPasswordValid = await comparePassword(
             credentials.password,
-            user.password
+            user.password,
           );
 
           if (!isPasswordValid) {
@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
           };
         } catch (error) {
-          console.error('Error in authorize:', error);
+          console.error("Error in authorize:", error);
           return null;
         }
       },
@@ -83,13 +83,13 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };

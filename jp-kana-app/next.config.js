@@ -4,12 +4,12 @@
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
-    dirs: ['tests', 'src'],
+    dirs: ["tests", "src"],
   },
   typescript: {
-    dirs: ['tests', 'src'],
+    dirs: ["tests", "src"],
   },
-  output: 'standalone',
+  output: "standalone",
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

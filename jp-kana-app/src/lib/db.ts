@@ -1,5 +1,5 @@
-import prisma from './prisma';
-import { Character, KanaPerformanceData } from '../types';
+import prisma from "./prisma";
+import { Character, KanaPerformanceData } from "../types";
 
 // Type for the UserKanaPerformance model
 interface UserKanaPerformance {
@@ -17,13 +17,13 @@ interface UserKanaPerformance {
 /**
  * Get all flashcards, optionally filtered by type
  */
-export async function getFlashcards(type?: 'hiragana' | 'katakana') {
+export async function getFlashcards(type?: "hiragana" | "katakana") {
   try {
     return await prisma.flashcard.findMany({
       where: type ? { type: type } : undefined,
     });
   } catch (error) {
-    console.error('Error fetching flashcards:', error);
+    console.error("Error fetching flashcards:", error);
     return [];
   }
 }
@@ -38,7 +38,7 @@ export async function getUserProgress(userId: string) {
       include: { flashcard: true },
     });
   } catch (error) {
-    console.error('Error fetching user progress:', error);
+    console.error("Error fetching user progress:", error);
     return [];
   }
 }
@@ -46,7 +46,11 @@ export async function getUserProgress(userId: string) {
 /**
  * Update user progress for a specific flashcard
  */
-export async function updateUserProgress(userId: string, flashcardId: number, isCorrect: boolean) {
+export async function updateUserProgress(
+  userId: string,
+  flashcardId: number,
+  isCorrect: boolean,
+) {
   try {
     // Upsert (create or update) user progress
     await prisma.userProgress.upsert({
@@ -70,7 +74,7 @@ export async function updateUserProgress(userId: string, flashcardId: number, is
       },
     });
   } catch (error) {
-    console.error('Error updating user progress:', error);
+    console.error("Error updating user progress:", error);
   }
 }
 
@@ -84,13 +88,13 @@ export async function updateUserProgress(userId: string, flashcardId: number, is
 export async function recordKanaPerformance(
   userId: string,
   kana: string,
-  kanaType: 'hiragana' | 'katakana' | undefined,
-  isCorrect: boolean
+  kanaType: "hiragana" | "katakana" | undefined,
+  isCorrect: boolean,
 ): Promise<void> {
   try {
     // Default to hiragana if kanaType is undefined
-    const effectiveKanaType: 'hiragana' | 'katakana' = kanaType || 'hiragana';
-    
+    const effectiveKanaType: "hiragana" | "katakana" = kanaType || "hiragana";
+
     await prisma.userKanaPerformance.upsert({
       where: {
         userId_kana: {
@@ -113,7 +117,7 @@ export async function recordKanaPerformance(
       },
     });
   } catch (error) {
-    console.error('Error recording kana performance:', error);
+    console.error("Error recording kana performance:", error);
   }
 }
 
@@ -121,8 +125,8 @@ export async function recordKanaPerformance(
  * Get performance data for all kana of a specific type for a user
  */
 export async function getKanaPerformance(
-  userId: string, 
-  kanaType: 'hiragana' | 'katakana'
+  userId: string,
+  kanaType: "hiragana" | "katakana",
 ): Promise<KanaPerformanceData[]> {
   try {
     const performances = await prisma.userKanaPerformance.findMany({
@@ -131,13 +135,14 @@ export async function getKanaPerformance(
         kanaType: kanaType,
       },
     });
-    
+
     return performances.map((perf: UserKanaPerformance) => ({
       kana: perf.kana,
       kanaType: perf.kanaType,
       correctCount: perf.correctCount,
       totalCount: perf.totalCount,
-      accuracy: perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
+      accuracy:
+        perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
     }));
   } catch (error) {
     console.error(`Error getting ${kanaType} performance:`, error);
@@ -151,27 +156,29 @@ export async function getKanaPerformance(
 export async function getKanaWithWeights(
   characters: Character[],
   userId: string,
-  kanaType: 'hiragana' | 'katakana'
+  kanaType: "hiragana" | "katakana",
 ): Promise<Character[]> {
   try {
     const performanceData = await getKanaPerformance(userId, kanaType);
-    
-    return characters.map(char => {
+
+    return characters.map((char) => {
       const charPerformance = performanceData.find(
-        item => item.kana === (kanaType === 'hiragana' ? char.hiragana : char.katakana)
+        (item) =>
+          item.kana ===
+          (kanaType === "hiragana" ? char.hiragana : char.katakana),
       );
-      
+
       if (charPerformance) {
         const accuracy = charPerformance.accuracy || 0;
         // Weight is inversely proportional to accuracy - less accurate characters appear more often
-        const newWeight = 1 + ((100 - accuracy) / 25);
+        const newWeight = 1 + (100 - accuracy) / 25;
         return { ...char, weight: newWeight };
       }
-      
+
       return char;
     });
   } catch (error) {
-    console.error('Error getting kana with weights:', error);
+    console.error("Error getting kana with weights:", error);
     return characters;
   }
-} 
+}

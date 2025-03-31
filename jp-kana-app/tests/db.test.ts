@@ -1,19 +1,19 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { prisma } from './setup';
-import { createUser } from '../src/lib/auth';
-import { Character } from '../src/types';
-import { KanaType } from '@prisma/client';
+import { describe, it, expect, beforeEach } from "vitest";
+import { prisma } from "./setup";
+import { createUser } from "../src/lib/auth";
+import { Character } from "../src/types";
+import { KanaType } from "@prisma/client";
 
-describe('Database Operations', () => {
+describe("Database Operations", () => {
   const testUser = {
-    email: 'test@example.com',
-    password: 'password123',
+    email: "test@example.com",
+    password: "password123",
   };
 
   const testCharacter: Character = {
-    hiragana: 'あ',
-    katakana: 'ア',
-    romanji: 'a',
+    hiragana: "あ",
+    katakana: "ア",
+    romanji: "a",
     weight: 1,
   };
 
@@ -24,25 +24,25 @@ describe('Database Operations', () => {
     await prisma.flashcard.deleteMany();
   });
 
-  describe('User Operations', () => {
-    it('should create a new user', async () => {
+  describe("User Operations", () => {
+    it("should create a new user", async () => {
       const user = await createUser(testUser.email, testUser.password);
       expect(user).toBeDefined();
       expect(user?.email).toBe(testUser.email);
       expect(user?.id).toBeDefined();
     });
 
-    it('should not create duplicate users', async () => {
+    it("should not create duplicate users", async () => {
       await createUser(testUser.email, testUser.password);
       const duplicateUser = await createUser(testUser.email, testUser.password);
       expect(duplicateUser).toBeNull();
     });
   });
 
-  describe('User Progress Operations', () => {
-    it('should create user progress record', async () => {
+  describe("User Progress Operations", () => {
+    it("should create user progress record", async () => {
       const user = await createUser(testUser.email, testUser.password);
-      if (!user) throw new Error('Failed to create user');
+      if (!user) throw new Error("Failed to create user");
 
       const flashcard = await prisma.flashcard.create({
         data: {
@@ -69,9 +69,9 @@ describe('Database Operations', () => {
       expect(progress.incorrectCount).toBe(0);
     });
 
-    it('should update existing progress record', async () => {
+    it("should update existing progress record", async () => {
       const user = await createUser(testUser.email, testUser.password);
-      if (!user) throw new Error('Failed to create user');
+      if (!user) throw new Error("Failed to create user");
 
       const flashcard = await prisma.flashcard.create({
         data: {
@@ -104,9 +104,9 @@ describe('Database Operations', () => {
       expect(updatedProgress.incorrectCount).toBe(1);
     });
 
-    it('should get user progress by flashcard', async () => {
+    it("should get user progress by flashcard", async () => {
       const user = await createUser(testUser.email, testUser.password);
-      if (!user) throw new Error('Failed to create user');
+      if (!user) throw new Error("Failed to create user");
 
       const flashcard = await prisma.flashcard.create({
         data: {
@@ -137,9 +137,9 @@ describe('Database Operations', () => {
       expect(progress?.flashcardId).toBe(flashcard.id);
     });
 
-    it('should get all progress for a user', async () => {
+    it("should get all progress for a user", async () => {
       const user = await createUser(testUser.email, testUser.password);
-      if (!user) throw new Error('Failed to create user');
+      if (!user) throw new Error("Failed to create user");
 
       const flashcard = await prisma.flashcard.create({
         data: {
@@ -168,16 +168,16 @@ describe('Database Operations', () => {
     });
   });
 
-  describe('User Kana Performance Operations', () => {
-    it('should create kana performance record', async () => {
+  describe("User Kana Performance Operations", () => {
+    it("should create kana performance record", async () => {
       const user = await createUser(testUser.email, testUser.password);
-      if (!user) throw new Error('Failed to create user');
+      if (!user) throw new Error("Failed to create user");
 
       const performance = await prisma.userKanaPerformance.create({
         data: {
           userId: user.id,
           kana: testCharacter.hiragana!,
-          kanaType: 'hiragana',
+          kanaType: "hiragana",
           correctCount: 1,
           totalCount: 1,
           lastPracticed: new Date(),
@@ -191,15 +191,15 @@ describe('Database Operations', () => {
       expect(performance.totalCount).toBe(1);
     });
 
-    it('should update existing kana performance record', async () => {
+    it("should update existing kana performance record", async () => {
       const user = await createUser(testUser.email, testUser.password);
-      if (!user) throw new Error('Failed to create user');
+      if (!user) throw new Error("Failed to create user");
 
       const performance = await prisma.userKanaPerformance.create({
         data: {
           userId: user.id,
           kana: testCharacter.hiragana!,
-          kanaType: 'hiragana',
+          kanaType: "hiragana",
           correctCount: 1,
           totalCount: 1,
           lastPracticed: new Date(),
@@ -219,4 +219,4 @@ describe('Database Operations', () => {
       expect(updatedPerformance.totalCount).toBe(3);
     });
   });
-}); 
+});

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface MessageDisplayProps {
   error: string;
@@ -9,7 +9,7 @@ interface MessageDisplayProps {
 const MessageDisplay: React.FC<MessageDisplayProps> = ({
   error,
   hasError,
-  onRetry
+  onRetry,
 }) => {
   if (!error) return null;
 
@@ -19,8 +19,8 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
       <span className="block sm:inline"> {error}</span>
       {hasError && (
         <div className="mt-2 flex justify-center">
-          <button 
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors" 
+          <button
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
             onClick={onRetry}
           >
             Retry
@@ -31,4 +31,4 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
   );
 };
 
-export default MessageDisplay; 
+export default MessageDisplay;

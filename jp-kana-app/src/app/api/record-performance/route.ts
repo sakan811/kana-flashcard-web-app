@@ -1,22 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '../../../lib/prisma';
-import { KanaType } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "../../../lib/prisma";
+import { KanaType } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { userId, kana, kanaType, isCorrect, flashcardId } = body;
-    
+
     if (!userId || !kana || !kanaType) {
       return NextResponse.json(
-        { error: 'Missing required parameters' },
-        { status: 400 }
+        { error: "Missing required parameters" },
+        { status: 400 },
       );
     }
-    
+
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
-    
+
     // Using a transaction to ensure consistency across both tables
     await prisma.$transaction(async (tx) => {
       // Update UserKanaPerformance table
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
           lastPracticed: new Date(),
         },
       });
-      
+
       // If flashcardId is provided, also update UserProgress table
       if (flashcardId) {
         await tx.userProgress.upsert({
@@ -69,10 +69,11 @@ export async function POST(request: NextRequest) {
         const flashcard = await tx.flashcard.findFirst({
           where: {
             kana: kana,
-            type: kanaType === 'hiragana' ? KanaType.hiragana : KanaType.katakana,
+            type:
+              kanaType === "hiragana" ? KanaType.hiragana : KanaType.katakana,
           },
         });
-        
+
         if (flashcard) {
           await tx.userProgress.upsert({
             where: {
@@ -97,13 +98,16 @@ export async function POST(request: NextRequest) {
         }
       }
     });
-    
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error recording kana performance:', error);
+    console.error("Error recording kana performance:", error);
     return NextResponse.json(
-      { error: 'Database connection error. Please check your database configuration and environment variables.' },
-      { status: 500 }
+      {
+        error:
+          "Database connection error. Please check your database configuration and environment variables.",
+      },
+      { status: 500 },
     );
   }
-} 
+}

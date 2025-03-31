@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Basic validation
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError("Password must be at least 8 characters long");
       return;
     }
 
@@ -33,10 +33,10 @@ export default function SignupPage() {
 
     try {
       // Call the API to create a user
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, email, password }),
       });
@@ -44,29 +44,31 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to create account');
+        throw new Error(data.message || "Failed to create account");
       }
 
       // Auto sign in after successful signup
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
       });
 
       if (result?.error) {
-        console.error('Error signing in after signup:', result.error);
+        console.error("Error signing in after signup:", result.error);
         // Just redirect to login instead
-        router.replace('/login');
+        router.replace("/login");
         return;
       }
 
       // Redirect to home
-      router.replace('/');
+      router.replace("/");
       router.refresh();
     } catch (error: unknown) {
-      console.error('Signup error:', error);
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      console.error("Signup error:", error);
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred",
+      );
       setIsLoading(false);
     }
   };
@@ -88,7 +90,10 @@ export default function SignupPage() {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="name" className="block text-sm font-medium leading-6">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium leading-6"
+            >
               Name
             </label>
             <div className="mt-2">
@@ -107,7 +112,10 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium leading-6">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium leading-6"
+            >
               Email address
             </label>
             <div className="mt-2">
@@ -127,7 +135,10 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium leading-6">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium leading-6"
+            >
               Password
             </label>
             <div className="mt-2">
@@ -147,7 +158,10 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium leading-6"
+            >
               Confirm Password
             </label>
             <div className="mt-2">
@@ -174,13 +188,13 @@ export default function SignupPage() {
                        text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 
                        focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:bg-blue-400"
             >
-              {isLoading ? 'Creating account...' : 'Sign up'}
+              {isLoading ? "Creating account..." : "Sign up"}
             </button>
           </div>
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link
             href="/login"
             className="font-semibold leading-6 text-blue-600 hover:text-blue-500"
@@ -191,4 +205,4 @@ export default function SignupPage() {
       </div>
     </div>
   );
-} 
+}

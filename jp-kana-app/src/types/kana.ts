@@ -20,4 +20,4 @@ export interface KanaPerformanceData {
   accuracy: number;
 }
 
-export type KanaType = 'hiragana' | 'katakana'; 
+export type KanaType = "hiragana" | "katakana";

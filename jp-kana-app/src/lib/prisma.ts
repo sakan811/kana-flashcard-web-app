@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 // This approach ensures the Prisma Client is only initialized once
 // and properly handles both development and production environments
@@ -11,27 +11,25 @@ const globalForPrisma = globalThis as unknown as {
 // Create a safer export to prevent issues on the client
 export function getPrismaClient(): PrismaClient {
   // Check if we're in a browser environment
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     // Return a fake client that logs helpful error messages
     return new Proxy({} as PrismaClient, {
       get() {
         console.error(
-          'PrismaClient cannot be used in the browser. Create a server API endpoint to handle database operations. See https://pris.ly/d/help/next-js-best-practices'
+          "PrismaClient cannot be used in the browser. Create a server API endpoint to handle database operations. See https://pris.ly/d/help/next-js-best-practices",
         );
-        throw new Error(
-          'PrismaClient cannot be used in the browser.'
-        );
+        throw new Error("PrismaClient cannot be used in the browser.");
       },
     });
   }
-  
+
   // We're on the server, so we can use PrismaClient
   if (!globalForPrisma.prisma) {
     globalForPrisma.prisma = new PrismaClient({
-      log: ['error', 'warn'],
+      log: ["error", "warn"],
     });
   }
-  
+
   return globalForPrisma.prisma;
 }
 
@@ -46,7 +44,11 @@ export async function getUserProgressWithFlashcard(userId: string) {
   });
 }
 
-export async function updateUserProgressRecord(userId: string, flashcardId: number, isCorrect: boolean) {
+export async function updateUserProgressRecord(
+  userId: string,
+  flashcardId: number,
+  isCorrect: boolean,
+) {
   return await prisma.userProgress.upsert({
     where: {
       userId_flashcardId: {
@@ -69,4 +71,4 @@ export async function updateUserProgressRecord(userId: string, flashcardId: numb
   });
 }
 
-export default prisma; 
+export default prisma;

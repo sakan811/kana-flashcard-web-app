@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import React from "react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function HomePage() {
   const { data: session, status } = useSession();
-  const isLoading = status === 'loading';
+  const isLoading = status === "loading";
 
   // If user is not authenticated, show login/signup prompt
   if (!isLoading && !session) {
@@ -16,7 +16,8 @@ export default function HomePage() {
           Welcome to the Japanese Kana Flashcard App
         </h1>
         <p className="text-xl mb-10 max-w-2xl text-gray-600 dark:text-gray-300">
-          Sign in or create an account to start practicing Japanese kana characters.
+          Sign in or create an account to start practicing Japanese kana
+          characters.
         </p>
         <div className="flex flex-col sm:flex-row gap-6">
           <Link
@@ -52,7 +53,8 @@ export default function HomePage() {
         Japanese Kana Flashcard App
       </h1>
       <p className="text-xl mb-10 max-w-2xl text-gray-600 dark:text-gray-300">
-        Learn Japanese kana characters with interactive flashcards. Practice Hiragana and Katakana to improve your Japanese reading skills.
+        Learn Japanese kana characters with interactive flashcards. Practice
+        Hiragana and Katakana to improve your Japanese reading skills.
       </p>
       <div className="flex flex-col sm:flex-row gap-6">
         <Link
@@ -70,4 +72,4 @@ export default function HomePage() {
       </div>
     </div>
   );
-} 
+}

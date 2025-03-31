@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 /**
  * Component to initialize database when the app loads
@@ -10,16 +10,16 @@ const DatabaseInitializer = () => {
   useEffect(() => {
     const initializeDatabase = async () => {
       try {
-        const response = await fetch('/api/init-database');
+        const response = await fetch("/api/init-database");
         const data = await response.json();
-        
+
         if (data.success) {
-          console.log('Database initialization complete:', data.message);
+          console.log("Database initialization complete:", data.message);
         } else {
-          console.error('Error initializing database:', data.message);
+          console.error("Error initializing database:", data.message);
         }
       } catch (error) {
-        console.error('Error initializing database:', error);
+        console.error("Error initializing database:", error);
       }
     };
 
@@ -30,4 +30,4 @@ const DatabaseInitializer = () => {
   return null;
 };
 
-export default DatabaseInitializer; 
+export default DatabaseInitializer;

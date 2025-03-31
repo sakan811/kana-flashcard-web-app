@@ -1,22 +1,26 @@
-import { useEffect, useCallback, MutableRefObject } from 'react';
-import { useSession } from 'next-auth/react';
-import { 
-  getKanaPerformance as fetchKanaPerformance, 
-  getRandomKana as fetchRandomKana
-} from '../lib/api-service';
-import { submitAnswer } from '../components/funcs/showKanaFunc';
-import { KanaType, Character } from '../types/kana';
-import { DEFAULT_USER_ID } from '../constants';
-import { useKanaState } from './useKanaState';
-import { isRecentlyShown, updateKanaHistory, createFallbackCharacter } from '../utils/kanaUtils';
+import { useEffect, useCallback, MutableRefObject } from "react";
+import { useSession } from "next-auth/react";
+import {
+  getKanaPerformance as fetchKanaPerformance,
+  getRandomKana as fetchRandomKana,
+} from "../lib/api-service";
+import { submitAnswer } from "../components/funcs/showKanaFunc";
+import { KanaType, Character } from "../types/kana";
+import { DEFAULT_USER_ID } from "../constants";
+import { useKanaState } from "./useKanaState";
+import {
+  isRecentlyShown,
+  updateKanaHistory,
+  createFallbackCharacter,
+} from "../utils/kanaUtils";
 
 export function useKanaFlashcard(
   kanaType: KanaType,
-  isNavigatingRef: MutableRefObject<boolean>
+  isNavigatingRef: MutableRefObject<boolean>,
 ) {
   const { data: session } = useSession();
   const userId = session?.user?.id || DEFAULT_USER_ID;
-  
+
   const {
     currentKana,
     setCurrentKana,
@@ -36,7 +40,7 @@ export function useKanaFlashcard(
     previousKanaRef,
     mountedRef,
     safelyExitLoadingState,
-    clearErrorMessage
+    clearErrorMessage,
   } = useKanaState(kanaType);
 
   const getRandomKana = useCallback(async (): Promise<Character> => {
@@ -44,16 +48,24 @@ export function useKanaFlashcard(
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
           const randomKana = await fetchRandomKana(userId, kanaType);
-          
-          if (!randomKana || typeof randomKana !== 'object') {
+
+          if (!randomKana || typeof randomKana !== "object") {
             continue;
           }
-          
-          const kanaValue = kanaType === 'hiragana' ? randomKana.hiragana : randomKana.katakana;
-          
-          if (!kanaValue || !isRecentlyShown(kanaValue, previousKanaRef.current) || attempt === 2) {
+
+          const kanaValue =
+            kanaType === "hiragana" ? randomKana.hiragana : randomKana.katakana;
+
+          if (
+            !kanaValue ||
+            !isRecentlyShown(kanaValue, previousKanaRef.current) ||
+            attempt === 2
+          ) {
             if (kanaValue) {
-              previousKanaRef.current = updateKanaHistory(kanaValue, previousKanaRef.current);
+              previousKanaRef.current = updateKanaHistory(
+                kanaValue,
+                previousKanaRef.current,
+              );
             }
             return randomKana;
           }
@@ -63,7 +75,7 @@ export function useKanaFlashcard(
           }
         }
       }
-      
+
       return createFallbackCharacter(kanaType);
     } catch {
       return createFallbackCharacter(kanaType);
@@ -72,7 +84,7 @@ export function useKanaFlashcard(
 
   const getKanaPerformance = useCallback(async () => {
     if (isNavigatingRef.current || !mountedRef.current) return;
-    
+
     try {
       const data = await fetchKanaPerformance(userId, kanaType);
       if (!isNavigatingRef.current && mountedRef.current) {
@@ -82,21 +94,32 @@ export function useKanaFlashcard(
     } catch {
       if (!isNavigatingRef.current && mountedRef.current) {
         setPerformanceData([]);
-        setMessage(prev => ({ ...prev, error: 'Database connection error. Please check your configuration.' }));
+        setMessage((prev) => ({
+          ...prev,
+          error: "Database connection error. Please check your configuration.",
+        }));
         setHasError(true);
       }
     }
-  }, [kanaType, isNavigatingRef, userId, setPerformanceData, setHasError, setMessage, mountedRef]);
+  }, [
+    kanaType,
+    isNavigatingRef,
+    userId,
+    setPerformanceData,
+    setHasError,
+    setMessage,
+    mountedRef,
+  ]);
 
   const fetchNextKana = useCallback(async () => {
     if (isNavigatingRef.current || !mountedRef.current) return;
-    
+
     setIsLoading(true);
-    
+
     const safetyTimeout = setTimeout(() => {
       safelyExitLoadingState();
     }, 1000);
-    
+
     try {
       const randomKana = await getRandomKana();
       if (!isNavigatingRef.current && mountedRef.current) {
@@ -107,7 +130,10 @@ export function useKanaFlashcard(
       }
     } catch {
       if (!isNavigatingRef.current && mountedRef.current) {
-        setMessage(prev => ({ ...prev, error: 'Error fetching kana. Using fallback.' }));
+        setMessage((prev) => ({
+          ...prev,
+          error: "Error fetching kana. Using fallback.",
+        }));
         setCurrentKana(createFallbackCharacter(kanaType));
         setIsLoading(false);
         setIsDataInitialized(true);
@@ -115,75 +141,111 @@ export function useKanaFlashcard(
     } finally {
       clearTimeout(safetyTimeout);
     }
-  }, [getRandomKana, isNavigatingRef, setCurrentKana, setHasError, setMessage, safelyExitLoadingState, kanaType, mountedRef, setIsLoading, setIsDataInitialized]);
+  }, [
+    getRandomKana,
+    isNavigatingRef,
+    setCurrentKana,
+    setHasError,
+    setMessage,
+    safelyExitLoadingState,
+    kanaType,
+    mountedRef,
+    setIsLoading,
+    setIsDataInitialized,
+  ]);
 
-  const handleSubmitAnswer = useCallback(async (answer: string) => {
-    if (isNavigatingRef.current || !mountedRef.current) return;
-    
-    try {
-      const kanaDisplay = kanaType === 'hiragana' ? currentKana.hiragana : currentKana.katakana;
-      const isCorrect = currentKana.romanji.toLowerCase() === answer.toLowerCase();
-      
-      setMessage({
-        correct: isCorrect ? `Correct! "${kanaDisplay}" is "${currentKana.romanji}"` : '',
-        incorrect: !isCorrect ? `Incorrect. "${kanaDisplay}" is "${currentKana.romanji}", not "${answer}"` : '',
-        error: ''
-      });
-      
-      const messageTimeout = setTimeout(() => {
-        if (!isNavigatingRef.current && mountedRef.current) {
-          setMessage(prev => ({ ...prev, correct: '', incorrect: '' }));
-        }
-      }, 3000);
-      
-      await submitAnswer(kanaType, answer, currentKana, isCorrect, userId);
-      await fetchNextKana();
-      await getKanaPerformance();
+  const handleSubmitAnswer = useCallback(
+    async (answer: string) => {
+      if (isNavigatingRef.current || !mountedRef.current) return;
 
-      clearTimeout(messageTimeout);
-    } catch {
-      setMessage(prev => ({ 
-        ...prev, 
-        error: 'Error submitting your answer. Please try again.' 
-      }));
-      setHasError(true);
-      
-      const errorTimeout = setTimeout(() => {
-        if (!isNavigatingRef.current && mountedRef.current) {
-          setMessage(prev => ({ ...prev, error: '' }));
-          setHasError(false);
-        }
-      }, 1500);
+      try {
+        const kanaDisplay =
+          kanaType === "hiragana" ? currentKana.hiragana : currentKana.katakana;
+        const isCorrect =
+          currentKana.romanji.toLowerCase() === answer.toLowerCase();
 
-      return () => clearTimeout(errorTimeout);
-    }
-  }, [currentKana, fetchNextKana, getKanaPerformance, kanaType, isNavigatingRef, userId, mountedRef, setMessage, setHasError]);
+        setMessage({
+          correct: isCorrect
+            ? `Correct! "${kanaDisplay}" is "${currentKana.romanji}"`
+            : "",
+          incorrect: !isCorrect
+            ? `Incorrect. "${kanaDisplay}" is "${currentKana.romanji}", not "${answer}"`
+            : "",
+          error: "",
+        });
+
+        const messageTimeout = setTimeout(() => {
+          if (!isNavigatingRef.current && mountedRef.current) {
+            setMessage((prev) => ({ ...prev, correct: "", incorrect: "" }));
+          }
+        }, 3000);
+
+        await submitAnswer(kanaType, answer, currentKana, isCorrect, userId);
+        await fetchNextKana();
+        await getKanaPerformance();
+
+        clearTimeout(messageTimeout);
+      } catch {
+        setMessage((prev) => ({
+          ...prev,
+          error: "Error submitting your answer. Please try again.",
+        }));
+        setHasError(true);
+
+        const errorTimeout = setTimeout(() => {
+          if (!isNavigatingRef.current && mountedRef.current) {
+            setMessage((prev) => ({ ...prev, error: "" }));
+            setHasError(false);
+          }
+        }, 1500);
+
+        return () => clearTimeout(errorTimeout);
+      }
+    },
+    [
+      currentKana,
+      fetchNextKana,
+      getKanaPerformance,
+      kanaType,
+      isNavigatingRef,
+      userId,
+      mountedRef,
+      setMessage,
+      setHasError,
+    ],
+  );
 
   const handleRetry = useCallback(() => {
     setHasError(false);
     setIsLoading(true);
-    
+
     const safetyTimeout = setTimeout(() => {
       safelyExitLoadingState();
     }, 2000);
-    
+
     fetchNextKana()
       .catch(() => {
-        setMessage(prev => ({ 
-          ...prev, 
-          error: 'Failed to retry. Using fallback data.' 
+        setMessage((prev) => ({
+          ...prev,
+          error: "Failed to retry. Using fallback data.",
         }));
         safelyExitLoadingState();
       })
       .finally(() => {
         clearTimeout(safetyTimeout);
       });
-  }, [fetchNextKana, safelyExitLoadingState, setHasError, setIsLoading, setMessage]);
+  }, [
+    fetchNextKana,
+    safelyExitLoadingState,
+    setHasError,
+    setIsLoading,
+    setMessage,
+  ]);
 
   useEffect(() => {
     mountedRef.current = true;
     isNavigatingRef.current = false;
-    
+
     return () => {
       mountedRef.current = false;
       isNavigatingRef.current = true;
@@ -192,25 +254,30 @@ export function useKanaFlashcard(
 
   useEffect(() => {
     if (!isInitialLoadRef.current) return;
-    
+
     isInitialLoadRef.current = false;
-    
+
     const timeoutId = setTimeout(() => {
-      if (!isNavigatingRef.current && mountedRef.current && !isDataInitialized) {
-        setMessage(prev => ({
+      if (
+        !isNavigatingRef.current &&
+        mountedRef.current &&
+        !isDataInitialized
+      ) {
+        setMessage((prev) => ({
           ...prev,
-          error: 'Database connection is taking longer than expected. Please wait while we retry...'
+          error:
+            "Database connection is taking longer than expected. Please wait while we retry...",
         }));
-        
+
         setCurrentKana(createFallbackCharacter(kanaType));
         safelyExitLoadingState();
-        
+
         const retryTimeout = setTimeout(async () => {
           if (!isNavigatingRef.current && mountedRef.current) {
             try {
               await fetchNextKana();
               await getKanaPerformance();
-              setMessage(prev => ({ ...prev, error: '' }));
+              setMessage((prev) => ({ ...prev, error: "" }));
             } catch {
               // Silently handle retry failure
             }
@@ -220,25 +287,26 @@ export function useKanaFlashcard(
         return () => clearTimeout(retryTimeout);
       }
     }, 5000);
-    
+
     const loadInitialData = async () => {
       if (!mountedRef.current) return;
-      
+
       try {
         let retryCount = 0;
         const maxRetries = 3;
-        
+
         while (retryCount < maxRetries) {
           try {
             await fetchNextKana();
             break;
           } catch {
             retryCount++;
-            if (retryCount === maxRetries) throw new Error('Max retries reached');
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (retryCount === maxRetries)
+              throw new Error("Max retries reached");
+            await new Promise((resolve) => setTimeout(resolve, 1000));
           }
         }
-        
+
         if (!isNavigatingRef.current && mountedRef.current) {
           await getKanaPerformance();
           setIsLoading(false);
@@ -246,26 +314,40 @@ export function useKanaFlashcard(
         }
       } catch {
         if (!isNavigatingRef.current && mountedRef.current) {
-          setMessage(prev => ({ 
-            ...prev, 
-            error: 'Unable to connect to database. Please check if the database is running.' 
+          setMessage((prev) => ({
+            ...prev,
+            error:
+              "Unable to connect to database. Please check if the database is running.",
           }));
           setCurrentKana(createFallbackCharacter(kanaType));
           safelyExitLoadingState();
         }
       }
     };
-    
+
     loadInitialData().finally(() => {
       if (!isNavigatingRef.current && mountedRef.current) {
         safelyExitLoadingState();
       }
     });
-    
+
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchNextKana, getKanaPerformance, kanaType, safelyExitLoadingState, isDataInitialized, isInitialLoadRef, mountedRef, setCurrentKana, setIsDataInitialized, setIsLoading, setMessage, isNavigatingRef]);
+  }, [
+    fetchNextKana,
+    getKanaPerformance,
+    kanaType,
+    safelyExitLoadingState,
+    isDataInitialized,
+    isInitialLoadRef,
+    mountedRef,
+    setCurrentKana,
+    setIsDataInitialized,
+    setIsLoading,
+    setMessage,
+    isNavigatingRef,
+  ]);
 
   return {
     currentKana,
@@ -278,6 +360,6 @@ export function useKanaFlashcard(
     isDataInitialized,
     handleSubmitAnswer,
     handleRetry,
-    clearErrorMessage
+    clearErrorMessage,
   };
-} 
+}

@@ -22,4 +22,4 @@ export interface KanaMessage {
   correct: string;
   incorrect: string;
   error: string;
-} 
+}

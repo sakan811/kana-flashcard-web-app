@@ -1,40 +1,40 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        setError("Invalid email or password");
         setIsLoading(false);
         return;
       }
 
-      router.replace('/');
+      router.replace("/");
       router.refresh();
     } catch (error) {
-      console.error('Login error:', error);
-      setError('An unexpected error occurred');
+      console.error("Login error:", error);
+      setError("An unexpected error occurred");
       setIsLoading(false);
     }
   };
@@ -56,7 +56,10 @@ export default function LoginPage() {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium leading-6">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium leading-6"
+            >
               Email address
             </label>
             <div className="mt-2">
@@ -77,7 +80,10 @@ export default function LoginPage() {
 
           <div>
             <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block text-sm font-medium leading-6">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium leading-6"
+              >
                 Password
               </label>
             </div>
@@ -105,13 +111,13 @@ export default function LoginPage() {
                          text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 
                          focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:bg-blue-400"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Don&apos;t have an account?{' '}
+          Don&apos;t have an account?{" "}
           <Link
             href="/signup"
             className="font-semibold leading-6 text-blue-600 hover:text-blue-500"
@@ -122,4 +128,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-} 
+}

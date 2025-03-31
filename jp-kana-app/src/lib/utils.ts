@@ -1,5 +1,5 @@
-import { Character } from '../types';
-import { HIRAGANA_DATA, KATAKANA_DATA } from '../constants';
+import { Character } from "../types";
+import { HIRAGANA_DATA, KATAKANA_DATA } from "../constants";
 
 /**
  * Selects a random character from the provided data based on their weights.
@@ -8,15 +8,20 @@ import { HIRAGANA_DATA, KATAKANA_DATA } from '../constants';
  * @param {Character[]} characterData - An array of objects representing characters.
  * @returns {Character} - A random character object selected based on weight.
  */
-export const getRandomCharacter = (characterData: Array<Character>): Character => {
+export const getRandomCharacter = (
+  characterData: Array<Character>,
+): Character => {
   // Ensure all characters have valid weights
-  const validCharacterData = characterData.map(char => ({
+  const validCharacterData = characterData.map((char) => ({
     ...char,
-    weight: isNaN(char.weight) || char.weight <= 0 ? 1 : char.weight
+    weight: isNaN(char.weight) || char.weight <= 0 ? 1 : char.weight,
   }));
 
   // Calculate the total weight by summing up the weights of all characters.
-  const totalWeight: number = validCharacterData.reduce((sum, { weight }) => sum + weight, 0);
+  const totalWeight: number = validCharacterData.reduce(
+    (sum, { weight }) => sum + weight,
+    0,
+  );
 
   // Generate a random number between 0 and the total weight.
   let randomNum: number = Math.random() * totalWeight;
@@ -51,4 +56,4 @@ export const getHiraganaList = (): Character[] => {
  */
 export const getKatakanaList = (): Character[] => {
   return KATAKANA_DATA;
-}; 
+};

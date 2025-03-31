@@ -1,26 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma, { updateUserProgressRecord } from '../../../lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import prisma, { updateUserProgressRecord } from "../../../lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { userId, flashcardId, kana, kanaType, isCorrect } = body;
-    
+
     if (!userId || !flashcardId || !kana || !kanaType) {
       return NextResponse.json(
-        { error: 'Missing required parameters' },
-        { status: 400 }
+        { error: "Missing required parameters" },
+        { status: 400 },
       );
     }
-    
+
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
-    
+
     // Transaction to update both UserProgress and UserKanaPerformance
     await prisma.$transaction(async (tx) => {
       // Update UserProgress
       await updateUserProgressRecord(userId, flashcardId, isCorrect);
-      
+
       // Update UserKanaPerformance
       await tx.userKanaPerformance.upsert({
         where: {
@@ -44,13 +44,16 @@ export async function POST(request: NextRequest) {
         },
       });
     });
-    
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error updating user progress:', error);
+    console.error("Error updating user progress:", error);
     return NextResponse.json(
-      { error: 'Database connection error. Please check your database configuration and environment variables.' },
-      { status: 500 }
+      {
+        error:
+          "Database connection error. Please check your database configuration and environment variables.",
+      },
+      { status: 500 },
     );
   }
-} 
+}

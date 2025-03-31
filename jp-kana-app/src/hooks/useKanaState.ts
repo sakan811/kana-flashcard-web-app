@@ -1,6 +1,11 @@
-import { useState, useRef } from 'react';
-import { Character, KanaMessage, KanaPerformanceData, KanaType } from '../types/kana';
-import { createFallbackCharacter } from '../utils/kanaUtils';
+import { useState, useRef } from "react";
+import {
+  Character,
+  KanaMessage,
+  KanaPerformanceData,
+  KanaType,
+} from "../types/kana";
+import { createFallbackCharacter } from "../utils/kanaUtils";
 
 export const useKanaState = (kanaType: KanaType) => {
   const defaultCharacter: Character = { romanji: "", weight: 1 };
@@ -9,22 +14,24 @@ export const useKanaState = (kanaType: KanaType) => {
   const mountedRef = useRef(true);
 
   const [currentKana, setCurrentKana] = useState<Character>(defaultCharacter);
-  const [inputValue, setInputValue] = useState<string>('');
-  const [message, setMessage] = useState<KanaMessage>({ 
-    correct: '', 
-    incorrect: '',
-    error: '' 
+  const [inputValue, setInputValue] = useState<string>("");
+  const [message, setMessage] = useState<KanaMessage>({
+    correct: "",
+    incorrect: "",
+    error: "",
   });
-  const [performanceData, setPerformanceData] = useState<KanaPerformanceData[]>([]);
+  const [performanceData, setPerformanceData] = useState<KanaPerformanceData[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
   const [isDataInitialized, setIsDataInitialized] = useState<boolean>(false);
 
   const safelyExitLoadingState = () => {
     if (!mountedRef.current) return;
-    
+
     setIsLoading(false);
-    setCurrentKana(current => {
+    setCurrentKana((current) => {
       if (!current || !current.romanji) {
         return createFallbackCharacter(kanaType);
       }
@@ -34,7 +41,7 @@ export const useKanaState = (kanaType: KanaType) => {
   };
 
   const clearErrorMessage = () => {
-    setMessage(prev => ({ ...prev, error: '' }));
+    setMessage((prev) => ({ ...prev, error: "" }));
   };
 
   return {
@@ -56,6 +63,6 @@ export const useKanaState = (kanaType: KanaType) => {
     previousKanaRef,
     mountedRef,
     safelyExitLoadingState,
-    clearErrorMessage
+    clearErrorMessage,
   };
-}; 
+};
