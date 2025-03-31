@@ -41,6 +41,9 @@ update-deps:
 clean:
 	cd $(APP_DIR) && rm -rf dist/ && rm -rf node_modules/ && rm -rf package-lock.json && rm -rf .next
 
+clean-build:
+	cd $(APP_DIR) && rm -rf .next
+
 install:
 	cd $(APP_DIR) && npm install
 

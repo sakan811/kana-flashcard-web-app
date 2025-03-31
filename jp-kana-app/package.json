@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "node .next/standalone/server.js",
+    "start": "next start",
     "lint": "next lint",
     "format": "npx prettier . --write",
     "check": "tsc --noEmit",

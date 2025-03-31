@@ -106,11 +106,6 @@ export async function POST() {
         { kana: "ぷ", romaji: "pu", type: KanaType.hiragana },
         { kana: "ぺ", romaji: "pe", type: KanaType.hiragana },
         { kana: "ぽ", romaji: "po", type: KanaType.hiragana },
-        // Small kana
-        { kana: "っ", romaji: "tsu", type: KanaType.hiragana },
-        { kana: "ゃ", romaji: "ya", type: KanaType.hiragana },
-        { kana: "ゅ", romaji: "yu", type: KanaType.hiragana },
-        { kana: "ょ", romaji: "yo", type: KanaType.hiragana },
       ];
 
       // Katakana characters
@@ -202,17 +197,6 @@ export async function POST() {
         { kana: "プ", romaji: "pu", type: KanaType.katakana },
         { kana: "ペ", romaji: "pe", type: KanaType.katakana },
         { kana: "ポ", romaji: "po", type: KanaType.katakana },
-        // Small kana
-        { kana: "ッ", romaji: "tsu", type: KanaType.katakana },
-        { kana: "ャ", romaji: "ya", type: KanaType.katakana },
-        { kana: "ュ", romaji: "yu", type: KanaType.katakana },
-        { kana: "ョ", romaji: "yo", type: KanaType.katakana },
-        // Extended katakana for foreign words
-        { kana: "ヴ", romaji: "vu", type: KanaType.katakana },
-        { kana: "ファ", romaji: "fa", type: KanaType.katakana },
-        { kana: "フィ", romaji: "fi", type: KanaType.katakana },
-        { kana: "フェ", romaji: "fe", type: KanaType.katakana },
-        { kana: "フォ", romaji: "fo", type: KanaType.katakana },
       ];
 
       // Create all flashcards
