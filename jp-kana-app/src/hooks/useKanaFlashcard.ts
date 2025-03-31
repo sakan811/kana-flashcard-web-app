@@ -339,22 +339,35 @@ export function useKanaFlashcard(
     // Reset navigation flag to allow state updates (moved to mount effect)
     isInitialLoadRef.current = false; // Set this immediately to prevent repeated calls
     
-    // Set a shorter timeout for data loading - this is our safety net
+    // Set a longer timeout for data loading in containerized environment
     const timeoutId = setTimeout(() => {
       if (!isNavigatingRef.current && mountedRef.current && !isDataInitialized) {
         console.warn('Data loading timeout reached - using fallback');
         
         setMessage(prev => ({
           ...prev,
-          error: 'Data loading took too long. Using fallback data.'
+          error: 'Database connection is taking longer than expected. Please wait while we retry...'
         }));
         
         // Instead of just showing an error, set some fallback data and continue
         console.log("Setting fallback due to timeout");
         setCurrentKana(createFallbackCharacter());
         safelyExitLoadingState();
+        
+        // Retry data loading after a delay
+        setTimeout(async () => {
+          if (!isNavigatingRef.current && mountedRef.current) {
+            try {
+              await fetchNextKana();
+              await getKanaPerformance();
+              setMessage(prev => ({ ...prev, error: '' }));
+            } catch (error) {
+              console.error('Retry failed:', error);
+            }
+          }
+        }, 5000); // Retry after 5 seconds
       }
-    }, 1000); // Reduced to 1 second for faster fallback
+    }, 5000); // Increased to 5 seconds for containerized environment
     
     // Start the loading process
     const loadInitialData = async () => {
@@ -363,14 +376,24 @@ export function useKanaFlashcard(
       try {
         console.log("Loading initial data...");
         
-        // Get the first random kana
-        await fetchNextKana().catch(error => {
-          console.error('Initial kana fetch failed:', error);
-          if (!isNavigatingRef.current && mountedRef.current) {
-            setCurrentKana(createFallbackCharacter());
-            safelyExitLoadingState();
+        // Get the first random kana with retry logic
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+          try {
+            await fetchNextKana();
+            break;
+          } catch (error) {
+            console.error(`Initial kana fetch attempt ${retryCount + 1} failed:`, error);
+            retryCount++;
+            if (retryCount === maxRetries) {
+              throw error;
+            }
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000));
           }
-        });
+        }
         
         // Get performance data after initial kana load
         if (!isNavigatingRef.current && mountedRef.current) {
@@ -393,7 +416,7 @@ export function useKanaFlashcard(
         if (!isNavigatingRef.current && mountedRef.current) {
           setMessage(prev => ({ 
             ...prev, 
-            error: 'Error loading data. Using fallback data.' 
+            error: 'Unable to connect to database. Please check if the database is running.' 
           }));
           
           // Ensure we have at least a fallback character

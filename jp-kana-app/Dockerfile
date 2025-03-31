@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install dependencies first (for better caching)
 COPY package.json package-lock.json ./
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy prisma schema for client generation
 COPY prisma ./prisma/
@@ -37,7 +37,7 @@ FROM node:20-alpine AS runner
 # Set working directory
 WORKDIR /app
 
-# Install only production dependencies
+# Install production dependencies
 COPY package.json package-lock.json ./
 RUN npm ci --only=production --ignore-scripts
 

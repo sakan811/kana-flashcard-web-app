@@ -1,43 +1,46 @@
 .PHONY: dev build preview test update-deps clean
 
+# Project configuration
+APP_DIR := jp-kana-app
+
 # Run development server
 dev:
-	cd jp-kana-app && npm run dev
+	cd $(APP_DIR) && npm run dev
 
 # Build for production
 build:
-	cd jp-kana-app && npm run build
+	cd $(APP_DIR) && npm run build
 
 # Run tests
 test:
-	cd jp-kana-app && npm test
+	cd $(APP_DIR) && npm test
 
 # lint
 lint:
-	cd jp-kana-app && npm run lint
+	cd $(APP_DIR) && npm run lint
 
 # Update all dependencies to latest version
 update-deps:
-	cd jp-kana-app && npm update --save && npm update --save-dev
+	cd $(APP_DIR) && npm update --save && npm update --save-dev
 
 # Clean build artifacts
 clean:
-	cd jp-kana-app && rm -rf dist/ && rm -rf node_modules/ && rm -rf package-lock.json
+	cd $(APP_DIR) && rm -rf dist/ && rm -rf node_modules/ && rm -rf package-lock.json
 
 install:
-	cd jp-kana-app && npm install
+	cd $(APP_DIR) && npm install
 
 prisma:
-	cd jp-kana-app && npx prisma generate
+	cd $(APP_DIR) && npx prisma generate
 
 migrate:
-	cd jp-kana-app && npx prisma migrate dev
+	cd $(APP_DIR) && npx prisma migrate dev
 
 reset:
-	cd jp-kana-app && npx prisma migrate reset
+	cd $(APP_DIR) && npx prisma migrate reset
 
 studio:
-	cd jp-kana-app && npx prisma studio
+	cd $(APP_DIR) && npx prisma studio
 
 compose-up:
 	docker compose up -d
@@ -46,7 +49,7 @@ compose-down:
 	docker compose down
 
 compose-clean:
-	docker compose down --rmi all
+	docker compose down --volumes --remove-orphans
 
 # Help command
 help:
@@ -60,4 +63,8 @@ help:
 	@echo "  make install    - Install dependencies"
 	@echo "  make compose-up - Start docker compose"
 	@echo "  make compose-down - Stop docker compose"
-	@echo "  make compose-clean - Stop and remove all containers and images"
+	@echo "  make prisma - Generate Prisma client"
+	@echo "  make migrate - Run Prisma migrations"
+	@echo "  make reset - Reset Prisma migrations"
+	@echo "  make studio - Open Prisma Studio"
+	@echo "  make compose-clean - Stop and remove containers and volumes for this project"
