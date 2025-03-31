@@ -163,7 +163,7 @@ export function useKanaFlashcard(
   ]);
 
   const handleSubmitAnswer = useCallback(
-    async (answer: string, isCorrect: boolean) => {
+    async (answer: string) => {
       if (!userId) {
         setMessage((prev) => ({
           ...prev,
@@ -172,9 +172,30 @@ export function useKanaFlashcard(
         return;
       }
 
-      if (isNavigatingRef.current || !mountedRef.current) return;
+      if (isNavigatingRef.current || !mountedRef.current || !currentKana.romaji) return;
+      
+      // Validate the user input against the current kana
+      const isCorrect = answer.toLowerCase() === currentKana.romaji.toLowerCase();
+
+      // Show immediate feedback to the user
+      if (isCorrect) {
+        setMessage((prev) => ({
+          ...prev,
+          correct: "Correct! 🎉",
+          incorrect: "",
+          error: "",
+        }));
+      } else {
+        setMessage((prev) => ({
+          ...prev,
+          correct: "",
+          incorrect: `Incorrect. "${currentKana.kana}" is pronounced "${currentKana.romaji}".`,
+          error: "",
+        }));
+      }
 
       try {
+        // Record the answer in the database
         await submitAnswer(
           userId,
           kanaType,
@@ -185,14 +206,23 @@ export function useKanaFlashcard(
 
         await getKanaPerformance();
 
-        const errorTimeout = setTimeout(() => {
+        // Clear the feedback message after a delay
+        const feedbackTimeout = setTimeout(() => {
           if (!isNavigatingRef.current && mountedRef.current) {
-            setMessage((prev) => ({ ...prev, error: "" }));
+            setMessage((prev) => ({ 
+              ...prev, 
+              correct: "",
+              incorrect: "",
+              error: "" 
+            }));
             setHasError(false);
+            
+            // After showing feedback, fetch the next kana
+            fetchNextKana();
           }
         }, 1500);
 
-        return () => clearTimeout(errorTimeout);
+        return () => clearTimeout(feedbackTimeout);
       } catch (error) {
         console.error("Error submitting answer:", error);
         setMessage((prev) => ({
@@ -209,7 +239,8 @@ export function useKanaFlashcard(
       setMessage,
       setHasError,
       userId,
-      getKanaPerformance
+      getKanaPerformance,
+      fetchNextKana
     ],
   );
 
