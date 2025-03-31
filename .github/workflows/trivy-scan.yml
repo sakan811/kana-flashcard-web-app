@@ -21,28 +21,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build backend
+      - name: Build the Web-app
         uses: docker/build-push-action@v6
         with:
-          context: ./backend
+          context: ./jp-kana-app
           push: false
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/kana-flashcard-app-backend:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/jp-kana-flashcard-app:latest
 
-      - name: Build frontend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./frontend
-          push: false
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/kana-flashcard-app-frontend:latest
-
-      - name: Run Trivy vulnerability scanner Backend
+      - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.29.0
         with:
-          image-ref: ${{ vars.DOCKERHUB_USERNAME }}/kana-flashcard-app-backend:latest
-          format: 'table'
-
-      - name: Run Trivy vulnerability scanner Frontend
-        uses: aquasecurity/trivy-action@0.29.0
-        with:
-          image-ref: ${{ vars.DOCKERHUB_USERNAME }}/kana-flashcard-app-frontend:latest
+          image-ref: ${{ vars.DOCKERHUB_USERNAME }}/jp-kana-flashcard-app:latest
           format: 'table'

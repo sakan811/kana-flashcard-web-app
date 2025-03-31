@@ -1,24 +1,7 @@
 version: '3.8'
 services:
-  # jp-kana-flashcard-app:
-  #   image: sakanbeer88/jp-kana-flashcard-app:latest
-  #   ports:
-  #     - "3000:80"
-  #   user: "1001:1001"
-  #   depends_on:
-  #     - supabase
-  #   environment:
-  #     - NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-  #     - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-
   jp-kana-flashcard-app:
-    build:
-      context: ./jp-kana-app
-      dockerfile: Dockerfile
-      args:
-        - DATABASE_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
-        - NEXTAUTH_SECRET=your-secret-key-here
-        - NEXTAUTH_URL=http://localhost:3000
+    image: sakanbeer88/jp-kana-flashcard-app:latest
     ports:
       - "3000:3000"
     user: "1001:1001"
