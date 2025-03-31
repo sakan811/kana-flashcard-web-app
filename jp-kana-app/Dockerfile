@@ -27,6 +27,7 @@ RUN mkdir -p src
 ARG DATABASE_URL
 ARG NEXTAUTH_SECRET
 ARG NEXTAUTH_URL
+ARG NEXT_PUBLIC_CDN_URL
 
 # Set default values for environment variables
 ENV DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres?schema=public}
@@ -51,23 +52,28 @@ RUN npm ci --only=production --ignore-scripts
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
+# Create static file directories with proper permissions
+RUN mkdir -p /app/.next/static /app/public /app/static && \
+    chown -R nextjs:nodejs /app
+
 # Copy necessary files from the builder stage
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+
+# Create a directory for static file caching
+RUN mkdir -p /app/static/cache && \
+    chown -R nextjs:nodejs /app/static
 
 # Set environment variables (will be overridden by runtime values)
 ENV NODE_ENV=production
 ENV DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/postgres?schema=public}
 ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-key-here}
 ENV NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
-
-# Set proper ownership
-RUN chown -R nextjs:nodejs /app
 
 # Switch to non-root user
 USER nextjs

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { prisma } from "./setup";
 import { updateKanaWeight, submitAnswer } from "../src/lib/flashcard-service";
 import { createUser } from "../src/lib/auth";
-import { Character } from "../src/types";
+import { Character } from "@/types";
 
 describe("Flashcard Service", () => {
   const testUser = {
@@ -10,25 +10,24 @@ describe("Flashcard Service", () => {
     password: "password123",
   };
 
-  const testCharacter: Character = {
-    hiragana: "あ",
-    katakana: "ア",
-    romanji: "a",
-    weight: 1,
-  };
+  const mockCharacters: Character[] = [
+    { kana: "あ", romanji: "a", type: "hiragana", weight: 1 },
+    { kana: "い", romanji: "i", type: "hiragana", weight: 1 },
+    { kana: "う", romanji: "u", type: "hiragana", weight: 1 },
+  ];
 
   beforeEach(async () => {
     await prisma.userProgress.deleteMany();
     await prisma.user.deleteMany();
-    await createUser(testUser);
+    await createUser(testUser.email, testUser.password);
   });
 
   describe("updateKanaWeight", () => {
     it("should update kana weights based on performance", async () => {
       const characters: Character[] = [
-        { ...testCharacter, weight: 1 },
-        { hiragana: "い", katakana: "イ", romanji: "i", weight: 1 },
-        { hiragana: "う", katakana: "ウ", romanji: "u", weight: 1 },
+        { ...mockCharacters[0], weight: 1 },
+        { ...mockCharacters[1], weight: 1 },
+        { ...mockCharacters[2], weight: 1 },
       ];
 
       const updatedCharacters = await updateKanaWeight(characters, "hiragana");
@@ -38,7 +37,7 @@ describe("Flashcard Service", () => {
     });
 
     it("should handle errors gracefully", async () => {
-      const characters: Character[] = [testCharacter];
+      const characters: Character[] = [mockCharacters[0]];
       const updatedCharacters = await updateKanaWeight(characters, "hiragana");
       expect(updatedCharacters).toEqual(characters); // Should return original characters on error
     });
@@ -46,29 +45,31 @@ describe("Flashcard Service", () => {
 
   describe("submitAnswer", () => {
     it("should record correct answer for hiragana", async () => {
-      await submitAnswer("hiragana", "a", testCharacter, true);
+      await submitAnswer("hiragana", "a", mockCharacters[0], true);
       // Note: We can't directly test the database state here as it's handled by the API
       // The test verifies that the function executes without throwing errors
     });
 
     it("should record incorrect answer for katakana", async () => {
-      await submitAnswer("katakana", "wrong", testCharacter, false);
+      await submitAnswer("katakana", "wrong", mockCharacters[0], false);
       // Note: We can't directly test the database state here as it's handled by the API
       // The test verifies that the function executes without throwing errors
     });
 
     it("should handle undefined kana type", async () => {
-      await submitAnswer(undefined, "a", testCharacter, true);
+      await submitAnswer(undefined, "a", mockCharacters[0], true);
       // Should default to hiragana and execute without errors
     });
 
-    it("should handle undefined kana character", async () => {
+    it("should handle empty kana character", async () => {
       const invalidCharacter: Character = {
+        kana: "",
         romanji: "a",
+        type: "hiragana",
         weight: 1,
       };
       await submitAnswer("hiragana", "a", invalidCharacter, true);
-      // Should handle undefined hiragana gracefully
+      // Should handle empty kana gracefully
     });
   });
 });

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
-import { KanaType } from "@prisma/client";
+import { Character } from "@/types";
 
 export async function GET(request: Request): Promise<NextResponse> {
   try {
@@ -16,15 +16,8 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
     }
 
-    // Validate and convert kanaType
-    const kanaType =
-      kanaTypeParam === "hiragana"
-        ? KanaType.hiragana
-        : kanaTypeParam === "katakana"
-          ? KanaType.katakana
-          : null;
-
-    if (!kanaType) {
+    // Validate kanaType
+    if (kanaTypeParam !== "hiragana" && kanaTypeParam !== "katakana") {
       return NextResponse.json(
         {
           success: false,
@@ -36,7 +29,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     // Fetch all flashcards of the specified type with their user progress
     const flashcards = await prisma.flashcard.findMany({
-      where: { type: kanaType },
+      where: { type: kanaTypeParam },
       include: {
         progress: {
           where: { userId },
@@ -87,7 +80,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       return {
         id: card.id,
         kana: card.kana,
-        romaji: card.romaji,
+        romanji: card.romaji,
         type: card.type,
         weight,
         correctCount: progress?.correctCount || 0,
@@ -121,13 +114,14 @@ export async function GET(request: Request): Promise<NextResponse> {
     }
 
     // Format the response to match the Character interface
-    const response = {
-      id: selectedCard.id,
-      hiragana:
-        selectedCard.type === "hiragana" ? selectedCard.kana : undefined,
-      katakana:
-        selectedCard.type === "katakana" ? selectedCard.kana : undefined,
-      romanji: selectedCard.romaji,
+    const response: Character & {
+      correctCount: number;
+      totalCount: number;
+      accuracy: number;
+    } = {
+      kana: selectedCard.kana,
+      romanji: selectedCard.romanji,
+      type: selectedCard.type,
       weight: selectedCard.weight,
       correctCount: selectedCard.correctCount,
       totalCount: selectedCard.totalCount,

@@ -4,7 +4,7 @@ import {
   getKanaPerformance as fetchKanaPerformance,
   getRandomKana as fetchRandomKana,
 } from "@/lib/api-service";
-import { submitAnswer } from "@/components/funcs/showKanaFunc";
+import { submitAnswer } from "@/lib/kana-performance";
 import { KanaType, Character } from "@/types";
 import { DEFAULT_USER_ID } from "@/constants";
 import { useKanaState } from "./useKanaState";

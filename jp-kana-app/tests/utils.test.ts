@@ -1,33 +1,34 @@
 import { describe, it, expect } from "vitest";
-import { Character } from "../src/types";
+import { Character } from "@/types";
+import { getRandomCharacter } from "@/lib/utils";
 
 describe("Utility Functions", () => {
   describe("Character Validation", () => {
     it("should validate hiragana character", () => {
       const character: Character = {
-        hiragana: "あ",
-        katakana: "ア",
+        kana: "あ",
         romanji: "a",
+        type: "hiragana",
         weight: 1,
       };
-      expect(character.hiragana).toMatch(/^[\u3040-\u309F]$/);
+      expect(character.kana).toMatch(/^[\u3040-\u309F]$/);
     });
 
     it("should validate katakana character", () => {
       const character: Character = {
-        hiragana: "あ",
-        katakana: "ア",
+        kana: "ア",
         romanji: "a",
+        type: "katakana",
         weight: 1,
       };
-      expect(character.katakana).toMatch(/^[\u30A0-\u30FF]$/);
+      expect(character.kana).toMatch(/^[\u30A0-\u30FF]$/);
     });
 
     it("should validate romanji format", () => {
       const character: Character = {
-        hiragana: "あ",
-        katakana: "ア",
+        kana: "あ",
         romanji: "a",
+        type: "hiragana",
         weight: 1,
       };
       expect(character.romanji).toMatch(/^[a-z]+$/);
@@ -74,6 +75,44 @@ describe("Utility Functions", () => {
       const percentage = 100;
       const formatted = percentage.toFixed(2);
       expect(formatted).toBe("100.00");
+    });
+  });
+
+  describe("getRandomCharacter", () => {
+    const mockCharacters: Character[] = [
+      {
+        kana: "あ",
+        romanji: "a",
+        type: "hiragana",
+        weight: 1,
+      },
+      {
+        kana: "い",
+        romanji: "i",
+        type: "hiragana",
+        weight: 2,
+      },
+      {
+        kana: "う",
+        romanji: "u",
+        type: "hiragana",
+        weight: 3,
+      },
+    ];
+
+    it("should return a character from the list", () => {
+      const result = getRandomCharacter(mockCharacters);
+      expect(mockCharacters).toContainEqual(result);
+    });
+
+    it("should handle empty character list", () => {
+      const result = getRandomCharacter([]);
+      expect(result).toEqual({
+        kana: "",
+        romanji: "",
+        type: "hiragana",
+        weight: 1,
+      });
     });
   });
 });

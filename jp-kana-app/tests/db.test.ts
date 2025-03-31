@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { prisma } from "./setup";
 import { createUser } from "../src/lib/auth";
-import { Character } from "../src/types";
-import { KanaType } from "@prisma/client";
+import { Character } from "@/types";
 
 describe("Database Operations", () => {
   const testUser = {
@@ -11,9 +10,9 @@ describe("Database Operations", () => {
   };
 
   const testCharacter: Character = {
-    hiragana: "あ",
-    katakana: "ア",
+    kana: "あ",
     romanji: "a",
+    type: "hiragana",
     weight: 1,
   };
 
@@ -46,9 +45,9 @@ describe("Database Operations", () => {
 
       const flashcard = await prisma.flashcard.create({
         data: {
-          kana: testCharacter.hiragana!,
+          kana: testCharacter.kana!,
           romaji: testCharacter.romanji,
-          type: KanaType.hiragana,
+          type: "hiragana",
         },
       });
 
@@ -75,9 +74,9 @@ describe("Database Operations", () => {
 
       const flashcard = await prisma.flashcard.create({
         data: {
-          kana: testCharacter.hiragana!,
+          kana: testCharacter.kana!,
           romaji: testCharacter.romanji,
-          type: KanaType.hiragana,
+          type: "hiragana",
         },
       });
 
@@ -110,9 +109,9 @@ describe("Database Operations", () => {
 
       const flashcard = await prisma.flashcard.create({
         data: {
-          kana: testCharacter.hiragana!,
+          kana: testCharacter.kana!,
           romaji: testCharacter.romanji,
-          type: KanaType.hiragana,
+          type: "hiragana",
         },
       });
 
@@ -143,9 +142,9 @@ describe("Database Operations", () => {
 
       const flashcard = await prisma.flashcard.create({
         data: {
-          kana: testCharacter.hiragana!,
+          kana: testCharacter.kana!,
           romaji: testCharacter.romanji,
-          type: KanaType.hiragana,
+          type: "hiragana",
         },
       });
 
@@ -176,7 +175,7 @@ describe("Database Operations", () => {
       const performance = await prisma.userKanaPerformance.create({
         data: {
           userId: user.id,
-          kana: testCharacter.hiragana!,
+          kana: testCharacter.kana!,
           kanaType: "hiragana",
           correctCount: 1,
           totalCount: 1,
@@ -186,7 +185,7 @@ describe("Database Operations", () => {
 
       expect(performance).toBeDefined();
       expect(performance.userId).toBe(user.id);
-      expect(performance.kana).toBe(testCharacter.hiragana);
+      expect(performance.kana).toBe(testCharacter.kana);
       expect(performance.correctCount).toBe(1);
       expect(performance.totalCount).toBe(1);
     });
@@ -198,7 +197,7 @@ describe("Database Operations", () => {
       const performance = await prisma.userKanaPerformance.create({
         data: {
           userId: user.id,
-          kana: testCharacter.hiragana!,
+          kana: testCharacter.kana!,
           kanaType: "hiragana",
           correctCount: 1,
           totalCount: 1,

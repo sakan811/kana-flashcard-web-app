@@ -5,7 +5,7 @@ import {
   recordKanaPerformance,
   getKanaWithWeights,
 } from "../src/lib/api-service";
-import { Character, KanaPerformanceData } from "../src/types";
+import { Character, KanaPerformanceData } from "@/types";
 
 // Mock fetch
 const mockFetch = vi.fn();
@@ -13,18 +13,17 @@ global.fetch = mockFetch;
 
 describe("API Service", () => {
   const testCharacter: Character = {
-    hiragana: "あ",
-    katakana: "ア",
+    kana: "あ",
     romanji: "a",
+    type: "hiragana",
     weight: 1,
   };
 
   const testPerformanceData: KanaPerformanceData = {
     kana: "あ",
-    kanaType: "hiragana",
+    accuracy: 50,
     correctCount: 5,
     totalCount: 10,
-    accuracy: 50,
   };
 
   beforeEach(() => {

@@ -7,8 +7,6 @@ export const createFallbackCharacter = (kanaType: KanaType): Character => {
     romanji: "a",
     type: kanaType,
     weight: 1,
-    createdAt: new Date(),
-    updatedAt: new Date(),
   };
 };
 

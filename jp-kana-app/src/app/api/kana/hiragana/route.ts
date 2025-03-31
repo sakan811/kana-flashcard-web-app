@@ -1,82 +1,31 @@
 import { NextResponse } from "next/server";
-import prisma from "../../../../lib/prisma";
-import { KanaType } from "@prisma/client";
+import { Character } from "@/types";
 
-// Define our Character interface
-interface Character {
-  hiragana?: string;
-  katakana?: string;
-  romanji: string;
-  weight: number;
-}
-
-// Base hiragana list as fallback
-const hiraganaList: Character[] = [
-  // Basic vowels
-  { hiragana: "あ", romanji: "a", weight: 1 },
-  { hiragana: "い", romanji: "i", weight: 1 },
-  { hiragana: "う", romanji: "u", weight: 1 },
-  { hiragana: "え", romanji: "e", weight: 1 },
-  { hiragana: "お", romanji: "o", weight: 1 },
-  // Add more hiragana characters as needed
+const hiraganaData: Character[] = [
+  { kana: "あ", romanji: "a", type: "hiragana", weight: 1 },
+  { kana: "い", romanji: "i", type: "hiragana", weight: 1 },
+  { kana: "う", romanji: "u", type: "hiragana", weight: 1 },
+  { kana: "え", romanji: "e", type: "hiragana", weight: 1 },
+  { kana: "お", romanji: "o", type: "hiragana", weight: 1 },
 ];
 
-export async function GET(request: Request): Promise<NextResponse> {
+export async function GET() {
   try {
-    // Extract userId from query parameters
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const data = await Promise.all(
+      hiraganaData.map(async (card) => ({
+        kana: card.kana,
+        romanji: card.romanji,
+        type: card.type,
+        weight: card.weight,
+      })),
+    );
 
-    // If no userId, return the default list
-    if (!userId) {
-      return NextResponse.json({
-        success: true,
-        data: hiraganaList,
-      });
-    }
-
-    // Fetch flashcards with user progress
-    const flashcards = await prisma.flashcard.findMany({
-      where: { type: KanaType.hiragana },
-      include: {
-        progress: {
-          where: { userId },
-        },
-      },
-    });
-
-    // Map flashcards to characters with weights
-    const characterList = flashcards.map((card) => {
-      const progress = card.progress[0];
-
-      // Calculate weight based on user performance
-      let weight = 1;
-      if (progress) {
-        const totalAttempts = progress.correctCount + progress.incorrectCount;
-        if (totalAttempts > 0) {
-          const accuracy = progress.correctCount / totalAttempts;
-          // Inverse relationship: lower accuracy = higher weight
-          weight = 1 + (1 - accuracy) * 2;
-        }
-      }
-
-      return {
-        hiragana: card.kana,
-        romanji: card.romaji,
-        weight,
-      };
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: characterList.length > 0 ? characterList : hiraganaList,
-    });
+    return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching hiragana list:", error);
-    return NextResponse.json({
-      success: true, // Changed to true - keep UI working even with error
-      message: "Using default hiragana list due to error",
-      data: hiraganaList,
-    });
+    console.error("Error fetching hiragana data:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch hiragana data" },
+      { status: 500 },
+    );
   }
 }

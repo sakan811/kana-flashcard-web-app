@@ -1,3 +1,10 @@
+/**
+ * This module handles Kana performance tracking and weight calculations
+ * for the flashcard system. It provides functionality to update Kana weights
+ * based on user performance and record user answers.
+ * @module kana-performance
+ */
+
 import { Character, KanaPerformanceData, KanaType } from "@/types";
 import { DEFAULT_USER_ID } from "@/constants";
 import {
@@ -6,7 +13,7 @@ import {
 } from "@/lib/api-service";
 
 /**
- * Update each Kana's weight.
+ * Update each Kana's weight based on user performance.
  *
  * @param {Character[]} initialKanaCharacters - Initial Kana Weight
  * @param {KanaType | undefined} kanaType - Japanese Kana Type
@@ -42,7 +49,7 @@ export const updateKanaWeight = async (
 };
 
 /**
- * Update weight of each Kana.
+ * Update weight of each Kana based on performance data.
  * @param {Character[]} initialKanaCharacters - Initial array of Kana objects with their default weights.
  * @param {KanaPerformanceData[]} performanceData - Array of objects containing user performance data for each Kana from the database.
  * @returns {Character[]} - A new array of Kana objects with the updated weight values.
@@ -73,7 +80,7 @@ export function updateWeights(
 }
 
 /**
- * Submit users' answer to the database
+ * Submit users' answer to the database and record performance
  * @param {KanaType | undefined} kanaType - The type of Kana that is being processed.
  * @param {string} inputValue - Users' answer of the displayed Kana as Romaji.
  * @param {Character} currentKana - Currently displayed Kana.

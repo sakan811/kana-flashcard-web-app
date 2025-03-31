@@ -1,7 +1,7 @@
 /**
  * API service for interacting with the backend from browser environments
  */
-import { Character, KanaPerformanceData } from "../types/kana";
+import { Character, KanaPerformanceData } from "@/types";
 import { CACHE_DURATION } from "../constants";
 
 // Simple cache for performance data

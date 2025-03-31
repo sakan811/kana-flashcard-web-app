@@ -4,11 +4,16 @@ import {
   KanaMessage,
   KanaPerformanceData,
   KanaType,
-} from "../types/kana";
+} from "@/types";
 import { createFallbackCharacter } from "../utils/kanaUtils";
 
 export const useKanaState = (kanaType: KanaType) => {
-  const defaultCharacter: Character = { romanji: "", weight: 1 };
+  const defaultCharacter: Character = {
+    kana: "",
+    romanji: "",
+    type: kanaType,
+    weight: 1,
+  };
   const isInitialLoadRef = useRef(true);
   const previousKanaRef = useRef<string[]>([]);
   const mountedRef = useRef(true);

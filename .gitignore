@@ -18,3 +18,4 @@
 /jp-kana-app/.next/
 
 /postgres.psql
+/jp-kana-app/tsconfig.tsbuildinfo

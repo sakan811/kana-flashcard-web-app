@@ -23,8 +23,12 @@ lint:
 format:
 	cd $(APP_DIR) && npm run format
 
-lint-format:
-	cd $(APP_DIR) && npm run lint && npm run format
+# type check
+check:
+	cd $(APP_DIR) && npm run check
+
+lint-format-check:
+	cd $(APP_DIR) && npm run lint && npm run format && npm run check
 
 # Update all dependencies to latest version
 update-deps:
@@ -32,7 +36,7 @@ update-deps:
 
 # Clean build artifacts
 clean:
-	cd $(APP_DIR) && rm -rf dist/ && rm -rf node_modules/ && rm -rf package-lock.json
+	cd $(APP_DIR) && rm -rf dist/ && rm -rf node_modules/ && rm -rf package-lock.json && rm -rf .next
 
 install:
 	cd $(APP_DIR) && npm install
@@ -50,7 +54,7 @@ studio:
 	cd $(APP_DIR) && npx prisma studio
 
 compose-dev:
-	docker compose -f docker-compose.dev.yml up --build
+	docker compose -f docker-compose.dev.yml up --build -d
 
 compose-up:
 	docker compose up -d
