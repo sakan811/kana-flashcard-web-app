@@ -189,7 +189,7 @@ export async function getKanaWithWeights(
 
     return characters.map((char) => {
       const charPerformance = performanceData.find(
-        (item) => item.kana === char.kana
+        (item) => item.kana === char.kana,
       );
 
       if (charPerformance) {
