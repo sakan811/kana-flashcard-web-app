@@ -9,7 +9,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "No authenticated session found" },
         { status: 401 }
       );
     }
@@ -20,20 +20,28 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Verify userId matches authenticated user
     if (userId !== session.user.id) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "User ID does not match authenticated session" },
         { status: 401 }
       );
     }
 
     if (!userId || !kana || !kanaType) {
       return NextResponse.json(
-        { error: "Missing required parameters" },
+        { error: "Missing required parameters: userId, kana, or kanaType" },
         { status: 400 },
       );
     }
 
-    // Test database connection
-    await prisma.$queryRaw`SELECT 1`;
+    // Test database connection before proceeding
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+    } catch (dbError) {
+      console.error("Database connection error:", dbError);
+      return NextResponse.json(
+        { error: "Database connection failed" },
+        { status: 503 }
+      );
+    }
 
     // Check if user exists
     const user = await prisma.user.findUnique({
@@ -42,7 +50,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" },
+        { error: "User not found in database" },
         { status: 404 }
       );
     }

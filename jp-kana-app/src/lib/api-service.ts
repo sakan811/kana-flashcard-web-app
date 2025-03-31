@@ -12,6 +12,17 @@ interface CacheEntry {
 
 const performanceCache: Record<string, CacheEntry> = {};
 
+const fetchWithCredentials = (url: string, options: RequestInit = {}) => {
+  return fetch(url, {
+    ...options,
+    credentials: 'include',
+    headers: {
+      ...options.headers,
+      'Content-Type': 'application/json',
+    }
+  });
+};
+
 /**
  * Fetch a random kana based on user performance
  * Kana with lower accuracy will have a higher probability of being selected
@@ -21,8 +32,8 @@ export async function getRandomKana(
   kanaType: "hiragana" | "katakana",
 ): Promise<Character> {
   try {
-    const response = await fetch(
-      `/api/random-kana?userId=${encodeURIComponent(userId)}&kanaType=${kanaType}`,
+    const response = await fetchWithCredentials(
+      `/api/random-kana?userId=${encodeURIComponent(userId)}&kanaType=${kanaType}`
     );
 
     if (!response.ok) {
@@ -58,7 +69,6 @@ export async function getKanaPerformance(
   const cacheKey = `${userId}-${kanaType}`;
   const now = Date.now();
 
-  // Check if there's a valid cached response
   if (
     performanceCache[cacheKey] &&
     now - performanceCache[cacheKey].timestamp < CACHE_DURATION
@@ -67,8 +77,8 @@ export async function getKanaPerformance(
   }
 
   try {
-    const response = await fetch(
-      `/api/kana-performance?userId=${userId}&kanaType=${kanaType}`,
+    const response = await fetchWithCredentials(
+      `/api/kana-performance?userId=${userId}&kanaType=${kanaType}`
     );
 
     if (!response.ok) {
@@ -78,8 +88,6 @@ export async function getKanaPerformance(
     }
 
     const data = await response.json();
-
-    // Cache the response
     performanceCache[cacheKey] = {
       data,
       timestamp: now,
@@ -114,11 +122,8 @@ export async function recordKanaPerformance(
   flashcardId?: number,
 ): Promise<void> {
   try {
-    const response = await fetch(`/api/record-performance`, {
+    const response = await fetchWithCredentials(`/api/record-performance`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         userId,
         kana,
@@ -129,12 +134,12 @@ export async function recordKanaPerformance(
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        `Failed to record kana performance: ${response.statusText}`,
+        errorData.error || `Failed to record kana performance: ${response.statusText}`,
       );
     }
 
-    // Invalidate the cache since we've updated the data
     invalidateCache(userId, kanaType);
   } catch (error) {
     console.error("Error recording kana performance:", error);
@@ -151,11 +156,8 @@ export async function getKanaWithWeights(
   kanaType: "hiragana" | "katakana",
 ): Promise<Character[]> {
   try {
-    const response = await fetch(`/api/kana-weights`, {
+    const response = await fetchWithCredentials(`/api/kana-weights`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         userId,
         kanaType,
