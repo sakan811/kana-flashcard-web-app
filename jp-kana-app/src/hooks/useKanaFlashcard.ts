@@ -1,12 +1,12 @@
 import { useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Character, KanaType } from "@/types/kana";
 import { submitAnswer } from "@/lib/flashcard-service";
 import {
   getKanaPerformance as fetchKanaPerformance,
   getRandomKana as fetchRandomKana,
 } from "@/lib/api-service";
-import { DEFAULT_USER_ID } from "@/constants";
 import { useKanaState } from "./useKanaState";
 import {
   isRecentlyShown,
@@ -18,8 +18,16 @@ export function useKanaFlashcard(
   kanaType: KanaType,
   isNavigatingRef: { current: boolean },
 ) {
-  const { data: session } = useSession();
-  const userId = session?.user?.id || DEFAULT_USER_ID;
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const userId = session?.user?.id;
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
   const {
     currentKana,
@@ -155,7 +163,7 @@ export function useKanaFlashcard(
 
   const handleSubmitAnswer = useCallback(
     async (answer: string) => {
-      if (isNavigatingRef.current || !mountedRef.current) return;
+      if (isNavigatingRef.current || !mountedRef.current || !userId) return;
 
       try {
         const isAnswerCorrect =
@@ -180,9 +188,11 @@ export function useKanaFlashcard(
           }
         }, 3000);
 
-        await submitAnswer(kanaType, answer, currentKana, isAnswerCorrect);
-        await fetchNextKana();
-        await getKanaPerformance();
+        if (userId) {
+          await submitAnswer(kanaType, answer, currentKana, isAnswerCorrect);
+          await fetchNextKana();
+          await getKanaPerformance();
+        }
 
         clearTimeout(messageTimeout);
       } catch {
@@ -211,6 +221,7 @@ export function useKanaFlashcard(
       mountedRef,
       setMessage,
       setHasError,
+      userId,
     ],
   );
 

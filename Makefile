@@ -39,7 +39,7 @@ update-deps:
 
 # Clean build artifacts
 clean:
-	cd $(APP_DIR) && rm -rf dist/ && rm -rf node_modules/ && rm -rf package-lock.json && rm -rf .next
+	cd $(APP_DIR) && rm -rf node_modules/ && rm -rf package-lock.json && rm -rf .next
 
 clean-build:
 	cd $(APP_DIR) && rm -rf .next
