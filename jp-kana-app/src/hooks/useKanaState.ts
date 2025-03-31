@@ -59,8 +59,33 @@ export const useKanaState = (kanaType: KanaType) => {
       currentKana.romaji.toLowerCase() === inputValue.toLowerCase();
     setIsCorrect(isAnswerCorrect);
 
-    // ... existing code ...
-  }, [currentKana, inputValue]);
+    if (isAnswerCorrect) {
+      setMessage((prev) => ({
+        ...prev,
+        correct: "Correct! 🎉",
+        incorrect: ""
+      }));
+    } else {
+      setMessage((prev) => ({
+        ...prev,
+        correct: "",
+        incorrect: `Incorrect. The correct answer was: ${currentKana.romaji}`
+      }));
+    }
+
+    // Clear the message after 2 seconds
+    setTimeout(() => {
+      if (mountedRef.current) {
+        setMessage((prev) => ({
+          ...prev,
+          correct: "",
+          incorrect: ""
+        }));
+      }
+    }, 2000);
+
+    return isAnswerCorrect;
+  }, [currentKana, inputValue, mountedRef]);
 
   return {
     currentKana,
