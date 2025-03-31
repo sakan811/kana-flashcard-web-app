@@ -5,7 +5,7 @@ RUN apk add --no-cache openssl libc6-compat
 
 # Install dependencies with cache optimization
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 COPY prisma ./prisma/
 RUN npx prisma generate
 
@@ -21,10 +21,7 @@ COPY --from=deps /app/prisma ./prisma
 COPY . .
 
 # Build application
-RUN npm run build && \
-    rm -rf node_modules && \
-    npm ci --only=production && \
-    npm cache clean --force
+RUN npm run build
 
 # Production stage
 FROM node:20-alpine AS runner
@@ -33,7 +30,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 # Add node_modules/.bin to PATH and set NODE_PATH
 ENV PATH=/app/node_modules/.bin:$PATH
-ENV NODE_PATH=/app/.next/standalone/node_modules
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \

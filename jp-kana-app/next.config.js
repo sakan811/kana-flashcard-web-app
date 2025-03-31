@@ -7,6 +7,9 @@ const nextConfig = {
     dirs: ["tests", "src"],
   },
   output: "standalone",
+  experimental: {
+    outputFileTracingRoot: process.env.NODE_ENV === "production" ? "/app" : undefined,
+  },
   distDir: ".next",
   // Optimize build output
   poweredByHeader: false,

@@ -17,6 +17,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
 
+    // Check if user exists first
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
     // Using a transaction to ensure consistency across both tables
     await prisma.$transaction(async (tx) => {
       // Update UserKanaPerformance table
@@ -44,6 +56,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
       // If flashcardId is provided, also update UserProgress table
       if (flashcardId) {
+        const flashcard = await tx.flashcard.findUnique({
+          where: { id: flashcardId }
+        });
+
+        if (!flashcard) {
+          throw new Error("Flashcard not found");
+        }
+
         await tx.userProgress.upsert({
           where: {
             userId_flashcardId: {
@@ -64,38 +84,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             lastPracticed: new Date(),
           },
         });
-      } else {
-        // If flashcardId is not provided, try to find it
-        const flashcard = await tx.flashcard.findFirst({
-          where: {
-            kana: kana,
-            type:
-              kanaType === "hiragana" ? KanaType.hiragana : KanaType.katakana,
-          },
-        });
-
-        if (flashcard) {
-          await tx.userProgress.upsert({
-            where: {
-              userId_flashcardId: {
-                userId: userId,
-                flashcardId: flashcard.id,
-              },
-            },
-            update: {
-              correctCount: { increment: isCorrect ? 1 : 0 },
-              incorrectCount: { increment: isCorrect ? 0 : 1 },
-              lastPracticed: new Date(),
-            },
-            create: {
-              userId: userId,
-              flashcardId: flashcard.id,
-              correctCount: isCorrect ? 1 : 0,
-              incorrectCount: isCorrect ? 0 : 1,
-              lastPracticed: new Date(),
-            },
-          });
-        }
       }
     });
 
@@ -104,8 +92,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     console.error("Error recording performance:", error);
     return NextResponse.json(
       {
-        error:
-          "Database connection error. Please check your database configuration and environment variables.",
+        error: "Database operation failed",
       },
       { status: 500 },
     );
