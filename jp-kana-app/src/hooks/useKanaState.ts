@@ -1,5 +1,10 @@
 import { useState, useRef, useCallback } from "react";
-import { Character, KanaMessage, KanaPerformanceData, KanaType } from "@/types/kana";
+import {
+  Character,
+  KanaMessage,
+  KanaPerformanceData,
+  KanaType,
+} from "@/types/kana";
 import { createFallbackCharacter } from "../utils/kanaUtils";
 
 export const useKanaState = (kanaType: KanaType) => {

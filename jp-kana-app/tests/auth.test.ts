@@ -29,7 +29,7 @@ describe("Authentication", () => {
       const user = await createUser(testUser.email, testUser.password);
       expect(user).toBeDefined();
       const dbUser = await prisma.user.findUnique({
-        where: { email: testUser.email }
+        where: { email: testUser.email },
       });
       expect(dbUser).toBeDefined();
       expect(dbUser?.id).toBe(user?.id);
@@ -40,7 +40,9 @@ describe("Authentication", () => {
         email: "invalid-email",
         password: "password123",
       };
-      await expect(createUser(invalidUser.email, invalidUser.password)).rejects.toThrow();
+      await expect(
+        createUser(invalidUser.email, invalidUser.password),
+      ).rejects.toThrow();
     });
   });
 });

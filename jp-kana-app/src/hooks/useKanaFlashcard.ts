@@ -16,7 +16,7 @@ import {
 
 export function useKanaFlashcard(
   kanaType: KanaType,
-  isNavigatingRef: { current: boolean }
+  isNavigatingRef: { current: boolean },
 ) {
   const { data: session } = useSession();
   const userId = session?.user?.id || DEFAULT_USER_ID;
@@ -165,8 +165,8 @@ export function useKanaFlashcard(
         const message = isAnswerCorrect
           ? `Correct! "${kanaDisplay}" is "${currentKana.romaji}"`
           : isAnswerCorrect === false
-          ? `Incorrect. "${kanaDisplay}" is "${currentKana.romaji}", not "${answer}"`
-          : "";
+            ? `Incorrect. "${kanaDisplay}" is "${currentKana.romaji}", not "${answer}"`
+            : "";
 
         setMessage({
           correct: isAnswerCorrect ? message : "",

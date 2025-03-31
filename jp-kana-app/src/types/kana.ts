@@ -1,6 +1,6 @@
 export enum KanaType {
   hiragana = "hiragana",
-  katakana = "katakana"
+  katakana = "katakana",
 }
 
 export interface Character {
