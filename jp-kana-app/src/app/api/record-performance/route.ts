@@ -55,6 +55,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
+    // Get the correct romaji for this kana
+    const flashcard = await prisma.flashcard.findFirst({
+      where: {
+        kana: kana,
+        type: kanaType
+      }
+    });
+
+    if (!flashcard) {
+      return NextResponse.json(
+        { error: "Kana character not found in database" },
+        { status: 404 }
+      );
+    }
+
     // Using a transaction to ensure consistency across all operations
     await prisma.$transaction(async (tx) => {
       // Update UserKanaPerformance table
@@ -105,7 +120,37 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     });
 
-    return NextResponse.json({ success: true });
+    // Get updated performance stats for this kana
+    const performance = await prisma.userKanaPerformance.findUnique({
+      where: {
+        userId_kana: {
+          userId: user.id,
+          kana: kana,
+        },
+      }
+    });
+
+    // Calculate accuracy percentage
+    const accuracy = performance 
+      ? Math.round((performance.correctCount / performance.totalCount) * 100) 
+      : 0;
+
+    // Return detailed feedback
+    return NextResponse.json({ 
+      success: true,
+      isCorrect: isCorrect,
+      message: isCorrect 
+        ? `Correct! "${kana}" is indeed "${flashcard.romaji}".` 
+        : `Incorrect. "${kana}" is pronounced "${flashcard.romaji}".`,
+      stats: {
+        correctCount: performance?.correctCount || 0,
+        totalCount: performance?.totalCount || 0,
+        accuracy: accuracy,
+        kana: kana,
+        romaji: flashcard.romaji,
+        kanaType: kanaType
+      }
+    });
   } catch (error) {
     console.error("Error recording performance:", error);
     return NextResponse.json(

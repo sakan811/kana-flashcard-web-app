@@ -14,11 +14,8 @@ export async function POST() {
   try {
     // Start a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Clear existing user progress first due to foreign key constraints
-      await tx.userProgress.deleteMany();
-      // Clear user kana performance records
-      await tx.userKanaPerformance.deleteMany();
-      // Then clear existing flashcards
+      // Only clear existing flashcards
+      // We preserve userProgress and userKanaPerformance to maintain user history
       await tx.flashcard.deleteMany();
 
       // Hiragana characters
@@ -212,7 +209,7 @@ export async function POST() {
       return { 
         success: true, 
         count: allCharacters.length,
-        message: `Successfully initialized ${hiraganaCharacters.length} hiragana and ${katakanaCharacters.length} katakana characters (total: ${allCharacters.length})` 
+        message: `Successfully initialized ${hiraganaCharacters.length} hiragana and ${katakanaCharacters.length} katakana characters (total: ${allCharacters.length}) while preserving user progress data` 
       };
     });
 
