@@ -7,6 +7,7 @@ import { comparePassword } from "@/lib/auth";
 declare const process: {
   env: {
     NEXTAUTH_SECRET: string;
+    NODE_ENV?: 'development' | 'production' | 'test';
   };
 };
 
