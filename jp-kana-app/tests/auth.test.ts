@@ -1,25 +1,25 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createUser, comparePassword } from "../src/lib/auth";
 import { mockPrismaClient } from "./prisma-mock";
+import { User } from "../src/lib/auth";
 
-// Need to mock the auth module
-vi.mock("../src/lib/auth", async (importOriginal) => {
-  const mod = await importOriginal();
-  return {
-    ...mod,
-    createUser: vi.fn(async (email, password) => {
-      if (!email.includes('@')) {
-        throw new Error("Invalid email format");
-      }
-      return {
-        id: "test-id",
-        email: email,
-        name: null
-      };
-    }),
-    comparePassword: vi.fn()
-  };
-});
+// Add proper type for mocked function
+type MockedFunction<T extends (...args: any) => any> = T & ReturnType<typeof vi.fn>;
+
+// Import the module before mocking
+vi.mock("../src/lib/auth", () => ({
+  createUser: vi.fn().mockImplementation((email: string, password: string) => {
+    if (!email.includes('@')) {
+      throw new Error("Invalid email format");
+    }
+    return Promise.resolve({
+      id: "test-user-id",
+      email: email,
+      name: null
+    } as User);
+  }),
+  comparePassword: vi.fn()
+}));
 
 describe("Authentication", () => {
   const testUser = {
@@ -30,8 +30,6 @@ describe("Authentication", () => {
   beforeEach(() => {
     // Reset mocks between tests
     vi.clearAllMocks();
-    mockPrismaClient.user.create.mockReset();
-    mockPrismaClient.user.findUnique.mockReset();
   });
 
   describe("User Creation", () => {
@@ -43,16 +41,16 @@ describe("Authentication", () => {
 
     it("should not create duplicate users", async () => {
       // Make first createUser call succeed
-      createUser.mockImplementationOnce(async (email, password) => {
+      (createUser as MockedFunction<typeof createUser>).mockImplementationOnce(async (email, password) => {
         return {
-          id: "test-id",
+          id: "test-user-id",
           email: email,
           name: null
-        };
+        } as User;
       });
       
       // Make second createUser call fail with null
-      createUser.mockImplementationOnce(async () => {
+      (createUser as MockedFunction<typeof createUser>).mockImplementationOnce(async () => {
         return null;
       });
 
