@@ -15,11 +15,11 @@ const performanceCache: Record<string, CacheEntry> = {};
 const fetchWithCredentials = (url: string, options: RequestInit = {}) => {
   return fetch(url, {
     ...options,
-    credentials: 'include',
+    credentials: "include",
     headers: {
       ...options.headers,
-      'Content-Type': 'application/json',
-    }
+      "Content-Type": "application/json",
+    },
   });
 };
 
@@ -33,7 +33,7 @@ export async function getRandomKana(
 ): Promise<Character> {
   try {
     const response = await fetchWithCredentials(
-      `/api/random-kana?userId=${encodeURIComponent(userId)}&kanaType=${kanaType}`
+      `/api/random-kana?userId=${encodeURIComponent(userId)}&kanaType=${kanaType}`,
     );
 
     if (!response.ok) {
@@ -78,7 +78,7 @@ export async function getKanaPerformance(
 
   try {
     const response = await fetchWithCredentials(
-      `/api/kana-performance?userId=${userId}&kanaType=${kanaType}`
+      `/api/kana-performance?userId=${userId}&kanaType=${kanaType}`,
     );
 
     if (!response.ok) {
@@ -136,7 +136,8 @@ export async function recordKanaPerformance(
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        errorData.error || `Failed to record kana performance: ${response.statusText}`,
+        errorData.error ||
+          `Failed to record kana performance: ${response.statusText}`,
       );
     }
 

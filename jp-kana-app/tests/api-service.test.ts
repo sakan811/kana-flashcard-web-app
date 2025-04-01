@@ -52,6 +52,9 @@ describe("API Service", () => {
       expect(result).toEqual(mockCharacter);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining("/api/random-kana"),
+        expect.objectContaining({
+          credentials: "include",
+        }),
       );
     });
 
@@ -62,6 +65,21 @@ describe("API Service", () => {
       });
 
       await expect(getRandomKana("test-user", "hiragana")).rejects.toThrow();
+    });
+
+    it("should handle success=false in response", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            success: false,
+            error: "Error message",
+          }),
+      });
+
+      await expect(getRandomKana("test-user", "hiragana")).rejects.toThrow(
+        "Error message",
+      );
     });
   });
 
@@ -76,6 +94,9 @@ describe("API Service", () => {
       expect(result).toEqual([mockPerformanceData]);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining("/api/kana-performance"),
+        expect.objectContaining({
+          credentials: "include",
+        }),
       );
     });
 
@@ -107,6 +128,7 @@ describe("API Service", () => {
         expect.objectContaining({
           method: "POST",
           body: expect.stringContaining("あ"),
+          credentials: "include",
         }),
       );
     });
@@ -142,6 +164,7 @@ describe("API Service", () => {
         expect.objectContaining({
           method: "POST",
           body: expect.stringContaining("test-user"),
+          credentials: "include",
         }),
       );
     });

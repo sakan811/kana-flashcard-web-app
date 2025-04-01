@@ -11,7 +11,7 @@ const protectedApiRoutes = [
   "/api/random-kana",
   "/api/kana-weights",
   "/api/update-progress",
-  "/api/user-progress"
+  "/api/user-progress",
 ];
 
 export async function middleware(request: NextRequest) {
@@ -23,8 +23,8 @@ export async function middleware(request: NextRequest) {
   );
 
   // Check if this is a protected API route
-  const isProtectedApiRoute = protectedApiRoutes.some(
-    (route) => path.startsWith(route)
+  const isProtectedApiRoute = protectedApiRoutes.some((route) =>
+    path.startsWith(route),
   );
 
   if (!isProtectedRoute && !isProtectedApiRoute) {
@@ -37,12 +37,9 @@ export async function middleware(request: NextRequest) {
   // If there is no token and this is a protected route/API, handle accordingly
   if (!token) {
     if (isProtectedApiRoute) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    
+
     const url = new URL("/login", request.url);
     url.searchParams.set("callbackUrl", encodeURI(request.url));
     return NextResponse.redirect(url);
@@ -52,8 +49,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-    "/api/:path*"
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)", "/api/:path*"],
 };

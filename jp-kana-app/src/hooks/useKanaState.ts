@@ -64,13 +64,13 @@ export const useKanaState = (kanaType: KanaType) => {
       setMessage((prev) => ({
         ...prev,
         correct: "Correct! 🎉",
-        incorrect: ""
+        incorrect: "",
       }));
     } else {
       setMessage((prev) => ({
         ...prev,
         correct: "",
-        incorrect: `Incorrect. The correct answer was: ${currentKana.romaji}`
+        incorrect: `Incorrect. The correct answer was: ${currentKana.romaji}`,
       }));
     }
 
@@ -80,7 +80,7 @@ export const useKanaState = (kanaType: KanaType) => {
         setMessage((prev) => ({
           ...prev,
           correct: "",
-          incorrect: ""
+          incorrect: "",
         }));
       }
     }, 2000);

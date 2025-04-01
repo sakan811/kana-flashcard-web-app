@@ -206,10 +206,10 @@ export async function POST() {
         data: allCharacters,
       });
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         count: allCharacters.length,
-        message: `Successfully initialized ${hiraganaCharacters.length} hiragana and ${katakanaCharacters.length} katakana characters (total: ${allCharacters.length}) while preserving user progress data` 
+        message: `Successfully initialized ${hiraganaCharacters.length} hiragana and ${katakanaCharacters.length} katakana characters (total: ${allCharacters.length}) while preserving user progress data`,
       };
     });
 
@@ -217,10 +217,11 @@ export async function POST() {
   } catch (error) {
     console.error("Error initializing database:", error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: "Failed to initialize database",
-        message: error instanceof Error ? error.message : "Unknown error occurred" 
+        message:
+          error instanceof Error ? error.message : "Unknown error occurred",
       },
       { status: 500 },
     );

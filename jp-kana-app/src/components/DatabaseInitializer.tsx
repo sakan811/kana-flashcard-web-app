@@ -20,7 +20,9 @@ const DatabaseInitializer = () => {
         const data = await response.json();
 
         if (data.success) {
-          console.log(`Database initialized with ${data.count} kana characters.`);
+          console.log(
+            `Database initialized with ${data.count} kana characters.`,
+          );
           console.log("Database initialization complete:", data.message);
         } else {
           console.error("Error initializing database:", data.message);

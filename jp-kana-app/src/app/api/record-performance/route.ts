@@ -10,7 +10,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!session?.user) {
       return NextResponse.json(
         { error: "No authenticated session found" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (userId !== session.user.id) {
       return NextResponse.json(
         { error: "User ID does not match authenticated session" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -39,19 +39,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       console.error("Database connection error:", dbError);
       return NextResponse.json(
         { error: "Database connection failed" },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
     // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     });
 
     if (!user) {
       return NextResponse.json(
         { error: "User not found in database" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -59,14 +59,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const flashcard = await prisma.flashcard.findFirst({
       where: {
         kana: kana,
-        type: kanaType
-      }
+        type: kanaType,
+      },
     });
 
     if (!flashcard) {
       return NextResponse.json(
         { error: "Kana character not found in database" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -127,20 +127,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           userId: user.id,
           kana: kana,
         },
-      }
+      },
     });
 
     // Calculate accuracy percentage
-    const accuracy = performance 
-      ? Math.round((performance.correctCount / performance.totalCount) * 100) 
+    const accuracy = performance
+      ? Math.round((performance.correctCount / performance.totalCount) * 100)
       : 0;
 
     // Return detailed feedback
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       isCorrect: isCorrect,
-      message: isCorrect 
-        ? `Correct! "${kana}" is indeed "${flashcard.romaji}".` 
+      message: isCorrect
+        ? `Correct! "${kana}" is indeed "${flashcard.romaji}".`
         : `Incorrect. "${kana}" is pronounced "${flashcard.romaji}".`,
       stats: {
         correctCount: performance?.correctCount || 0,
@@ -148,8 +148,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         accuracy: accuracy,
         kana: kana,
         romaji: flashcard.romaji,
-        kanaType: kanaType
-      }
+        kanaType: kanaType,
+      },
     });
   } catch (error) {
     console.error("Error recording performance:", error);

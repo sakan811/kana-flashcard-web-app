@@ -7,7 +7,7 @@ import { comparePassword } from "@/lib/auth";
 declare const process: {
   env: {
     NEXTAUTH_SECRET: string;
-    NODE_ENV?: 'development' | 'production' | 'test';
+    NODE_ENV?: "development" | "production" | "test";
   };
 };
 
@@ -91,14 +91,14 @@ export const authOptions: NextAuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: 'next-auth.session-token',
+      name: "next-auth.session-token",
       options: {
         httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production'
-      }
-    }
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

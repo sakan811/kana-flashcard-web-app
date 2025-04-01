@@ -176,13 +176,21 @@ export function useKanaFlashcard(
         return;
       }
 
-      if (isNavigatingRef.current || !mountedRef.current || !currentKana.romaji || isLoading || isProcessingAnswer) return;
-      
+      if (
+        isNavigatingRef.current ||
+        !mountedRef.current ||
+        !currentKana.romaji ||
+        isLoading ||
+        isProcessingAnswer
+      )
+        return;
+
       // Set processing state to true to prevent multiple submissions
       setIsProcessingAnswer(true);
-      
+
       // Validate the user input against the current kana
-      const isCorrect = answer.toLowerCase() === currentKana.romaji.toLowerCase();
+      const isCorrect =
+        answer.toLowerCase() === currentKana.romaji.toLowerCase();
 
       // Show immediate feedback to the user
       if (isCorrect) {
@@ -203,27 +211,21 @@ export function useKanaFlashcard(
 
       try {
         // Record the answer in the database
-        await submitAnswer(
-          userId,
-          kanaType,
-          answer,
-          currentKana,
-          isCorrect
-        );
+        await submitAnswer(userId, kanaType, answer, currentKana, isCorrect);
 
         await getKanaPerformance();
 
         // Clear the feedback message after a delay
         const feedbackTimeout = setTimeout(() => {
           if (!isNavigatingRef.current && mountedRef.current) {
-            setMessage((prev) => ({ 
-              ...prev, 
+            setMessage((prev) => ({
+              ...prev,
               correct: "",
               incorrect: "",
-              error: "" 
+              error: "",
             }));
             setHasError(false);
-            
+
             // After showing feedback, fetch the next kana
             fetchNextKana();
             // Note: setIsProcessingAnswer(false) is handled in fetchNextKana
@@ -252,7 +254,7 @@ export function useKanaFlashcard(
       fetchNextKana,
       isLoading,
       isProcessingAnswer,
-      setIsProcessingAnswer
+      setIsProcessingAnswer,
     ],
   );
 
