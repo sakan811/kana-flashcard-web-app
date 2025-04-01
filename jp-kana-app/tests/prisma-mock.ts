@@ -21,16 +21,6 @@ export const mockPrismaClient = {
     delete: vi.fn(),
     deleteMany: vi.fn(),
   },
-  userProgress: {
-    create: vi.fn(),
-    findUnique: vi.fn(),
-    findFirst: vi.fn(),
-    findMany: vi.fn(),
-    update: vi.fn(),
-    upsert: vi.fn(),
-    delete: vi.fn(),
-    deleteMany: vi.fn(),
-  },
   userKanaPerformance: {
     create: vi.fn(),
     findUnique: vi.fn(),

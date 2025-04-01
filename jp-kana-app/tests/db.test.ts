@@ -57,32 +57,22 @@ describe("Database Operations", () => {
       mockPrismaClient.flashcard.create as unknown as { mockReset: () => void }
     ).mockReset();
     (
-      mockPrismaClient.userProgress.create as unknown as {
-        mockReset: () => void;
-      }
-    ).mockReset();
-    (
-      mockPrismaClient.userProgress.update as unknown as {
-        mockReset: () => void;
-      }
-    ).mockReset();
-    (
-      mockPrismaClient.userProgress.findFirst as unknown as {
-        mockReset: () => void;
-      }
-    ).mockReset();
-    (
-      mockPrismaClient.userProgress.findMany as unknown as {
-        mockReset: () => void;
-      }
-    ).mockReset();
-    (
       mockPrismaClient.userKanaPerformance.create as unknown as {
         mockReset: () => void;
       }
     ).mockReset();
     (
       mockPrismaClient.userKanaPerformance.update as unknown as {
+        mockReset: () => void;
+      }
+    ).mockReset();
+    (
+      mockPrismaClient.userKanaPerformance.findFirst as unknown as {
+        mockReset: () => void;
+      }
+    ).mockReset();
+    (
+      mockPrismaClient.userKanaPerformance.findMany as unknown as {
         mockReset: () => void;
       }
     ).mockReset();
@@ -129,22 +119,23 @@ describe("Database Operations", () => {
         }
       ).mockResolvedValue(mockFlashcard);
 
-      // Create progress
-      const mockProgress = {
+      // Create performance record
+      const mockPerformance = {
         id: 1,
         userId: mockUser.id,
-        flashcardId: 1,
+        kana: "あ",
+        kanaType: "hiragana",
         correctCount: 1,
-        incorrectCount: 0,
+        totalCount: 1,
         lastPracticed: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       (
-        mockPrismaClient.userProgress.create as unknown as {
+        mockPrismaClient.userKanaPerformance.create as unknown as {
           mockResolvedValue: (value: unknown) => void;
         }
-      ).mockResolvedValue(mockProgress);
+      ).mockResolvedValue(mockPerformance);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
@@ -157,19 +148,20 @@ describe("Database Operations", () => {
           type: "hiragana",
         },
       });
-      const progress = await mockPrismaClient.userProgress.create({
+      const progress = await mockPrismaClient.userKanaPerformance.create({
         data: {
           userId: user.id,
-          flashcardId: flashcard.id,
+          kana: flashcard.kana,
+          kanaType: flashcard.type,
           correctCount: 1,
-          incorrectCount: 0,
+          totalCount: 1,
           lastPracticed: new Date(),
         },
       });
 
       expect(progress).toBeDefined();
       expect(progress.userId).toBe(user.id);
-      expect(progress.flashcardId).toBe(flashcard.id);
+      expect(progress.kana).toBe(flashcard.kana);
       expect(progress.correctCount).toBe(1);
     });
 
@@ -189,34 +181,35 @@ describe("Database Operations", () => {
         }
       ).mockResolvedValue(mockFlashcard);
 
-      // Create progress record
-      const mockProgress = {
+      // Create performance record
+      const mockPerformance = {
         id: 1,
         userId: mockUser.id,
-        flashcardId: 1,
+        kana: "あ",
+        kanaType: "hiragana",
         correctCount: 1,
-        incorrectCount: 0,
+        totalCount: 1,
         lastPracticed: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       (
-        mockPrismaClient.userProgress.create as unknown as {
+        mockPrismaClient.userKanaPerformance.create as unknown as {
           mockResolvedValue: (value: unknown) => void;
         }
-      ).mockResolvedValue(mockProgress);
+      ).mockResolvedValue(mockPerformance);
 
-      // Create updated progress record
-      const mockUpdatedProgress = {
-        ...mockProgress,
+      // Create updated performance record
+      const mockUpdatedPerformance = {
+        ...mockPerformance,
         correctCount: 2,
-        incorrectCount: 1,
+        totalCount: 2,
       };
       (
-        mockPrismaClient.userProgress.update as unknown as {
+        mockPrismaClient.userKanaPerformance.update as unknown as {
           mockResolvedValue: (value: unknown) => void;
         }
-      ).mockResolvedValue(mockUpdatedProgress);
+      ).mockResolvedValue(mockUpdatedPerformance);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
@@ -229,29 +222,30 @@ describe("Database Operations", () => {
           type: "hiragana",
         },
       });
-      const progress = await mockPrismaClient.userProgress.create({
+      const progress = await mockPrismaClient.userKanaPerformance.create({
         data: {
           userId: user.id,
-          flashcardId: flashcard.id,
+          kana: flashcard.kana,
+          kanaType: flashcard.type,
           correctCount: 1,
-          incorrectCount: 0,
+          totalCount: 1,
           lastPracticed: new Date(),
         },
       });
-      const updatedProgress = await mockPrismaClient.userProgress.update({
+      const updatedProgress = await mockPrismaClient.userKanaPerformance.update({
         where: { id: progress.id },
         data: {
           correctCount: 2,
-          incorrectCount: 1,
+          totalCount: 2,
           lastPracticed: new Date(),
         },
       });
 
       expect(updatedProgress.correctCount).toBe(2);
-      expect(updatedProgress.incorrectCount).toBe(1);
+      expect(updatedProgress.totalCount).toBe(2);
     });
 
-    it("should get user progress by flashcard", async () => {
+    it("should get user progress by kana", async () => {
       // Create a flashcard
       const mockFlashcard = {
         id: 1,
@@ -267,28 +261,29 @@ describe("Database Operations", () => {
         }
       ).mockResolvedValue(mockFlashcard);
 
-      // Create progress record
-      const mockProgress = {
+      // Create performance record
+      const mockPerformance = {
         id: 1,
         userId: mockUser.id,
-        flashcardId: 1,
+        kana: "あ",
+        kanaType: "hiragana",
         correctCount: 1,
-        incorrectCount: 0,
+        totalCount: 1,
         lastPracticed: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       (
-        mockPrismaClient.userProgress.create as unknown as {
+        mockPrismaClient.userKanaPerformance.create as unknown as {
           mockResolvedValue: (value: unknown) => void;
         }
-      ).mockResolvedValue(mockProgress);
+      ).mockResolvedValue(mockPerformance);
 
       (
-        mockPrismaClient.userProgress.findFirst as unknown as {
+        mockPrismaClient.userKanaPerformance.findFirst as unknown as {
           mockResolvedValue: (value: unknown) => void;
         }
-      ).mockResolvedValue(mockProgress);
+      ).mockResolvedValue(mockPerformance);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
@@ -301,24 +296,25 @@ describe("Database Operations", () => {
           type: "hiragana",
         },
       });
-      await mockPrismaClient.userProgress.create({
+      await mockPrismaClient.userKanaPerformance.create({
         data: {
           userId: user.id,
-          flashcardId: flashcard.id,
+          kana: flashcard.kana,
+          kanaType: flashcard.type,
           correctCount: 1,
-          incorrectCount: 0,
+          totalCount: 1,
           lastPracticed: new Date(),
         },
       });
-      const progress = await mockPrismaClient.userProgress.findFirst({
+      const progress = await mockPrismaClient.userKanaPerformance.findFirst({
         where: {
           userId: user.id,
-          flashcardId: flashcard.id,
+          kana: flashcard.kana,
         },
       });
 
       expect(progress).toBeDefined();
-      expect(progress?.flashcardId).toBe(flashcard.id);
+      expect(progress?.kana).toBe(flashcard.kana);
     });
 
     it("should get all progress for a user", async () => {
@@ -337,28 +333,29 @@ describe("Database Operations", () => {
         }
       ).mockResolvedValue(mockFlashcard);
 
-      // Create progress record
-      const mockProgress = {
+      // Create performance record
+      const mockPerformance = {
         id: 1,
         userId: mockUser.id,
-        flashcardId: 1,
+        kana: "あ",
+        kanaType: "hiragana",
         correctCount: 1,
-        incorrectCount: 0,
+        totalCount: 1,
         lastPracticed: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       (
-        mockPrismaClient.userProgress.create as unknown as {
+        mockPrismaClient.userKanaPerformance.create as unknown as {
           mockResolvedValue: (value: unknown) => void;
         }
-      ).mockResolvedValue(mockProgress);
+      ).mockResolvedValue(mockPerformance);
 
       (
-        mockPrismaClient.userProgress.findMany as unknown as {
+        mockPrismaClient.userKanaPerformance.findMany as unknown as {
           mockResolvedValue: (value: unknown) => void;
         }
-      ).mockResolvedValue([mockProgress]);
+      ).mockResolvedValue([mockPerformance]);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
@@ -371,16 +368,17 @@ describe("Database Operations", () => {
           type: "hiragana",
         },
       });
-      await mockPrismaClient.userProgress.create({
+      await mockPrismaClient.userKanaPerformance.create({
         data: {
           userId: user.id,
-          flashcardId: flashcard.id,
+          kana: flashcard.kana,
+          kanaType: flashcard.type,
           correctCount: 1,
-          incorrectCount: 0,
+          totalCount: 1,
           lastPracticed: new Date(),
         },
       });
-      const progress = await mockPrismaClient.userProgress.findMany({
+      const progress = await mockPrismaClient.userKanaPerformance.findMany({
         where: { userId: user.id },
       });
 

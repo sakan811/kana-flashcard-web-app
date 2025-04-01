@@ -5,15 +5,11 @@
 /**
  * A properly typed mock function utility that avoids using 'any'
  */
-export type MockedFunction<T extends (...args: unknown[]) => unknown> = T & {
-  mockImplementation: (
-    implementation: (...args: Parameters<T>) => ReturnType<T>,
-  ) => MockedFunction<T>;
-  mockImplementationOnce: (
-    implementation: (...args: Parameters<T>) => ReturnType<T>,
-  ) => MockedFunction<T>;
-  mockResolvedValue: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
-  mockResolvedValueOnce: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
+export type MockedFunction<T> = T & {
+  mockImplementation: (implementation: (...args: unknown[]) => unknown) => MockedFunction<T>;
+  mockImplementationOnce: (implementation: (...args: unknown[]) => unknown) => MockedFunction<T>;
+  mockResolvedValue: (value: unknown) => MockedFunction<T>;
+  mockResolvedValueOnce: (value: unknown) => MockedFunction<T>;
   mockReset: () => MockedFunction<T>;
   mockClear: () => MockedFunction<T>;
 };

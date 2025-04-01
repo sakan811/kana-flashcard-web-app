@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import type { UserProgress, Flashcard } from "@prisma/client";
+import type { Flashcard, UserKanaPerformance } from "@prisma/client";
 
 // This approach ensures the Prisma Client is only initialized once
 // and properly handles both development and production environments
@@ -39,11 +39,11 @@ const prisma = getPrismaClient();
 
 // Helper functions for user progress
 export async function getUserProgressWithFlashcard(userId: string): Promise<
-  (UserProgress & {
+  (UserKanaPerformance & {
     flashcard: Flashcard;
   })[]
 > {
-  return await prisma.userProgress.findMany({
+  return await prisma.userKanaPerformance.findMany({
     where: { userId },
     include: { flashcard: true },
   });
@@ -53,24 +53,25 @@ export async function updateUserProgressRecord(
   userId: string,
   flashcardId: number,
   isCorrect: boolean,
-): Promise<UserProgress> {
-  return await prisma.userProgress.upsert({
+): Promise<UserKanaPerformance> {
+  return await prisma.userKanaPerformance.upsert({
     where: {
-      userId_flashcardId: {
+      userId_kana: {
         userId,
-        flashcardId,
+        kana: (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))?.kana || '',
       },
     },
     update: {
       correctCount: { increment: isCorrect ? 1 : 0 },
-      incorrectCount: { increment: isCorrect ? 0 : 1 },
+      totalCount: { increment: 1 },
       lastPracticed: new Date(),
     },
     create: {
       userId,
-      flashcardId,
+      kana: (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))?.kana || '',
+      kanaType: (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))?.type || 'hiragana',
       correctCount: isCorrect ? 1 : 0,
-      incorrectCount: isCorrect ? 0 : 1,
+      totalCount: 1,
       lastPracticed: new Date(),
     },
   });

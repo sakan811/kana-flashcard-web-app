@@ -13,11 +13,11 @@ const TEST_USER = {
 const mockCreateUserImplementation = (
   email: string,
   password: string,
-  name?: string
+  name?: string,
 ): Promise<User> => {
   // Mark password as intentionally unused
   void password;
-  
+
   // Validate email format (for testing purposes)
   if (!email.includes("@")) {
     return Promise.reject(new Error("Invalid email format"));
@@ -49,7 +49,7 @@ describe("Authentication", () => {
 
     // Reset default implementation for createUser
     (createUser as MockedFunction<typeof createUser>).mockImplementation(
-      mockCreateUserImplementation
+      mockCreateUserImplementation,
     );
   });
 
