@@ -85,6 +85,10 @@ install:
 prisma:
 	cd $(APP_DIR) && npx prisma generate
 
+# Run Prisma database push (caution: does not create migrations)
+push:
+	cd $(APP_DIR) && npx prisma db push
+
 # Run Prisma migrations in development
 migrate:
 	cd $(APP_DIR) && npx prisma migrate dev
