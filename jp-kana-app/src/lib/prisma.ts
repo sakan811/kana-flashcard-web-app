@@ -58,7 +58,9 @@ export async function updateUserProgressRecord(
     where: {
       userId_kana: {
         userId,
-        kana: (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))?.kana || '',
+        kana:
+          (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))
+            ?.kana || "",
       },
     },
     update: {
@@ -68,8 +70,12 @@ export async function updateUserProgressRecord(
     },
     create: {
       userId,
-      kana: (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))?.kana || '',
-      kanaType: (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))?.type || 'hiragana',
+      kana:
+        (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))
+          ?.kana || "",
+      kanaType:
+        (await prisma.flashcard.findUnique({ where: { id: flashcardId } }))
+          ?.type || "hiragana",
       correctCount: isCorrect ? 1 : 0,
       totalCount: 1,
       lastPracticed: new Date(),

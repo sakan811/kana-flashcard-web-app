@@ -232,14 +232,16 @@ describe("Database Operations", () => {
           lastPracticed: new Date(),
         },
       });
-      const updatedProgress = await mockPrismaClient.userKanaPerformance.update({
-        where: { id: progress.id },
-        data: {
-          correctCount: 2,
-          totalCount: 2,
-          lastPracticed: new Date(),
+      const updatedProgress = await mockPrismaClient.userKanaPerformance.update(
+        {
+          where: { id: progress.id },
+          data: {
+            correctCount: 2,
+            totalCount: 2,
+            lastPracticed: new Date(),
+          },
         },
-      });
+      );
 
       expect(updatedProgress.correctCount).toBe(2);
       expect(updatedProgress.totalCount).toBe(2);
