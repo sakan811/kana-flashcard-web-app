@@ -7,7 +7,8 @@ type MockedFunction<T extends (...args: unknown[]) => unknown> = T & ReturnType<
 
 // Import the module before mocking
 vi.mock("../src/lib/auth", () => ({
-  createUser: vi.fn().mockImplementation((email: string, _password: string) => {
+  createUser: vi.fn().mockImplementation((email: string, password: string) => {
+    void password; // Mark as intentionally unused
     if (!email.includes('@')) {
       throw new Error("Invalid email format");
     }
@@ -40,7 +41,8 @@ describe("Authentication", () => {
 
     it("should not create duplicate users", async () => {
       // Make first createUser call succeed
-      (createUser as MockedFunction<typeof createUser>).mockImplementationOnce(async (email: string, _password: string) => {
+      (createUser as MockedFunction<typeof createUser>).mockImplementationOnce(async (email: string, password: string) => {
+        void password; // Mark as intentionally unused
         return {
           id: "test-user-id",
           email: email,

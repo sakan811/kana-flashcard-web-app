@@ -25,7 +25,8 @@ vi.mock("../src/lib/flashcard-service", () => {
   
   return {
     ...originalModule,
-    submitAnswer: vi.fn().mockImplementation((userId, kanaType, answer, character, _isCorrect) => {
+    submitAnswer: vi.fn().mockImplementation((userId, kanaType, answer, character, isCorrect) => {
+      void isCorrect; // Mark as intentionally unused
       if (!character || !character.kana) {
         return Promise.reject(new Error("Character or kana is empty"));
       }
@@ -58,7 +59,8 @@ describe("Flashcard Service", () => {
     vi.spyOn(apiService, "recordKanaPerformance").mockResolvedValue();
     
     // Reset submit answer mock to default implementation
-    (submitAnswer as MockedFunction<typeof submitAnswer>).mockImplementation((userId, kanaType, answer, character, _isCorrect) => {
+    (submitAnswer as MockedFunction<typeof submitAnswer>).mockImplementation((userId, kanaType, answer, character, isCorrect) => {
+      void isCorrect; // Mark as intentionally unused
       if (!character || !character.kana) {
         return Promise.reject(new Error("Character or kana is empty"));
       }
