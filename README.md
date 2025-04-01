@@ -1,8 +1,6 @@
 # Japanese Kana Flashcard Web App
 
-A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, e.g., Hiragana and Katakana.
-
-The web-app was built to run **locally**.
+A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specifically Hiragana and Katakana.
 
 ## Status
 
@@ -12,30 +10,27 @@ The web-app was built to run **locally**.
 
 ## How to Use the Web App
 
-## Demo Version
-
 - Navigate to <https://kana-flashcard-web-app-671v.vercel.app/>
 
-## Full Version
+### Local Version
 
-### Setup the Web App
+#### Setup the Web App
 
-- Download [docker-compose.yml](docker-compose.yml) file and place at any place of your choice.
+- Download [docker-compose.yml](./docker-compose.yml) file from this repository and place it in your desired directory
 - Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Open **Terminal** console
-- Use `cd` command to navigate to the directory where you saved the `docker-compose.yml` file
-  - For example: `cd /path/to/directory/`
-- Type ```docker-compose up -d``` and enter
-  - You can set Postgres port by running `export POSTGRES_PORT=port_number` before ```docker-compose up -d```:  
-    - For example:  
+- Run:
 
-      ```bash
-      export POSTGRES_PORT=5501
-      ```
+  ```bash
+  docker-compose up -d
+  ```
 
-    - Default Postgres port is **5432**
+This will:
 
-### Run the Web App
+- Start a PostgreSQL database container on port 7777
+- Start the Kana Flashcard application container on port 3000
+- Automatically run database migrations
 
-- Make sure that **Docker Desktop** is running
+#### Run the Web App
+
+- Make sure that **Docker Desktop** and the containers are running
 - Navigate to <http://localhost:3000/>
