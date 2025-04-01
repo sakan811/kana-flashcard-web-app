@@ -5,7 +5,7 @@ RUN apk add --no-cache openssl libc6-compat
 
 # Install dependencies with cache optimization
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 COPY prisma ./prisma/
 RUN npx prisma generate
 
