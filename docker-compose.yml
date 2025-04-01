@@ -13,7 +13,7 @@ services:
       - POSTGRES_PRISMA_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
       - POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
       - NEXTAUTH_SECRET=your-secret-key-here
-      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL=http://localhost:3000/api/auth
       - NODE_ENV=development
     command: >
       sh -c "
