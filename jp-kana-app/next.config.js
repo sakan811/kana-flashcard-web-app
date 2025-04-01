@@ -6,6 +6,8 @@ const nextConfig = {
   eslint: {
     dirs: ["tests", "src"],
   },
+  output: "standalone",
+  outputFileTracingRoot: process.env.NODE_ENV === "production" ? process.cwd() : undefined,
   poweredByHeader: false,
   generateEtags: true,
   compress: true,
