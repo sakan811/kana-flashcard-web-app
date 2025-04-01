@@ -11,23 +11,25 @@ const TEST_USER = {
 
 // Mock the auth module - Vitest hoists this to the top of the file
 vi.mock("../src/lib/auth", () => ({
-  createUser: vi.fn().mockImplementation((
-    email: string,
-    _password: string, // Added underscore prefix to mark as intentionally unused
-    name?: string,
-  ): Promise<User> => {
-    // Validate email format (for testing purposes)
-    if (!email.includes("@")) {
-      return Promise.reject(new Error("Invalid email format"));
-    }
+  createUser: vi.fn().mockImplementation(
+    (
+      email: string,
+      _password: string, // Added underscore prefix to mark as intentionally unused
+      name?: string,
+    ): Promise<User> => {
+      // Validate email format (for testing purposes)
+      if (!email.includes("@")) {
+        return Promise.reject(new Error("Invalid email format"));
+      }
 
-    // Return a proper user object
-    return Promise.resolve({
-      id: "test-user-id",
-      email,
-      name: name || null,
-    });
-  }),
+      // Return a proper user object
+      return Promise.resolve({
+        id: "test-user-id",
+        email,
+        name: name || null,
+      });
+    },
+  ),
   comparePassword: vi.fn(),
   getUserByEmail: vi.fn(),
   hashPassword: vi.fn(),
