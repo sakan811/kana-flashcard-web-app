@@ -13,12 +13,9 @@ const TEST_USER = {
 vi.mock("../src/lib/auth", () => ({
   createUser: vi.fn().mockImplementation((
     email: string,
-    password: string,
+    _password: string, // Added underscore prefix to mark as intentionally unused
     name?: string,
   ): Promise<User> => {
-    // Mark password as intentionally unused
-    void password;
-
     // Validate email format (for testing purposes)
     if (!email.includes("@")) {
       return Promise.reject(new Error("Invalid email format"));
@@ -49,7 +46,6 @@ describe("Authentication", () => {
       function (...args: unknown[]) {
         // We know the implementation expects these parameters
         const email = args[0] as string;
-        const password = args[1] as string;
         const name = args[2] as string | undefined;
 
         // Inline the implementation
