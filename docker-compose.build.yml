@@ -7,8 +7,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
-      - DIRECT_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
+      - POSTGRES_PRISMA_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
+      - POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
       - NEXTAUTH_SECRET=your-secret-key-here
       - NEXTAUTH_URL=http://localhost:3000
       - NODE_ENV=development
