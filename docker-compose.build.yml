@@ -10,7 +10,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
       - NEXTAUTH_SECRET=your-secret-key-here
       - NEXTAUTH_URL=http://localhost:3000
-      - NODE_ENV=production
+      - NODE_ENV=development
     command: sh -c "npx prisma migrate deploy && npx next start"
     depends_on:
       jp-kana-flashcard-app-db:
