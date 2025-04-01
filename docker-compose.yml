@@ -10,7 +10,8 @@ services:
       jp-kana-flashcard-app-db:
         condition: service_healthy
     environment:
-      - POSTGRES_PRISMA_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
+      - DATABASE_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
+      - DIRECT_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres?schema=public
       - NEXTAUTH_SECRET=your-secret-key-here
       - NEXTAUTH_URL=http://localhost:3000
       - NODE_ENV=development
