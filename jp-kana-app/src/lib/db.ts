@@ -28,18 +28,26 @@ export async function getFlashcards(type?: KanaType): Promise<Character[]> {
 }
 
 /**
- * Get all progress for a specific user
+ * Get all progress for a specific user by combining data from
+ * both UserProgress and UserKanaPerformance tables
  */
 export async function getUserProgress(
   userId: string,
 ): Promise<UserKanaPerformance[]> {
   try {
-    const progress = await prisma.userProgress.findMany({
+    // Get data from UserKanaPerformance table (the primary source)
+    const kanaPerformance = await prisma.userKanaPerformance.findMany({
+      where: { userId },
+    });
+
+    // Get data from UserProgress table (for any flashcards that might only be there)
+    const flashcardProgress = await prisma.userProgress.findMany({
       where: { userId },
       include: { flashcard: true },
     });
 
-    return progress.map((p) => ({
+    // Convert UserProgress data to UserKanaPerformance format
+    const progressMapped = flashcardProgress.map((p) => ({
       id: p.id,
       userId: p.userId,
       kana: p.flashcard.kana,
@@ -50,6 +58,24 @@ export async function getUserProgress(
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
     }));
+
+    // Create a map of existing kana performances to avoid duplicates
+    const kanaMap = new Map();
+    
+    // Add all kana performance entries to the map
+    kanaPerformance.forEach(perf => {
+      kanaMap.set(perf.kana, perf);
+    });
+    
+    // Add any flashcard progress entries that aren't already in the map
+    progressMapped.forEach(perf => {
+      if (!kanaMap.has(perf.kana)) {
+        kanaMap.set(perf.kana, perf);
+      }
+    });
+    
+    // Convert the map values back to an array
+    return Array.from(kanaMap.values());
   } catch (error) {
     console.error("Error fetching user progress:", error);
     return [];
