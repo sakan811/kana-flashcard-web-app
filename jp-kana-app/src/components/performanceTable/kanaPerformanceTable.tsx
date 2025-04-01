@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useRef, useEffect, memo } from "react";
 import { Character, KanaPerformanceData, KanaType } from "@/types/kana";
+import { HIRAGANA_CHARACTERS, KATAKANA_CHARACTERS } from "@/constants";
 
 // Define types for the props
 interface Column {
@@ -19,7 +20,7 @@ interface KanaPerformanceTableProps {
 const kanaToRomajiMap: Record<string, string> = {};
 
 const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
-  ({ performanceData, columns, title }) => {
+  ({ performanceData, columns, title, kanaType }) => {
     const [showTable, setShowTable] = useState<boolean>(false);
     const tableRef = useRef<HTMLDivElement>(null);
     const mappingInitializedRef = useRef<boolean>(false);
@@ -28,22 +29,19 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
     useEffect(() => {
       if (mappingInitializedRef.current) return;
 
-      try {
-        const characters: Character[] = JSON.parse(
-          localStorage.getItem("kanaCharacters") || "[]",
-        );
-        if (characters.length > 0) {
-          characters.forEach((char) => {
-            if (char.kana) {
-              kanaToRomajiMap[char.kana] = char.romaji;
-            }
-          });
-          mappingInitializedRef.current = true;
+      // Use the character arrays from constants instead of relying on localStorage
+      const characters: Character[] = kanaType === KanaType.hiragana 
+        ? HIRAGANA_CHARACTERS 
+        : KATAKANA_CHARACTERS;
+      
+      characters.forEach((char) => {
+        if (char.kana) {
+          kanaToRomajiMap[char.kana] = char.romaji;
         }
-      } catch (error) {
-        console.error("Error loading kana characters:", error);
-      }
-    }, []);
+      });
+      mappingInitializedRef.current = true;
+      
+    }, [kanaType]);
 
     const toggleTable = (): void => {
       setShowTable((prevShowTable) => !prevShowTable);
@@ -67,7 +65,7 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
           return item.kana;
         case "romaji":
           // Use the kanaToRomajiMap to look up the romaji
-          return kanaToRomajiMap[item.kana] || "";
+          return kanaToRomajiMap[item.kana] || item.kana;
         case "accuracy":
           return Math.round(item.accuracy);
         case "lastPracticed":
