@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { mockPrismaClient } from "./prisma-mock";
 import { Character, KanaType } from "../src/types/kana";
 import { createFallbackCharacter } from "../src/utils/kanaUtils";
 import * as apiService from "../src/lib/api-service";
@@ -7,17 +6,9 @@ import { User } from "../src/lib/auth";
 
 // Import the module before mocking
 import { submitAnswer } from "../src/lib/flashcard-service";
-import { createUser } from "../src/lib/auth";
 
-// Add proper type for mocked function
-type MockedFunction<T extends (...args: any) => any> = T & ReturnType<typeof vi.fn>;
-
-// Mock user for tests
-const mockUser: User = {
-  id: "test-user-id",
-  email: "test@example.com",
-  name: null
-};
+// Add proper type for mocked function with specific types instead of any
+type MockedFunction<T extends (...args: unknown[]) => unknown> = T & ReturnType<typeof vi.fn>;
 
 // Mock the auth module
 vi.mock("../src/lib/auth", () => ({
@@ -34,7 +25,7 @@ vi.mock("../src/lib/flashcard-service", () => {
   
   return {
     ...originalModule,
-    submitAnswer: vi.fn().mockImplementation((userId, kanaType, answer, character, isCorrect) => {
+    submitAnswer: vi.fn().mockImplementation((userId, kanaType, answer, character, _isCorrect) => {
       if (!character || !character.kana) {
         return Promise.reject(new Error("Character or kana is empty"));
       }
@@ -67,7 +58,7 @@ describe("Flashcard Service", () => {
     vi.spyOn(apiService, "recordKanaPerformance").mockResolvedValue();
     
     // Reset submit answer mock to default implementation
-    (submitAnswer as MockedFunction<typeof submitAnswer>).mockImplementation((userId, kanaType, answer, character, isCorrect) => {
+    (submitAnswer as MockedFunction<typeof submitAnswer>).mockImplementation((userId, kanaType, answer, character, _isCorrect) => {
       if (!character || !character.kana) {
         return Promise.reject(new Error("Character or kana is empty"));
       }
