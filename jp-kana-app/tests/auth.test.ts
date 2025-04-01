@@ -2,24 +2,23 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createUser } from "../src/lib/auth";
 import { User } from "../src/lib/auth";
 
-// Add proper type for mocked function with specific types instead of any
-type MockedFunction<T extends (...args: unknown[]) => unknown> = T &
-  ReturnType<typeof vi.fn>;
+// Add proper type for mocked function that preserves parameter types
+type MockedFunction<T extends (...args: any[]) => any> = T & ReturnType<typeof vi.fn>;
 
 // Import the module before mocking
 vi.mock("../src/lib/auth", () => ({
   createUser: vi.fn().mockImplementation((email: string, password: string) => {
     void password; // Mark as intentionally unused
-    if (!email.includes("@")) {
+    if (!email.includes('@')) {
       throw new Error("Invalid email format");
     }
     return Promise.resolve({
       id: "test-user-id",
       email: email,
-      name: null,
+      name: null
     } as User);
   }),
-  comparePassword: vi.fn(),
+  comparePassword: vi.fn()
 }));
 
 describe("Authentication", () => {

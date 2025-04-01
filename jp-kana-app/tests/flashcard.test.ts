@@ -8,18 +8,15 @@ import { User } from "../src/lib/auth";
 import { submitAnswer } from "../src/lib/flashcard-service";
 
 // Add proper type for mocked function with specific types instead of any
-type MockedFunction<T extends (...args: unknown[]) => unknown> = T &
-  ReturnType<typeof vi.fn>;
+type MockedFunction<T extends (...args: any[]) => any> = T & ReturnType<typeof vi.fn>;
 
 // Mock the auth module
 vi.mock("../src/lib/auth", () => ({
-  createUser: vi.fn().mockImplementation(() =>
-    Promise.resolve({
-      id: "test-user-id",
-      email: "test@example.com",
-      name: null,
-    } as User),
-  ),
+  createUser: vi.fn().mockImplementation(() => Promise.resolve({
+    id: "test-user-id",
+    email: "test@example.com",
+    name: null
+  } as User))
 }));
 
 // Mock the flashcard service

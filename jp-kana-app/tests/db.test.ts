@@ -7,14 +7,13 @@ import { User } from "../src/lib/auth";
 import { createUser } from "../src/lib/auth";
 
 // Add proper type for mocked function with specific types instead of any
-type MockedFunction<T extends (...args: unknown[]) => unknown> = T &
-  ReturnType<typeof vi.fn>;
+type MockedFunction<T extends (...args: any[]) => any> = T & ReturnType<typeof vi.fn>;
 
 // Define the mock user object upfront to avoid undefined issues
 const mockUser: User = {
   id: "test-user-id",
   email: "test@example.com",
-  name: null,
+  name: null
 };
 
 // Mock the auth module with a defined implementation
