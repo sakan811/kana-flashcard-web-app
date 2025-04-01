@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  performance   UserKanaPerformance[]
+
+  @@map("users")
+}
+
+model Flashcard {
+  id        Int           @id @default(autoincrement())
+  kana      String
+  romaji    String
+  type      KanaType
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([kana, type], name: "kana_type")
+  @@map("flashcards")
+}
+
+model UserKanaPerformance {
+  id            Int       @id @default(autoincrement())
+  userId        String    @map("user_id")
+  kana          String
+  kanaType      String    @map("kana_type")
+  correctCount  Int       @default(0) @map("correct_count")
+  totalCount    Int       @default(0) @map("total_count")
+  lastPracticed DateTime  @default(now()) @map("last_practiced")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kana])
+  @@map("user_kana_performance")
+}
+
+enum KanaType {
+  hiragana
+  katakana
+}
