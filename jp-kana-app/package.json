@@ -27,7 +27,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma migrate dev && next build"
+    "vercel-build": "prisma migrate deploy && next build"
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
