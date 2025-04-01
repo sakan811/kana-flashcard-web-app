@@ -77,14 +77,14 @@ export async function updateUserProgressRecord(
   isCorrect: boolean,
 ): Promise<UserKanaPerformance> {
   // Fetch the flashcard once to avoid multiple database queries
-  const flashcard = await prisma.flashcard.findUnique({ 
-    where: { id: flashcardId } 
+  const flashcard = await prisma.flashcard.findUnique({
+    where: { id: flashcardId },
   });
-  
+
   // Use default values if flashcard is not found
   const kana = flashcard?.kana || "";
   const kanaType = (flashcard?.type as KanaType) || KanaType.hiragana;
-  
+
   return await prisma.userKanaPerformance.upsert({
     where: {
       userId_kana: {

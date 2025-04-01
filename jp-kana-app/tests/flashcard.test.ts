@@ -27,17 +27,25 @@ vi.mock("../src/lib/flashcard-service", () => {
     ...originalModule,
     submitAnswer: vi
       .fn()
-      .mockImplementation((userId, kanaType, answer, character, isCorrect) => {
-        void isCorrect; // Mark as intentionally unused
-        if (
-          !character ||
-          character.kana === undefined ||
-          character.kana === ""
-        ) {
-          return Promise.reject(new Error("Character or kana is empty"));
-        }
-        return Promise.resolve();
-      }),
+      .mockImplementation(
+        (
+          userId: string,
+          kanaType: KanaType | undefined,
+          answer: string,
+          character: Character | undefined,
+          isCorrect: boolean,
+        ) => {
+          void isCorrect; // Mark as intentionally unused
+          if (
+            !character ||
+            character.kana === undefined ||
+            character.kana === ""
+          ) {
+            return Promise.reject(new Error("Character or kana is empty"));
+          }
+          return Promise.resolve();
+        },
+      ),
   };
 });
 
@@ -66,11 +74,25 @@ describe("Flashcard Service", () => {
 
     // Reset submit answer mock to default implementation
     (submitAnswer as MockedFunction<typeof submitAnswer>).mockImplementation(
-      (userId, kanaType, answer, character, isCorrect) => {
+      function mockSubmitAnswer(
+        userId,
+        kanaType,
+        answer,
+        character,
+        isCorrect,
+      ) {
         void isCorrect; // Mark as intentionally unused
-        if (!character || !character.kana) {
+
+        // Type guard to check if character has kana property
+        if (
+          !character ||
+          typeof character !== "object" ||
+          !("kana" in character) ||
+          !character.kana
+        ) {
           return Promise.reject(new Error("Character or kana is empty"));
         }
+
         return Promise.resolve();
       },
     );
