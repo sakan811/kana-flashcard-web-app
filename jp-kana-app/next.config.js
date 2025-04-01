@@ -7,7 +7,7 @@ const nextConfig = {
     dirs: ["tests", "src"],
   },
   output: "standalone",
-  outputFileTracingRoot: process.env.NODE_ENV === "production" ? process.cwd() : undefined,
+  outputFileTracingRoot: process.cwd(), // Dynamically set correct root
   poweredByHeader: false,
   generateEtags: true,
   compress: true,
