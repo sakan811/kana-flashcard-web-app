@@ -7,9 +7,14 @@ import {
 } from "../src/lib/api-service";
 import { Character, KanaPerformanceData, KanaType } from "@/types/kana";
 
-// Mock fetch
+// Mock fetch and cache
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
+
+// Mock the cache module
+vi.mock("../src/constants", () => ({
+  CACHE_DURATION: 60000, // 1 minute in milliseconds
+}));
 
 describe("API Service", () => {
   const mockCharacter: Character = {
@@ -35,6 +40,13 @@ describe("API Service", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Ensure all fetch calls return proper JSON methods
+    mockFetch.mockImplementation(() => 
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      })
+    );
   });
 
   describe("getRandomKana", () => {
@@ -62,6 +74,7 @@ describe("API Service", () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         statusText: "Not Found",
+        json: () => Promise.resolve({}),
       });
 
       await expect(getRandomKana("test-user", "hiragana")).rejects.toThrow();
@@ -101,18 +114,23 @@ describe("API Service", () => {
     });
 
     it("should use cached data when available", async () => {
+      // First call should make a fetch request
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve([mockPerformanceData]),
       });
-
-      // First call
+      
+      // First call to populate cache
       await getKanaPerformance("test-user", "hiragana");
-      // Second call should use cache
+      
+      // Reset mock to verify it's not called again
+      mockFetch.mockClear();
+      
+      // Second call should use cache and not call fetch again
       const result = await getKanaPerformance("test-user", "hiragana");
 
       expect(result).toEqual([mockPerformanceData]);
-      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch).not.toHaveBeenCalled();
     });
   });
 
@@ -120,6 +138,7 @@ describe("API Service", () => {
     it("should record performance successfully", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        json: () => Promise.resolve({}),
       });
 
       await recordKanaPerformance("test-user", "あ", "hiragana", true);
@@ -137,6 +156,7 @@ describe("API Service", () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         statusText: "Server Error",
+        json: () => Promise.reject(new Error("Server Error")),
       });
 
       await expect(
@@ -174,6 +194,7 @@ describe("API Service", () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         statusText: "Server Error",
+        json: () => Promise.resolve({}),
       });
 
       await expect(

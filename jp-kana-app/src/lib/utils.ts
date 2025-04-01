@@ -1,4 +1,4 @@
-import { Character } from "@/types/kana";
+import { Character, KanaType } from "@/types/kana";
 import { HIRAGANA_CHARACTERS, KATAKANA_CHARACTERS } from "@/constants";
 
 /**
@@ -11,6 +11,16 @@ import { HIRAGANA_CHARACTERS, KATAKANA_CHARACTERS } from "@/constants";
 export const getRandomCharacter = (
   characterData: Array<Character>,
 ): Character => {
+  // Handle empty array case
+  if (!characterData || characterData.length === 0) {
+    return {
+      kana: "",
+      romaji: "",
+      type: KanaType.hiragana,
+      weight: 1,
+    };
+  }
+
   // Ensure all characters have valid weights
   const validCharacterData = characterData.map((char) => ({
     ...char,

@@ -1,19 +1,29 @@
-import "@testing-library/jest-dom";
-import { PrismaClient } from "@prisma/client";
-import { afterEach, afterAll } from "vitest";
+import { expect, afterEach, afterAll, beforeEach, vi } from "vitest";
+import * as matchers from "@testing-library/jest-dom/matchers";
+import { mockPrismaClient, resetPrismaMocks } from "./prisma-mock";
 
-// Create a new PrismaClient instance for testing
-export const prisma = new PrismaClient();
+// Add testing-library jest-dom matchers
+expect.extend(matchers);
 
-// Clean up database after each test
-afterEach(async () => {
-  await prisma.userProgress.deleteMany();
-  await prisma.userKanaPerformance.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.flashcard.deleteMany();
+// Mock the Prisma client for testing
+vi.mock("@prisma/client", () => {
+  return {
+    PrismaClient: vi.fn(() => mockPrismaClient)
+  };
 });
 
-// Close Prisma connection after all tests
-afterAll(async () => {
-  await prisma.$disconnect();
+// Mock the Prisma import from our lib
+vi.mock("../src/lib/prisma", () => {
+  return {
+    default: mockPrismaClient,
+    getPrismaClient: vi.fn(() => mockPrismaClient)
+  };
 });
+
+// Reset all mocks between tests
+beforeEach(() => {
+  resetPrismaMocks();
+});
+
+// Export mock client for individual tests
+export const prisma = mockPrismaClient;
