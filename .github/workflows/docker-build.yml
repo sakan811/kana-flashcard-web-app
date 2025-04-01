@@ -1,4 +1,4 @@
-name: Trivy Docker Image Scan
+name: Docker Build
 
 on:
   pull_request:
@@ -27,9 +27,3 @@ jobs:
           context: ./jp-kana-app
           push: false
           tags: ${{ vars.DOCKERHUB_USERNAME }}/jp-kana-flashcard-app:latest
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.29.0
-        with:
-          image-ref: ${{ vars.DOCKERHUB_USERNAME }}/jp-kana-flashcard-app:latest
-          format: 'table'
