@@ -69,7 +69,7 @@ describe("Kana Components", () => {
       fireEvent.change(input, { target: { value: "ka" } });
       expect(handleChangeMock).toHaveBeenCalled();
 
-      const form = input.closest("form");
+      const form = screen.getByTestId("kana-form");
       fireEvent.submit(form);
       expect(handleSubmitMock).toHaveBeenCalled();
     });

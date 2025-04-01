@@ -32,6 +32,7 @@ const KanaInput: React.FC<KanaInputProps> = ({
     <form
       id="romajiForm"
       onSubmit={onSubmit}
+      data-testid="kana-form"
       className="flex flex-col items-center w-full max-w-md mx-auto mt-6"
     >
       <label
