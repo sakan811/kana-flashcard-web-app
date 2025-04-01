@@ -9,31 +9,28 @@ const TEST_USER = {
   name: "Test User",
 };
 
-// Create a typed mockImplementation function for better readability
-const mockCreateUserImplementation = (
-  email: string,
-  password: string,
-  name?: string,
-): Promise<User> => {
-  // Mark password as intentionally unused
-  void password;
-
-  // Validate email format (for testing purposes)
-  if (!email.includes("@")) {
-    return Promise.reject(new Error("Invalid email format"));
-  }
-
-  // Return a proper user object
-  return Promise.resolve({
-    id: "test-user-id",
-    email,
-    name: name || null,
-  });
-};
-
 // Mock the auth module - Vitest hoists this to the top of the file
 vi.mock("../src/lib/auth", () => ({
-  createUser: vi.fn().mockImplementation(mockCreateUserImplementation),
+  createUser: vi.fn().mockImplementation((
+    email: string,
+    password: string,
+    name?: string,
+  ): Promise<User> => {
+    // Mark password as intentionally unused
+    void password;
+
+    // Validate email format (for testing purposes)
+    if (!email.includes("@")) {
+      return Promise.reject(new Error("Invalid email format"));
+    }
+
+    // Return a proper user object
+    return Promise.resolve({
+      id: "test-user-id",
+      email,
+      name: name || null,
+    });
+  }),
   comparePassword: vi.fn(),
   getUserByEmail: vi.fn(),
   hashPassword: vi.fn(),
@@ -47,14 +44,24 @@ describe("Authentication", () => {
     // Reset mocks between tests
     vi.clearAllMocks();
 
-    // Reset default implementation for createUser
+    // Reset default implementation for createUser - use inline function instead of referencing mockCreateUserImplementation
     (createUser as MockedFunction<typeof createUser>).mockImplementation(
       function (...args: unknown[]) {
         // We know the implementation expects these parameters
         const email = args[0] as string;
         const password = args[1] as string;
         const name = args[2] as string | undefined;
-        return mockCreateUserImplementation(email, password, name);
+
+        // Inline the implementation
+        if (!email.includes("@")) {
+          return Promise.reject(new Error("Invalid email format"));
+        }
+
+        return Promise.resolve({
+          id: "test-user-id",
+          email,
+          name: name || null,
+        });
       },
     );
   });

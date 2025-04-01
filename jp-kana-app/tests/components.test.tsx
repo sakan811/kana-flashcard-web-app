@@ -6,8 +6,8 @@ import KanaInput from "../src/components/kana/KanaInput";
 import MessageDisplay from "../src/components/kana/MessageDisplay";
 import { KanaType } from "@/types/kana";
 
-// Import matchers directly without re-importing expect
-import matchers from "@testing-library/jest-dom/matchers";
+// Import jest-dom properly for Vitest
+import * as matchers from "@testing-library/jest-dom/matchers";
 expect.extend(matchers);
 
 // Mock necessary providers
