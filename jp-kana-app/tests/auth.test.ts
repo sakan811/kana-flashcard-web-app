@@ -49,7 +49,13 @@ describe("Authentication", () => {
 
     // Reset default implementation for createUser
     (createUser as MockedFunction<typeof createUser>).mockImplementation(
-      mockCreateUserImplementation,
+      function (...args: unknown[]) {
+        // We know the implementation expects these parameters
+        const email = args[0] as string;
+        const password = args[1] as string;
+        const name = args[2] as string | undefined;
+        return mockCreateUserImplementation(email, password, name);
+      },
     );
   });
 

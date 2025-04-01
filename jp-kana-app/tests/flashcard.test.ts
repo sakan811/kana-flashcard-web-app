@@ -29,7 +29,11 @@ vi.mock("../src/lib/flashcard-service", () => {
       .fn()
       .mockImplementation((userId, kanaType, answer, character, isCorrect) => {
         void isCorrect; // Mark as intentionally unused
-        if (!character || !character.kana) {
+        if (
+          !character ||
+          character.kana === undefined ||
+          character.kana === ""
+        ) {
           return Promise.reject(new Error("Character or kana is empty"));
         }
         return Promise.resolve();

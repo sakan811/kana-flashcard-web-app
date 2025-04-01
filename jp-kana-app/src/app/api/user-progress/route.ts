@@ -13,22 +13,28 @@ export async function GET(request: NextRequest) {
     const progressData = await getUserProgressWithFlashcard(userId);
 
     // Transform data for easier consumption by the frontend
-    const formattedProgress = progressData.map((progress) => ({
-      flashcardId: progress.flashcardId,
-      kana: progress.flashcard.kana,
-      romaji: progress.flashcard.romaji,
-      type: progress.flashcard.type,
-      correctCount: progress.correctCount,
-      incorrectCount: progress.incorrectCount,
-      totalCount: progress.correctCount + progress.incorrectCount,
-      accuracy:
-        progress.correctCount + progress.incorrectCount > 0
-          ? (progress.correctCount /
-              (progress.correctCount + progress.incorrectCount)) *
-            100
-          : 0,
-      lastPracticed: progress.lastPracticed,
-    }));
+    const formattedProgress = progressData
+      .map((progress) => {
+        if (!progress.flashcard) {
+          return null;
+        }
+
+        return {
+          flashcardId: progress.flashcard.id, // Using flashcard ID instead of non-existent flashcardId
+          kana: progress.flashcard.kana,
+          romaji: progress.flashcard.romaji,
+          type: progress.flashcard.type,
+          correctCount: progress.correctCount,
+          incorrectCount: progress.totalCount - progress.correctCount, // Calculate incorrectCount from totalCount - correctCount
+          totalCount: progress.totalCount,
+          accuracy:
+            progress.totalCount > 0
+              ? (progress.correctCount / progress.totalCount) * 100
+              : 0,
+          lastPracticed: progress.lastPracticed,
+        };
+      })
+      .filter(Boolean); // Remove nulls (entries without flashcard)
 
     return NextResponse.json(formattedProgress);
   } catch (error) {
