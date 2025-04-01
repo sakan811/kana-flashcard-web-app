@@ -15,7 +15,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body = await request.json();
-    const { userId, kana, kanaType, isCorrect, flashcardId } = body;
+    const { userId, kana, kanaType, isCorrect } = body;
 
     // Verify userId matches authenticated user
     if (userId !== session.user.id) {
@@ -70,54 +70,27 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Using a transaction to ensure consistency across all operations
-    await prisma.$transaction(async (tx) => {
-      // Update UserKanaPerformance table
-      await tx.userKanaPerformance.upsert({
-        where: {
-          userId_kana: {
-            userId: user.id,
-            kana: kana,
-          },
-        },
-        update: {
-          correctCount: { increment: isCorrect ? 1 : 0 },
-          totalCount: { increment: 1 },
-          lastPracticed: new Date(),
-        },
-        create: {
+    // Update UserKanaPerformance table
+    await prisma.userKanaPerformance.upsert({
+      where: {
+        userId_kana: {
           userId: user.id,
           kana: kana,
-          kanaType: kanaType,
-          correctCount: isCorrect ? 1 : 0,
-          totalCount: 1,
-          lastPracticed: new Date(),
         },
-      });
-
-      // If flashcardId is provided, also update UserProgress table
-      if (flashcardId) {
-        await tx.userProgress.upsert({
-          where: {
-            userId_flashcardId: {
-              userId: user.id,
-              flashcardId: flashcardId,
-            },
-          },
-          update: {
-            correctCount: { increment: isCorrect ? 1 : 0 },
-            incorrectCount: { increment: isCorrect ? 0 : 1 },
-            lastPracticed: new Date(),
-          },
-          create: {
-            userId: user.id,
-            flashcardId: flashcardId,
-            correctCount: isCorrect ? 1 : 0,
-            incorrectCount: isCorrect ? 0 : 1,
-            lastPracticed: new Date(),
-          },
-        });
-      }
+      },
+      update: {
+        correctCount: { increment: isCorrect ? 1 : 0 },
+        totalCount: { increment: 1 },
+        lastPracticed: new Date(),
+      },
+      create: {
+        userId: user.id,
+        kana: kana,
+        kanaType: kanaType,
+        correctCount: isCorrect ? 1 : 0,
+        totalCount: 1,
+        lastPracticed: new Date(),
+      },
     });
 
     // Get updated performance stats for this kana

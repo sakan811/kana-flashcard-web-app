@@ -28,92 +28,21 @@ export async function getFlashcards(type?: KanaType): Promise<Character[]> {
 }
 
 /**
- * Get all progress for a specific user by combining data from
- * both UserProgress and UserKanaPerformance tables
+ * Get all progress for a specific user from UserKanaPerformance table
  */
 export async function getUserProgress(
   userId: string,
 ): Promise<UserKanaPerformance[]> {
   try {
-    // Get data from UserKanaPerformance table (the primary source)
+    // Get data from UserKanaPerformance table
     const kanaPerformance = await prisma.userKanaPerformance.findMany({
       where: { userId },
     });
-
-    // Get data from UserProgress table (for any flashcards that might only be there)
-    const flashcardProgress = await prisma.userProgress.findMany({
-      where: { userId },
-      include: { flashcard: true },
-    });
-
-    // Convert UserProgress data to UserKanaPerformance format
-    const progressMapped = flashcardProgress.map((p) => ({
-      id: p.id,
-      userId: p.userId,
-      kana: p.flashcard.kana,
-      kanaType: p.flashcard.type as KanaType,
-      correctCount: p.correctCount,
-      totalCount: p.correctCount + p.incorrectCount,
-      lastPracticed: p.lastPracticed,
-      createdAt: p.createdAt,
-      updatedAt: p.updatedAt,
-    }));
-
-    // Create a map of existing kana performances to avoid duplicates
-    const kanaMap = new Map();
     
-    // Add all kana performance entries to the map
-    kanaPerformance.forEach(perf => {
-      kanaMap.set(perf.kana, perf);
-    });
-    
-    // Add any flashcard progress entries that aren't already in the map
-    progressMapped.forEach(perf => {
-      if (!kanaMap.has(perf.kana)) {
-        kanaMap.set(perf.kana, perf);
-      }
-    });
-    
-    // Convert the map values back to an array
-    return Array.from(kanaMap.values());
+    return kanaPerformance;
   } catch (error) {
     console.error("Error fetching user progress:", error);
     return [];
-  }
-}
-
-/**
- * Update user progress for a specific flashcard
- */
-export async function updateUserProgress(
-  userId: string,
-  flashcardId: number,
-  isCorrect: boolean,
-): Promise<void> {
-  try {
-    // Upsert (create or update) user progress
-    await prisma.userProgress.upsert({
-      where: {
-        userId_flashcardId: {
-          userId: userId,
-          flashcardId: flashcardId,
-        },
-      },
-      update: {
-        correctCount: { increment: isCorrect ? 1 : 0 },
-        incorrectCount: { increment: isCorrect ? 0 : 1 },
-        lastPracticed: new Date(),
-      },
-      create: {
-        userId: userId,
-        flashcardId: flashcardId,
-        correctCount: isCorrect ? 1 : 0,
-        incorrectCount: isCorrect ? 0 : 1,
-        lastPracticed: new Date(),
-      },
-    });
-  } catch (error) {
-    console.error("Error updating user progress:", error);
   }
 }
 

@@ -27,14 +27,9 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
     }
 
-    // Fetch all flashcards of the specified type with their user progress
+    // Fetch all flashcards of the specified type
     const flashcards = await prisma.flashcard.findMany({
       where: { type: kanaTypeParam },
-      include: {
-        progress: {
-          where: { userId },
-        },
-      },
     });
 
     if (flashcards.length === 0) {
@@ -44,17 +39,26 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
     }
 
+    // Get user performance data for all kana of this type
+    const performances = await prisma.userKanaPerformance.findMany({
+      where: { 
+        userId: userId,
+        kanaType: kanaTypeParam 
+      },
+    });
+
     // Calculate weights based on performance
     const weightedKana = flashcards.map((card) => {
-      const progress = card.progress[0];
+      // Find matching performance data for this kana
+      const performance = performances.find(p => p.kana === card.kana);
 
       // Default weight for untrained kana is higher to prioritize new characters
       let weight = 5;
 
-      if (progress) {
-        const totalAttempts = progress.correctCount + progress.incorrectCount;
+      if (performance) {
+        const totalAttempts = performance.totalCount;
         if (totalAttempts > 0) {
-          const accuracy = progress.correctCount / totalAttempts;
+          const accuracy = performance.correctCount / totalAttempts;
           // Enhanced weight calculation:
           // 1. Base inverse relationship: lower accuracy = higher weight
           // 2. Apply exponential scaling to further prioritize low accuracy kana
@@ -83,15 +87,11 @@ export async function GET(request: Request): Promise<NextResponse> {
         romaji: card.romaji,
         type: card.type,
         weight,
-        correctCount: progress?.correctCount || 0,
-        incorrectCount: progress?.incorrectCount || 0,
-        totalCount:
-          (progress?.correctCount || 0) + (progress?.incorrectCount || 0),
+        correctCount: performance?.correctCount || 0,
+        totalCount: performance?.totalCount || 0,
         accuracy:
-          progress && progress.correctCount + progress.incorrectCount > 0
-            ? (progress.correctCount /
-                (progress.correctCount + progress.incorrectCount)) *
-              100
+          performance && performance.totalCount > 0
+            ? (performance.correctCount / performance.totalCount) * 100
             : 0,
       };
     });
