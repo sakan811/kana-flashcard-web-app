@@ -26,7 +26,7 @@
     "update-deps": "npm update --save && npm update --save-dev",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && prisma migrate deploy"
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
