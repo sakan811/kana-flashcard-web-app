@@ -8,7 +8,7 @@ expect.extend(matchers);
 // Mock the Prisma client for testing
 vi.mock("@prisma/client", () => {
   return {
-    PrismaClient: vi.fn(() => mockPrismaClient)
+    PrismaClient: vi.fn(() => mockPrismaClient),
   };
 });
 
@@ -16,7 +16,7 @@ vi.mock("@prisma/client", () => {
 vi.mock("../src/lib/prisma", () => {
   return {
     default: mockPrismaClient,
-    getPrismaClient: vi.fn(() => mockPrismaClient)
+    getPrismaClient: vi.fn(() => mockPrismaClient),
   };
 });
 

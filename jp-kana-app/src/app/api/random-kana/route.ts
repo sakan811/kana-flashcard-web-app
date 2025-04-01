@@ -41,16 +41,16 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     // Get user performance data for all kana of this type
     const performances = await prisma.userKanaPerformance.findMany({
-      where: { 
+      where: {
         userId: userId,
-        kanaType: kanaTypeParam 
+        kanaType: kanaTypeParam,
       },
     });
 
     // Calculate weights based on performance
     const weightedKana = flashcards.map((card) => {
       // Find matching performance data for this kana
-      const performance = performances.find(p => p.kana === card.kana);
+      const performance = performances.find((p) => p.kana === card.kana);
 
       // Default weight for untrained kana is higher to prioritize new characters
       let weight = 5;

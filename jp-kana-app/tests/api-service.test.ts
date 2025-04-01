@@ -41,11 +41,11 @@ describe("API Service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Ensure all fetch calls return proper JSON methods
-    mockFetch.mockImplementation(() => 
+    mockFetch.mockImplementation(() =>
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve({}),
-      })
+      }),
     );
   });
 
@@ -119,13 +119,13 @@ describe("API Service", () => {
         ok: true,
         json: () => Promise.resolve([mockPerformanceData]),
       });
-      
+
       // First call to populate cache
       await getKanaPerformance("test-user", "hiragana");
-      
+
       // Reset mock to verify it's not called again
       mockFetch.mockClear();
-      
+
       // Second call should use cache and not call fetch again
       const result = await getKanaPerformance("test-user", "hiragana");
 

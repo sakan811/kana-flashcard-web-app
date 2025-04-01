@@ -7,22 +7,25 @@ import { User } from "../src/lib/auth";
 import { createUser } from "../src/lib/auth";
 
 // Add proper type for mocked function with specific types instead of any
-type MockedFunction<T extends (...args: unknown[]) => unknown> = T & ReturnType<typeof vi.fn>;
+type MockedFunction<T extends (...args: unknown[]) => unknown> = T &
+  ReturnType<typeof vi.fn>;
 
 // Define the mock user object upfront to avoid undefined issues
 const mockUser: User = {
   id: "test-user-id",
   email: "test@example.com",
-  name: null
+  name: null,
 };
 
 // Mock the auth module with a defined implementation
 vi.mock("../src/lib/auth", () => ({
-  createUser: vi.fn().mockImplementation(() => Promise.resolve({
-    id: "test-user-id",
-    email: "test@example.com",
-    name: null
-  } as User))
+  createUser: vi.fn().mockImplementation(() =>
+    Promise.resolve({
+      id: "test-user-id",
+      email: "test@example.com",
+      name: null,
+    } as User),
+  ),
 }));
 
 describe("Database Operations", () => {
@@ -40,20 +43,52 @@ describe("Database Operations", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset the createUser mock implementation
-    (createUser as MockedFunction<typeof createUser>).mockImplementation(() => Promise.resolve(mockUser));
-    
+    (createUser as MockedFunction<typeof createUser>).mockImplementation(() =>
+      Promise.resolve(mockUser),
+    );
+
     // Reset Prisma mocks using type assertion with unknown instead of any
-    (mockPrismaClient.user.create as unknown as { mockReset: () => void }).mockReset();
-    (mockPrismaClient.user.findUnique as unknown as { mockReset: () => void }).mockReset();
-    (mockPrismaClient.flashcard.create as unknown as { mockReset: () => void }).mockReset();
-    (mockPrismaClient.userProgress.create as unknown as { mockReset: () => void }).mockReset();
-    (mockPrismaClient.userProgress.update as unknown as { mockReset: () => void }).mockReset();
-    (mockPrismaClient.userProgress.findFirst as unknown as { mockReset: () => void }).mockReset();
-    (mockPrismaClient.userProgress.findMany as unknown as { mockReset: () => void }).mockReset();
-    (mockPrismaClient.userKanaPerformance.create as unknown as { mockReset: () => void }).mockReset();
-    (mockPrismaClient.userKanaPerformance.update as unknown as { mockReset: () => void }).mockReset();
+    (
+      mockPrismaClient.user.create as unknown as { mockReset: () => void }
+    ).mockReset();
+    (
+      mockPrismaClient.user.findUnique as unknown as { mockReset: () => void }
+    ).mockReset();
+    (
+      mockPrismaClient.flashcard.create as unknown as { mockReset: () => void }
+    ).mockReset();
+    (
+      mockPrismaClient.userProgress.create as unknown as {
+        mockReset: () => void;
+      }
+    ).mockReset();
+    (
+      mockPrismaClient.userProgress.update as unknown as {
+        mockReset: () => void;
+      }
+    ).mockReset();
+    (
+      mockPrismaClient.userProgress.findFirst as unknown as {
+        mockReset: () => void;
+      }
+    ).mockReset();
+    (
+      mockPrismaClient.userProgress.findMany as unknown as {
+        mockReset: () => void;
+      }
+    ).mockReset();
+    (
+      mockPrismaClient.userKanaPerformance.create as unknown as {
+        mockReset: () => void;
+      }
+    ).mockReset();
+    (
+      mockPrismaClient.userKanaPerformance.update as unknown as {
+        mockReset: () => void;
+      }
+    ).mockReset();
   });
 
   describe("User Operations", () => {
@@ -66,9 +101,13 @@ describe("Database Operations", () => {
 
     it("should not create duplicate users", async () => {
       // First call returns a user
-      (createUser as MockedFunction<typeof createUser>).mockResolvedValueOnce(mockUser);
+      (createUser as MockedFunction<typeof createUser>).mockResolvedValueOnce(
+        mockUser,
+      );
       // Second call returns null (duplicate)
-      (createUser as MockedFunction<typeof createUser>).mockResolvedValueOnce(null);
+      (createUser as MockedFunction<typeof createUser>).mockResolvedValueOnce(
+        null,
+      );
 
       await createUser(testUser.email, testUser.password);
       const duplicateUser = await createUser(testUser.email, testUser.password);
@@ -82,13 +121,16 @@ describe("Database Operations", () => {
       const mockFlashcard = {
         id: 1,
         kana: "あ",
-        romaji: "a", 
+        romaji: "a",
         type: "hiragana",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.flashcard.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockFlashcard);
+      (
+        mockPrismaClient.flashcard.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockFlashcard);
 
       // Create progress
       const mockProgress = {
@@ -99,15 +141,18 @@ describe("Database Operations", () => {
         incorrectCount: 0,
         lastPracticed: new Date(),
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.userProgress.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockProgress);
+      (
+        mockPrismaClient.userProgress.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockProgress);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
       if (!user) throw new Error("Failed to create user");
-      
+
       const flashcard = await mockPrismaClient.flashcard.create({
         data: {
           kana: testCharacter.kana!,
@@ -136,13 +181,16 @@ describe("Database Operations", () => {
       const mockFlashcard = {
         id: 1,
         kana: "あ",
-        romaji: "a", 
+        romaji: "a",
         type: "hiragana",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.flashcard.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockFlashcard);
+      (
+        mockPrismaClient.flashcard.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockFlashcard);
 
       // Create progress record
       const mockProgress = {
@@ -153,24 +201,30 @@ describe("Database Operations", () => {
         incorrectCount: 0,
         lastPracticed: new Date(),
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.userProgress.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockProgress);
-      
+      (
+        mockPrismaClient.userProgress.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockProgress);
+
       // Create updated progress record
       const mockUpdatedProgress = {
         ...mockProgress,
         correctCount: 2,
         incorrectCount: 1,
       };
-      (mockPrismaClient.userProgress.update as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockUpdatedProgress);
+      (
+        mockPrismaClient.userProgress.update as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockUpdatedProgress);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
       if (!user) throw new Error("Failed to create user");
-      
+
       const flashcard = await mockPrismaClient.flashcard.create({
         data: {
           kana: testCharacter.kana!,
@@ -205,13 +259,16 @@ describe("Database Operations", () => {
       const mockFlashcard = {
         id: 1,
         kana: "あ",
-        romaji: "a", 
+        romaji: "a",
         type: "hiragana",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.flashcard.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockFlashcard);
+      (
+        mockPrismaClient.flashcard.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockFlashcard);
 
       // Create progress record
       const mockProgress = {
@@ -222,18 +279,24 @@ describe("Database Operations", () => {
         incorrectCount: 0,
         lastPracticed: new Date(),
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.userProgress.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockProgress);
-      
-      (mockPrismaClient.userProgress.findFirst as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockProgress);
+      (
+        mockPrismaClient.userProgress.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockProgress);
+
+      (
+        mockPrismaClient.userProgress.findFirst as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockProgress);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
       if (!user) throw new Error("Failed to create user");
-      
+
       const flashcard = await mockPrismaClient.flashcard.create({
         data: {
           kana: testCharacter.kana!,
@@ -266,13 +329,16 @@ describe("Database Operations", () => {
       const mockFlashcard = {
         id: 1,
         kana: "あ",
-        romaji: "a", 
+        romaji: "a",
         type: "hiragana",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.flashcard.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockFlashcard);
+      (
+        mockPrismaClient.flashcard.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockFlashcard);
 
       // Create progress record
       const mockProgress = {
@@ -283,18 +349,24 @@ describe("Database Operations", () => {
         incorrectCount: 0,
         lastPracticed: new Date(),
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.userProgress.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockProgress);
-      
-      (mockPrismaClient.userProgress.findMany as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue([mockProgress]);
+      (
+        mockPrismaClient.userProgress.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockProgress);
+
+      (
+        mockPrismaClient.userProgress.findMany as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue([mockProgress]);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
       if (!user) throw new Error("Failed to create user");
-      
+
       const flashcard = await mockPrismaClient.flashcard.create({
         data: {
           kana: testCharacter.kana!,
@@ -332,15 +404,18 @@ describe("Database Operations", () => {
         totalCount: 1,
         lastPracticed: new Date(),
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.userKanaPerformance.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockPerformance);
+      (
+        mockPrismaClient.userKanaPerformance.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockPerformance);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
       if (!user) throw new Error("Failed to create user");
-      
+
       const performance = await mockPrismaClient.userKanaPerformance.create({
         data: {
           userId: user.id,
@@ -370,24 +445,30 @@ describe("Database Operations", () => {
         totalCount: 1,
         lastPracticed: new Date(),
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      (mockPrismaClient.userKanaPerformance.create as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockPerformance);
-      
+      (
+        mockPrismaClient.userKanaPerformance.create as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockPerformance);
+
       // Create updated performance record
       const mockUpdatedPerformance = {
         ...mockPerformance,
         correctCount: 2,
-        totalCount: 3
+        totalCount: 3,
       };
-      (mockPrismaClient.userKanaPerformance.update as unknown as { mockResolvedValue: (value: unknown) => void })
-        .mockResolvedValue(mockUpdatedPerformance);
+      (
+        mockPrismaClient.userKanaPerformance.update as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockUpdatedPerformance);
 
       // Execute test
       const user = await createUser(testUser.email, testUser.password);
       if (!user) throw new Error("Failed to create user");
-      
+
       const performance = await mockPrismaClient.userKanaPerformance.create({
         data: {
           userId: user.id,
@@ -398,14 +479,15 @@ describe("Database Operations", () => {
           lastPracticed: new Date(),
         },
       });
-      const updatedPerformance = await mockPrismaClient.userKanaPerformance.update({
-        where: { id: performance.id },
-        data: {
-          correctCount: 2,
-          totalCount: 3,
-          lastPracticed: new Date(),
-        },
-      });
+      const updatedPerformance =
+        await mockPrismaClient.userKanaPerformance.update({
+          where: { id: performance.id },
+          data: {
+            correctCount: 2,
+            totalCount: 3,
+            lastPracticed: new Date(),
+          },
+        });
 
       expect(updatedPerformance.correctCount).toBe(2);
       expect(updatedPerformance.totalCount).toBe(3);

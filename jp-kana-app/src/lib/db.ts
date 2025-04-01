@@ -38,7 +38,7 @@ export async function getUserProgress(
     const kanaPerformance = await prisma.userKanaPerformance.findMany({
       where: { userId },
     });
-    
+
     return kanaPerformance;
   } catch (error) {
     console.error("Error fetching user progress:", error);

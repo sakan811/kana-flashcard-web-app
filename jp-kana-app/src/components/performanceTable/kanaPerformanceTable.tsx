@@ -30,17 +30,17 @@ const KanaPerformanceTable: React.FC<KanaPerformanceTableProps> = memo(
       if (mappingInitializedRef.current) return;
 
       // Use the character arrays from constants instead of relying on localStorage
-      const characters: Character[] = kanaType === KanaType.hiragana 
-        ? HIRAGANA_CHARACTERS 
-        : KATAKANA_CHARACTERS;
-      
+      const characters: Character[] =
+        kanaType === KanaType.hiragana
+          ? HIRAGANA_CHARACTERS
+          : KATAKANA_CHARACTERS;
+
       characters.forEach((char) => {
         if (char.kana) {
           kanaToRomajiMap[char.kana] = char.romaji;
         }
       });
       mappingInitializedRef.current = true;
-      
     }, [kanaType]);
 
     const toggleTable = (): void => {
