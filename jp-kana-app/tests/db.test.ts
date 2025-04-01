@@ -6,8 +6,13 @@ import { User } from "../src/lib/auth";
 // Import the mocked createUser function first, before it's used
 import { createUser } from "../src/lib/auth";
 
-// Add proper type for mocked function with specific types instead of any
-type MockedFunction<T extends (...args: any[]) => any> = T & ReturnType<typeof vi.fn>;
+// Define a properly typed MockedFunction utility type with function constraint
+type MockedFunction<T extends (...args: any[]) => any> = T & { 
+  mockImplementation: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
+  mockImplementationOnce: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
+  mockResolvedValue: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
+  mockResolvedValueOnce: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
+};
 
 // Define the mock user object upfront to avoid undefined issues
 const mockUser: User = {

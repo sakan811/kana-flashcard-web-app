@@ -1,9 +1,15 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom"; // Import jest-dom for DOM assertions
 import KanaDisplay from "../src/components/kana/KanaDisplay";
 import KanaInput from "../src/components/kana/KanaInput";
 import MessageDisplay from "../src/components/kana/MessageDisplay";
 import { KanaType } from "@/types/kana";
+
+// Extend the expect interface to include jest-dom matchers
+import { expect } from "vitest";
+import matchers from "@testing-library/jest-dom/matchers";
+expect.extend(matchers);
 
 // Mock necessary providers
 vi.mock("next-auth/react", () => ({

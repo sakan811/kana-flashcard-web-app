@@ -2,8 +2,13 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createUser } from "../src/lib/auth";
 import { User } from "../src/lib/auth";
 
-// Add proper type for mocked function that preserves parameter types
-type MockedFunction<T extends (...args: any[]) => any> = T & ReturnType<typeof vi.fn>;
+// Define a properly typed MockedFunction utility type with function constraint
+type MockedFunction<T extends (...args: any[]) => any> = T & { 
+  mockImplementation: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
+  mockImplementationOnce: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
+  mockResolvedValue: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
+  mockResolvedValueOnce: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
+};
 
 // Import the module before mocking
 vi.mock("../src/lib/auth", () => ({

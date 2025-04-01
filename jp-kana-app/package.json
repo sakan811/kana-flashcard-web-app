@@ -16,7 +16,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --fix",
+    "lint": "next lint",
     "format": "npx prettier . --write",
     "check": "tsc --noEmit",
     "test": "vitest",

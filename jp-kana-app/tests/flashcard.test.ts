@@ -7,8 +7,13 @@ import { User } from "../src/lib/auth";
 // Import the module before mocking
 import { submitAnswer } from "../src/lib/flashcard-service";
 
-// Add proper type for mocked function with specific types instead of any
-type MockedFunction<T extends (...args: any[]) => any> = T & ReturnType<typeof vi.fn>;
+// Define a properly typed MockedFunction utility type with function constraint
+type MockedFunction<T extends (...args: any[]) => any> = T & { 
+  mockImplementation: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
+  mockImplementationOnce: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
+  mockResolvedValue: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
+  mockResolvedValueOnce: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
+};
 
 // Mock the auth module
 vi.mock("../src/lib/auth", () => ({
