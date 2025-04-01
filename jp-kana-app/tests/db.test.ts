@@ -2,23 +2,16 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { mockPrismaClient } from "./prisma-mock";
 import { Character, KanaType } from "@/types/kana";
 import { User } from "../src/lib/auth";
+import { MockedFunction } from "./test-utils";
 
 // Import the mocked createUser function first, before it's used
 import { createUser } from "../src/lib/auth";
-
-// Define a properly typed MockedFunction utility type with function constraint
-type MockedFunction<T extends (...args: any[]) => any> = T & { 
-  mockImplementation: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
-  mockImplementationOnce: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
-  mockResolvedValue: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
-  mockResolvedValueOnce: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
-};
 
 // Define the mock user object upfront to avoid undefined issues
 const mockUser: User = {
   id: "test-user-id",
   email: "test@example.com",
-  name: null
+  name: null,
 };
 
 // Mock the auth module with a defined implementation

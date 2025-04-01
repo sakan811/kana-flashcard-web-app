@@ -1,80 +1,106 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { createUser } from "../src/lib/auth";
-import { User } from "../src/lib/auth";
+import { MockedFunction } from "./test-utils";
+import type { User } from "../src/lib/auth";
 
-// Define a properly typed MockedFunction utility type with function constraint
-type MockedFunction<T extends (...args: any[]) => any> = T & { 
-  mockImplementation: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
-  mockImplementationOnce: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
-  mockResolvedValue: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
-  mockResolvedValueOnce: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
+// Define test user constants outside for reuse
+const TEST_USER = {
+  email: "test@example.com",
+  password: "password123",
+  name: "Test User",
 };
 
-// Import the module before mocking
+// Create a typed mockImplementation function for better readability
+const mockCreateUserImplementation = (
+  email: string,
+  password: string,
+  name?: string
+): Promise<User> => {
+  // Mark password as intentionally unused
+  void password;
+  
+  // Validate email format (for testing purposes)
+  if (!email.includes("@")) {
+    return Promise.reject(new Error("Invalid email format"));
+  }
+
+  // Return a proper user object
+  return Promise.resolve({
+    id: "test-user-id",
+    email,
+    name: name || null,
+  });
+};
+
+// Mock the auth module - Vitest hoists this to the top of the file
 vi.mock("../src/lib/auth", () => ({
-  createUser: vi.fn().mockImplementation((email: string, password: string) => {
-    void password; // Mark as intentionally unused
-    if (!email.includes('@')) {
-      throw new Error("Invalid email format");
-    }
-    return Promise.resolve({
-      id: "test-user-id",
-      email: email,
-      name: null
-    } as User);
-  }),
-  comparePassword: vi.fn()
+  createUser: vi.fn().mockImplementation(mockCreateUserImplementation),
+  comparePassword: vi.fn(),
+  getUserByEmail: vi.fn(),
+  hashPassword: vi.fn(),
 }));
 
-describe("Authentication", () => {
-  const testUser = {
-    email: "test@example.com",
-    password: "password123",
-  };
+// Import after mocking to get the mocked versions
+import { createUser } from "../src/lib/auth";
 
+describe("Authentication", () => {
   beforeEach(() => {
     // Reset mocks between tests
     vi.clearAllMocks();
+
+    // Reset default implementation for createUser
+    (createUser as MockedFunction<typeof createUser>).mockImplementation(
+      mockCreateUserImplementation
+    );
   });
 
   describe("User Creation", () => {
     it("should create a new user", async () => {
-      const user = await createUser(testUser.email, testUser.password);
+      const user = await createUser(
+        TEST_USER.email,
+        TEST_USER.password,
+        TEST_USER.name,
+      );
+
       expect(user).toBeDefined();
-      expect(user?.email).toBe(testUser.email);
+      expect(user?.email).toBe(TEST_USER.email);
+      expect(user?.name).toBe(TEST_USER.name);
+      expect(createUser).toHaveBeenCalledWith(
+        TEST_USER.email,
+        TEST_USER.password,
+        TEST_USER.name,
+      );
     });
 
     it("should not create duplicate users", async () => {
-      // Make first createUser call succeed
-      (createUser as MockedFunction<typeof createUser>).mockImplementationOnce(
-        async (email: string, password: string) => {
-          void password; // Mark as intentionally unused
-          return {
-            id: "test-user-id",
-            email: email,
-            name: null,
-          } as User;
-        },
+      // First call succeeds
+      const firstUser = await createUser(
+        TEST_USER.email,
+        TEST_USER.password,
+        TEST_USER.name,
+      );
+      expect(firstUser).toBeDefined();
+
+      // Second call returns null (simulating duplicate)
+      (createUser as MockedFunction<typeof createUser>).mockResolvedValueOnce(
+        null,
+      );
+      const duplicateUser = await createUser(
+        TEST_USER.email,
+        TEST_USER.password,
+        TEST_USER.name,
       );
 
-      // Make second createUser call fail with null
-      (createUser as MockedFunction<typeof createUser>).mockImplementationOnce(
-        async () => {
-          return null;
-        },
-      );
-
-      await createUser(testUser.email, testUser.password);
-      const duplicateUser = await createUser(testUser.email, testUser.password);
       expect(duplicateUser).toBeNull();
+      expect(createUser).toHaveBeenCalledTimes(2);
     });
 
-    it("should hash the password", async () => {
-      const user = await createUser(testUser.email, testUser.password);
+    it("should handle password hashing implicitly", async () => {
+      await createUser(TEST_USER.email, TEST_USER.password);
 
-      // Since we're mocking, just verify user was created
-      expect(user).toBeDefined();
-      expect(user?.email).toBe(testUser.email);
+      expect(createUser).toHaveBeenCalledWith(
+        TEST_USER.email,
+        TEST_USER.password,
+      );
     });
 
     it("should validate email format", async () => {
@@ -86,6 +112,16 @@ describe("Authentication", () => {
       await expect(
         createUser(invalidUser.email, invalidUser.password),
       ).rejects.toThrow("Invalid email format");
+    });
+
+    it("should create user without name when not provided", async () => {
+      const user = await createUser(TEST_USER.email, TEST_USER.password);
+
+      expect(user?.name).toBeNull();
+      expect(createUser).toHaveBeenCalledWith(
+        TEST_USER.email,
+        TEST_USER.password,
+      );
     });
   });
 });

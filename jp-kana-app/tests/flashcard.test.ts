@@ -3,25 +3,20 @@ import { Character, KanaType } from "../src/types/kana";
 import { createFallbackCharacter } from "../src/utils/kanaUtils";
 import * as apiService from "../src/lib/api-service";
 import { User } from "../src/lib/auth";
+import { MockedFunction } from "./test-utils";
 
 // Import the module before mocking
 import { submitAnswer } from "../src/lib/flashcard-service";
 
-// Define a properly typed MockedFunction utility type with function constraint
-type MockedFunction<T extends (...args: any[]) => any> = T & { 
-  mockImplementation: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
-  mockImplementationOnce: (implementation: (...args: Parameters<T>) => ReturnType<T>) => MockedFunction<T>;
-  mockResolvedValue: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
-  mockResolvedValueOnce: (value: Awaited<ReturnType<T>>) => MockedFunction<T>;
-};
-
 // Mock the auth module
 vi.mock("../src/lib/auth", () => ({
-  createUser: vi.fn().mockImplementation(() => Promise.resolve({
-    id: "test-user-id",
-    email: "test@example.com",
-    name: null
-  } as User))
+  createUser: vi.fn().mockImplementation(() =>
+    Promise.resolve({
+      id: "test-user-id",
+      email: "test@example.com",
+      name: null,
+    } as User),
+  ),
 }));
 
 // Mock the flashcard service

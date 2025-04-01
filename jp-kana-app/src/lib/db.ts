@@ -40,9 +40,9 @@ export async function getUserProgress(
     });
 
     // Cast kanaType to KanaType enum
-    return kanaPerformance.map(performance => ({
+    return kanaPerformance.map((performance) => ({
       ...performance,
-      kanaType: performance.kanaType as KanaType
+      kanaType: performance.kanaType as KanaType,
     }));
   } catch (error) {
     console.error("Error fetching user progress:", error);
