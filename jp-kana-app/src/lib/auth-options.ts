@@ -49,23 +49,49 @@ export const authOptions: NextAuthConfig = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // Initial sign in
+      // Initial sign in - include user id in token
       if (user) {
         token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
+      // Make sure session has user id
       if (session.user) {
         session.user.id = token.id as string;
       }
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Simple redirect logic that works well with OAuth flows
-      if (url.startsWith("/")) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
+      // Improved redirect handling for OAuth flows
+      // Allow redirects to same-origin URLs
+      if (url.startsWith("/")) {
+        // For relative URLs like "/katakana", prepend the base URL
+        return `${baseUrl}${url}`;
+      } else if (url.startsWith(baseUrl)) {
+        // Already absolute URL on same origin, allow as is
+        return url;
+      }
+      // Default fallback to home page
+      return baseUrl;
+    },
+    // Enhanced authorized callback for middleware protection
+    authorized({ auth, request }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnProtectedPage = !request.nextUrl?.pathname.startsWith('/login') && 
+                               !request.nextUrl?.pathname.startsWith('/signup');
+      
+      if (process.env.NODE_ENV === "development") {
+        console.log(`Authorization check for ${request.nextUrl?.pathname}: ${isLoggedIn ? 'authorized' : 'unauthorized'}`);
+      }
+      
+      // For API routes, auth check is handled in middleware
+      if (request.nextUrl?.pathname.startsWith('/api/')) {
+        return true;
+      }
+      
+      // For protected pages, require login
+      return isOnProtectedPage ? isLoggedIn : true;
     },
   },
   pages: {
@@ -77,9 +103,27 @@ export const authOptions: NextAuthConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   cookies: {
-    // Improved cookie configuration to fix PKCE issues
+    // Improve cookie configuration for better cross-domain compatibility
     sessionToken: {
       name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    callbackUrl: {
+      name: 'next-auth.callback-url',
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
       options: {
         httpOnly: true,
         sameSite: "lax",

@@ -7,36 +7,47 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [redirected, setRedirected] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   
   // Get callbackUrl from URL parameters or default to homepage
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
+  // Effect to handle authenticated users
   useEffect(() => {
-    // If user is authenticated, redirect to the callback URL
-    if (status === "authenticated" && !redirected) {
-      setRedirected(true);
-      router.push(callbackUrl);
-    }
+    // If already authenticated, navigate to the callback URL
+    if (status === "authenticated") {
+      console.log("Already authenticated. Navigating to:", callbackUrl);
 
-    // Check for error in URL from NextAuth
+      // If it's an absolute URL, use direct navigation
+      if (callbackUrl.startsWith('http')) {
+        window.location.href = callbackUrl;
+      } else {
+        // For relative URLs, use Next.js router
+        router.replace(callbackUrl);
+      }
+    }
+  }, [status, callbackUrl, router]);
+
+  // Handle errors from the URL
+  useEffect(() => {
     const errorMessage = searchParams.get("error");
     if (errorMessage) {
       setError(`Authentication error: ${errorMessage}`);
       setIsLoading(false);
     }
-  }, [searchParams, status, router, callbackUrl, redirected]);
+  }, [searchParams]);
 
   const handleGitHubSignIn = async () => {
     setIsLoading(true);
     try {
+      // Use redirect: true to let NextAuth handle the flow directly
       await signIn("github", {
         callbackUrl,
         redirect: true,
       });
+      // No need for post-sign-in logic here as NextAuth will handle the redirect
     } catch (err) {
       console.error("Sign in error:", err);
       setError("An unexpected error occurred");
@@ -44,7 +55,7 @@ export default function LoginPage() {
     }
   };
 
-  // If already authenticated, show loading state while redirecting
+  // If already authenticated, show loading state
   if (status === "authenticated") {
     return (
       <div className="flex min-h-[80vh] flex-col justify-center items-center">
@@ -58,8 +69,11 @@ export default function LoginPage() {
     <div className="flex min-h-[80vh] flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h1 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight">
-          Sign in to your account
+          Welcome to Kana Flashcards
         </h1>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Sign in with GitHub to get started. New users will be automatically registered.
+        </p>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -90,7 +104,7 @@ export default function LoginPage() {
               />
             </svg>
             <span className="text-sm font-semibold leading-6">
-              {isLoading ? "Signing in..." : "Sign in with GitHub"}
+              {isLoading ? "Signing in..." : "Continue with GitHub"}
             </span>
           </button>
         </div>

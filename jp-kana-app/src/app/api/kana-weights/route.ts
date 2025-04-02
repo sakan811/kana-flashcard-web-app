@@ -1,18 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import prisma from "../../../lib/prisma";
 import { Character } from "@/types/kana";
+import { withAuth, verifyUserId, createErrorResponse, createSuccessResponse } from "@/lib/api-utils";
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
     const body = await request.json();
-    const { userId, kanaType, characters } = body;
+    const { userId: requestedUserId, kanaType, characters } = body;
 
-    if (!userId || !kanaType || !characters || !Array.isArray(characters)) {
-      return NextResponse.json(
-        { error: "Missing required parameters" },
-        { status: 400 },
-      );
+    // Verify the requested userId matches the authenticated userId
+    const effectiveUserId = verifyUserId(requestedUserId, userId);
+
+    if (!kanaType || !characters || !Array.isArray(characters)) {
+      return createErrorResponse("Missing required parameters", 400);
     }
+
+    console.log(`Calculating weights for user ${effectiveUserId} and kana type ${kanaType}`);
 
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
@@ -20,7 +23,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Get all performance data for this user and kana type
     const performances = await prisma.userKanaPerformance.findMany({
       where: {
-        userId: userId,
+        userId: effectiveUserId,
         kanaType: kanaType,
       },
     });
@@ -62,15 +65,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return { ...char, weight: 5 };
     });
 
-    return NextResponse.json(charactersWithWeights);
+    return createSuccessResponse(charactersWithWeights);
   } catch (error) {
     console.error("Error getting kana weights:", error);
-    return NextResponse.json(
-      {
-        error:
-          "Database connection error. Please check your database configuration and environment variables.",
-      },
-      { status: 500 },
+    
+    if (error instanceof Error && error.message === "User ID does not match authenticated session") {
+      return createErrorResponse(error.message, 401);
+    }
+    
+    return createErrorResponse(
+      "Database connection error. Please check your database configuration and environment variables.",
+      500
     );
   }
-}
+});

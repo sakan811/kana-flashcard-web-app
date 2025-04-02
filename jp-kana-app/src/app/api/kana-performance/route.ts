@@ -1,28 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import prisma from "../../../lib/prisma";
+import { withAuth, verifyUserId, createErrorResponse, createSuccessResponse } from "@/lib/api-utils";
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export const GET = withAuth(async (request: NextRequest, userId: string) => {
   const searchParams = request.nextUrl.searchParams;
-  const userId = searchParams.get("userId") || "current-user";
+  const requestedUserId = searchParams.get("userId");
   const kanaType = searchParams.get("kanaType") as
     | "hiragana"
     | "katakana"
     | null;
 
-  if (!kanaType) {
-    return NextResponse.json(
-      { error: "Missing kanaType parameter" },
-      { status: 400 },
-    );
-  }
-
   try {
+    // Verify the requested userId matches the authenticated userId
+    const effectiveUserId = verifyUserId(requestedUserId, userId);
+
+    if (!kanaType) {
+      return createErrorResponse("Missing kanaType parameter", 400);
+    }
+
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
 
+    console.log(`Fetching performance data for user ${effectiveUserId} and kana type ${kanaType}`);
+    
     const performances = await prisma.userKanaPerformance.findMany({
       where: {
-        userId: userId,
+        userId: effectiveUserId,
         kanaType: kanaType,
       },
     });
@@ -36,15 +39,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         perf.totalCount > 0 ? (perf.correctCount / perf.totalCount) * 100 : 0,
     }));
 
-    return NextResponse.json(performanceData);
+    return createSuccessResponse(performanceData);
   } catch (error) {
     console.error(`Error getting ${kanaType} performance:`, error);
-    return NextResponse.json(
-      {
-        error:
-          "Database connection error. Please check your database configuration and environment variables.",
-      },
-      { status: 500 },
+    
+    if (error instanceof Error && error.message === "User ID does not match authenticated session") {
+      return createErrorResponse(error.message, 401);
+    }
+    
+    return createErrorResponse(
+      "Database connection error. Please check your database configuration and environment variables.",
+      500
     );
   }
-}
+});

@@ -1,57 +1,36 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import prisma from "../../../lib/prisma";
-import { auth } from "@/auth";
+import { withAuth, verifyUserId, createErrorResponse, createSuccessResponse } from "@/lib/api-utils";
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
-    // Check authentication using the new auth() function
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: "No authenticated session found" },
-        { status: 401 },
-      );
-    }
-
     const body = await request.json();
-    const { userId, kana, kanaType, isCorrect } = body;
+    const { userId: requestedUserId, kana, kanaType, isCorrect } = body;
 
-    // Verify userId matches authenticated user
-    if (userId !== session.user.id) {
-      return NextResponse.json(
-        { error: "User ID does not match authenticated session" },
-        { status: 401 },
-      );
+    // Verify the requested userId matches the authenticated userId
+    const effectiveUserId = verifyUserId(requestedUserId, userId);
+
+    if (!kana || !kanaType) {
+      return createErrorResponse("Missing required parameters: kana or kanaType", 400);
     }
 
-    if (!userId || !kana || !kanaType) {
-      return NextResponse.json(
-        { error: "Missing required parameters: userId, kana, or kanaType" },
-        { status: 400 },
-      );
-    }
+    console.log(`Recording performance for user ${effectiveUserId}, kana ${kana}, type ${kanaType}, correct: ${isCorrect}`);
 
     // Test database connection before proceeding
     try {
       await prisma.$queryRaw`SELECT 1`;
     } catch (dbError) {
       console.error("Database connection error:", dbError);
-      return NextResponse.json(
-        { error: "Database connection failed" },
-        { status: 503 },
-      );
+      return createErrorResponse("Database connection failed", 503);
     }
 
     // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: effectiveUserId },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found in database" },
-        { status: 404 },
-      );
+      return createErrorResponse("User not found in database", 404);
     }
 
     // Get the correct romaji for this kana
@@ -63,10 +42,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     });
 
     if (!flashcard) {
-      return NextResponse.json(
-        { error: "Kana character not found in database" },
-        { status: 404 },
-      );
+      return createErrorResponse("Kana character not found in database", 404);
     }
 
     // Update UserKanaPerformance table
@@ -108,7 +84,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       : 0;
 
     // Return detailed feedback
-    return NextResponse.json({
+    return createSuccessResponse({
       success: true,
       isCorrect: isCorrect,
       message: isCorrect
@@ -125,9 +101,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     });
   } catch (error) {
     console.error("Error recording performance:", error);
-    return NextResponse.json(
-      { error: "Failed to record performance" },
-      { status: 500 },
-    );
+    
+    if (error instanceof Error && error.message === "User ID does not match authenticated session") {
+      return createErrorResponse(error.message, 401);
+    }
+    
+    return createErrorResponse("Failed to record performance", 500);
   }
-}
+});

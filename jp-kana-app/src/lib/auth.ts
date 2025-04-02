@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 
@@ -11,47 +10,6 @@ export type User = {
   name: string | null;
 };
 
-// Function to hash a password
-export const hashPassword = async (password: string): Promise<string> => {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
-};
-
-// Function to compare a password with a hash
-export const comparePassword = async (
-  password: string,
-  hashedPassword: string,
-): Promise<boolean> => {
-  return bcrypt.compare(password, hashedPassword);
-};
-
-// Function to create a new user
-export const createUser = async (
-  email: string,
-  password: string,
-  name?: string,
-): Promise<User | null> => {
-  try {
-    const hashedPassword = await hashPassword(password);
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name: name || null,
-      },
-    });
-
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    };
-  } catch (error) {
-    console.error("Error creating user:", error);
-    return null;
-  }
-};
-
 // Function to get a user by email
 export const getUserByEmail = async (email: string): Promise<User | null> => {
   return prisma.user.findUnique({
@@ -59,7 +17,7 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
   });
 };
 
-// Function to check if user is authenticated, redirect if not
+// Function to require authentication in server components
 export const requireAuth = async (): Promise<User> => {
   const session = await auth();
 
@@ -70,7 +28,7 @@ export const requireAuth = async (): Promise<User> => {
   return session.user as User;
 };
 
-// Function to check if user is authenticated, return status
+// Function to check auth status without redirecting
 export const checkAuth = async (): Promise<{
   isAuthenticated: boolean;
   user?: User;

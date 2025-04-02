@@ -4,19 +4,15 @@ import type { User } from "../src/lib/auth";
 
 // Define test user constants outside for reuse
 const TEST_USER = {
+  id: "test-user-id",
   email: "test@example.com",
-  password: "password123",
   name: "Test User",
 };
 
 // Mock the auth module - Vitest hoists this to the top of the file
 vi.mock("../src/lib/auth", () => ({
-  createUser: vi.fn().mockImplementation(
-    (
-      email: string,
-      _password: string, // Added underscore prefix to mark as intentionally unused
-      name?: string,
-    ): Promise<User> => {
+  getUserByEmail: vi.fn().mockImplementation(
+    (email: string): Promise<User | null> => {
       // Validate email format (for testing purposes)
       if (!email.includes("@")) {
         return Promise.reject(new Error("Invalid email format"));
@@ -26,113 +22,53 @@ vi.mock("../src/lib/auth", () => ({
       return Promise.resolve({
         id: "test-user-id",
         email,
-        name: name || null,
+        name: "Test User",
       });
     },
   ),
-  comparePassword: vi.fn(),
-  getUserByEmail: vi.fn(),
-  hashPassword: vi.fn(),
+  requireAuth: vi.fn(),
+  checkAuth: vi.fn(),
 }));
 
 // Import after mocking to get the mocked versions
-import { createUser } from "../src/lib/auth";
+import { getUserByEmail, checkAuth } from "../src/lib/auth";
 
 describe("Authentication", () => {
   beforeEach(() => {
     // Reset mocks between tests
     vi.clearAllMocks();
-
-    // Reset default implementation for createUser - use inline function instead of referencing mockCreateUserImplementation
-    (createUser as MockedFunction<typeof createUser>).mockImplementation(
-      function (...args: unknown[]) {
-        // We know the implementation expects these parameters
-        const email = args[0] as string;
-        const name = args[2] as string | undefined;
-
-        // Inline the implementation
-        if (!email.includes("@")) {
-          return Promise.reject(new Error("Invalid email format"));
-        }
-
-        return Promise.resolve({
-          id: "test-user-id",
-          email,
-          name: name || null,
-        });
-      },
-    );
   });
 
-  describe("User Creation", () => {
-    it("should create a new user", async () => {
-      const user = await createUser(
-        TEST_USER.email,
-        TEST_USER.password,
-        TEST_USER.name,
-      );
+  describe("User Lookup", () => {
+    it("should find a user by email", async () => {
+      const user = await getUserByEmail(TEST_USER.email);
 
       expect(user).toBeDefined();
       expect(user?.email).toBe(TEST_USER.email);
-      expect(user?.name).toBe(TEST_USER.name);
-      expect(createUser).toHaveBeenCalledWith(
-        TEST_USER.email,
-        TEST_USER.password,
-        TEST_USER.name,
-      );
-    });
-
-    it("should not create duplicate users", async () => {
-      // First call succeeds
-      const firstUser = await createUser(
-        TEST_USER.email,
-        TEST_USER.password,
-        TEST_USER.name,
-      );
-      expect(firstUser).toBeDefined();
-
-      // Second call returns null (simulating duplicate)
-      (createUser as MockedFunction<typeof createUser>).mockResolvedValueOnce(
-        null,
-      );
-      const duplicateUser = await createUser(
-        TEST_USER.email,
-        TEST_USER.password,
-        TEST_USER.name,
-      );
-
-      expect(duplicateUser).toBeNull();
-      expect(createUser).toHaveBeenCalledTimes(2);
-    });
-
-    it("should handle password hashing implicitly", async () => {
-      await createUser(TEST_USER.email, TEST_USER.password);
-
-      expect(createUser).toHaveBeenCalledWith(
-        TEST_USER.email,
-        TEST_USER.password,
-      );
+      expect(getUserByEmail).toHaveBeenCalledWith(TEST_USER.email);
     });
 
     it("should validate email format", async () => {
-      const invalidUser = {
-        email: "invalid-email",
-        password: "password123",
-      };
+      const invalidEmail = "invalid-email";
 
       await expect(
-        createUser(invalidUser.email, invalidUser.password),
+        getUserByEmail(invalidEmail)
       ).rejects.toThrow("Invalid email format");
     });
+  });
 
-    it("should create user without name when not provided", async () => {
-      const user = await createUser(TEST_USER.email, TEST_USER.password);
+  describe("Authentication Checks", () => {
+    it("should check auth status", async () => {
+      // Mock the checkAuth implementation for this test
+      (checkAuth as MockedFunction<typeof checkAuth>).mockResolvedValueOnce({
+        isAuthenticated: true,
+        user: TEST_USER,
+      });
 
-      expect(user?.name).toBeNull();
-      expect(createUser).toHaveBeenCalledWith(
-        TEST_USER.email,
-        TEST_USER.password,
-      );
+      const result = await checkAuth();
+      
+      expect(result.isAuthenticated).toBe(true);
+      expect(result.user).toEqual(TEST_USER);
     });
   });
 });

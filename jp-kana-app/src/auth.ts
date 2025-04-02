@@ -1,24 +1,13 @@
 import NextAuth from "next-auth";
-import type { NextAuthConfig } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
 
-// Import your auth options from the existing file
-import { authOptions as existingAuthOptions } from "@/lib/auth-options";
+// Create the auth helpers with a single configuration source
+// This centralizes all authentication functionality from one export
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
 
-// You can extend or modify the existing auth options if needed
-export const authOptions: NextAuthConfig = {
-  ...existingAuthOptions,
-  callbacks: {
-    ...existingAuthOptions.callbacks,
-    authorized: async ({ auth, request }) => {
-      // Return true if the user is logged in
-      return !!auth?.user;
-    },
-  },
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  }
-};
-
-// Export the NextAuth function with the auth options
-export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);
+// Export a convenience method for getting the current session user
+// This ensures consistent typing across the application
+export async function getCurrentUser() {
+  const session = await auth();
+  return session?.user;
+}

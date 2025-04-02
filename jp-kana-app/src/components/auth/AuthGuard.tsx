@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -6,50 +6,65 @@ interface AuthGuardProps {
   children: React.ReactNode;
 }
 
+/**
+ * AuthGuard component - Central component for authentication protection
+ * This handles all protected route logic on the client side
+ */
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const [redirectInitiated, setRedirectInitiated] = useState(false);
-
-  React.useEffect(() => {
-    // Only redirect if the user is definitely unauthenticated and redirect hasn't been initiated yet
-    if (status === "unauthenticated" && !redirectInitiated) {
-      // Mark that a redirect has been initiated to prevent multiple redirects
-      setRedirectInitiated(true);
-      // Include the current path as the callback URL
+  
+  // Force session refresh when component mounts or status changes
+  useEffect(() => {
+    if (status === "authenticated") {
+      console.log("Refreshing auth session...");
+      update();
+    }
+  }, [status, update]);
+  
+  // Effect to handle unauthenticated state
+  useEffect(() => {
+    // Only redirect if definitively not authenticated (not during "loading" state)
+    if (status === "unauthenticated") {
+      // Set callback URL for return after authentication
       const callbackUrl = encodeURIComponent(pathname);
-      router.push(`/login?callbackUrl=${callbackUrl}`);
+      
+      // Redirect to login page, but avoid redirect if already on login page
+      if (!pathname.includes("/login")) {
+        console.log(`User not authenticated, redirecting to login with callback to ${pathname}`);
+        router.push(`/login?callbackUrl=${callbackUrl}`);
+      }
     }
+  }, [status, router, pathname]);
 
-    // Reset the redirect state if the status changes to loading or authenticated
-    if (status !== "unauthenticated") {
-      setRedirectInitiated(false);
-    }
-  }, [status, router, pathname, redirectInitiated]);
-
+  // While checking auth status, show loading
   if (status === "loading") {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <p className="text-xl text-gray-600 dark:text-gray-300">Loading...</p>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+        <p className="ml-3 text-xl text-gray-600 dark:text-gray-300">Verifying authentication...</p>
       </div>
     );
   }
 
-  // Only render children when authenticated
+  // If authenticated, show the protected content
   if (status === "authenticated") {
     return <>{children}</>;
   }
 
-  // Show placeholder while redirect happens
+  // During redirect, show a message (this is shown briefly before the redirect happens)
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
         Authentication Required
       </h1>
-      <p className="text-xl mb-10 max-w-2xl text-gray-600 dark:text-gray-300">
-        Please sign in to access the flashcards.
+      <p className="text-xl mb-6 max-w-2xl text-gray-600 dark:text-gray-300">
+        Please sign in to access this content.
       </p>
+      <div className="animate-pulse">
+        <p className="text-blue-500">Redirecting to login page...</p>
+      </div>
     </div>
   );
 };

@@ -80,17 +80,35 @@ export function useKanaFlashcard(
             }
             return randomKana;
           }
-        } catch {
+        } catch (error) {
+          console.error("Error fetching random kana:", error);
+          // Check for authentication error specifically
+          if (error instanceof Error && error.message.includes("Unauthorized")) {
+            // Authentication error - refresh the session or redirect
+            if (attempt === 2 && mountedRef.current && !isNavigatingRef.current) {
+              setMessage((prev) => ({
+                ...prev,
+                error: "Authentication error. Please sign in again.",
+              }));
+              
+              // Redirect to login if unauthenticated
+              setTimeout(() => {
+                router.push("/login");
+              }, 2000);
+            }
+          }
+          
           if (attempt === 2) {
             return createFallbackCharacter(kanaType);
           }
         }
       }
       return createFallbackCharacter(kanaType);
-    } catch {
+    } catch (error) {
+      console.error("Error in getRandomKana:", error);
       return createFallbackCharacter(kanaType);
     }
-  }, [kanaType, userId, previousKanaRef]);
+  }, [kanaType, userId, previousKanaRef, router, setMessage, mountedRef, isNavigatingRef]);
 
   const getKanaPerformance = useCallback(async () => {
     if (isNavigatingRef.current || !mountedRef.current || !userId) return;
@@ -101,13 +119,29 @@ export function useKanaFlashcard(
         setPerformanceData(data);
         setHasError(false);
       }
-    } catch {
+    } catch (error) {
+      console.error("Error fetching kana performance:", error);
       if (!isNavigatingRef.current && mountedRef.current) {
         setPerformanceData([]);
-        setMessage((prev) => ({
-          ...prev,
-          error: "Database connection error. Please check your configuration.",
-        }));
+        
+        // Check for authentication error specifically
+        if (error instanceof Error && error.message.includes("Unauthorized")) {
+          setMessage((prev) => ({
+            ...prev,
+            error: "Authentication error. Please sign in again.",
+          }));
+          
+          // Redirect to login if unauthenticated after a delay
+          setTimeout(() => {
+            router.push("/login");
+          }, 2000);
+        } else {
+          setMessage((prev) => ({
+            ...prev,
+            error: "Database connection error. Please check your configuration.",
+          }));
+        }
+        
         setHasError(true);
       }
     }
@@ -119,6 +153,7 @@ export function useKanaFlashcard(
     setHasError,
     setMessage,
     mountedRef,
+    router,
   ]);
 
   const fetchNextKana = useCallback(async () => {

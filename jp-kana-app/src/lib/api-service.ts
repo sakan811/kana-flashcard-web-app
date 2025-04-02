@@ -12,8 +12,16 @@ interface CacheEntry {
 
 const performanceCache: Record<string, CacheEntry> = {};
 
-const fetchWithCredentials = (url: string, options: RequestInit = {}) => {
-  return fetch(url, {
+/**
+ * Enhanced fetch function that includes credentials and proper error handling
+ * @param url API endpoint URL
+ * @param options Fetch options
+ * @returns Fetch response
+ */
+const fetchWithCredentials = async (url: string, options: RequestInit = {}) => {
+  console.log("Sending request with credentials to:", url);
+  
+  const response = await fetch(url, {
     ...options,
     credentials: "include",
     headers: {
@@ -21,6 +29,26 @@ const fetchWithCredentials = (url: string, options: RequestInit = {}) => {
       "Content-Type": "application/json",
     },
   });
+
+  console.log("Response status:", response.status);
+
+  // Handle common authentication errors
+  if (response.status === 401) {
+    // Try to parse the error message if available
+    try {
+      const errorData = await response.json();
+      console.error("Auth error details:", errorData);
+      throw new Error(errorData.error || "Unauthorized: Authentication required");
+    } catch (e) {
+      // If parsing fails, throw a generic error
+      if (e instanceof Error && e.message !== "Unauthorized: Authentication required") {
+        throw e;
+      }
+      throw new Error("Unauthorized: Authentication required");
+    }
+  }
+
+  return response;
 };
 
 /**

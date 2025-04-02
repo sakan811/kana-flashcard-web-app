@@ -1,31 +1,27 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import prisma from "../../../lib/prisma";
 import { Character, KanaType } from "@/types/kana";
+import { withAuth, verifyUserId, createErrorResponse, createSuccessResponse } from "@/lib/api-utils";
 
-export async function GET(request: Request): Promise<NextResponse> {
+export const GET = withAuth(async (request: NextRequest, userId: string) => {
   try {
     // Extract parameters
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const requestedUserId = searchParams.get("userId");
     const kanaTypeParam = searchParams.get("kanaType");
 
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, error: "Missing userId parameter" },
-        { status: 400 },
-      );
-    }
+    // Verify the requested userId matches the authenticated userId
+    const effectiveUserId = verifyUserId(requestedUserId, userId);
 
     // Validate kanaType
     if (kanaTypeParam !== "hiragana" && kanaTypeParam !== "katakana") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid kanaType: must be "hiragana" or "katakana"',
-        },
-        { status: 400 },
+      return createErrorResponse(
+        'Invalid kanaType: must be "hiragana" or "katakana"',
+        400
       );
     }
+
+    console.log(`Fetching random kana for user ${effectiveUserId} and kana type ${kanaTypeParam}`);
 
     // Fetch all flashcards of the specified type
     const flashcards = await prisma.flashcard.findMany({
@@ -33,16 +29,16 @@ export async function GET(request: Request): Promise<NextResponse> {
     });
 
     if (flashcards.length === 0) {
-      return NextResponse.json(
-        { success: false, error: "No flashcards found for the specified type" },
-        { status: 404 },
+      return createErrorResponse(
+        "No flashcards found for the specified type",
+        404
       );
     }
 
     // Get user performance data for all kana of this type
     const performances = await prisma.userKanaPerformance.findMany({
       where: {
-        userId: userId,
+        userId: effectiveUserId,
         kanaType: kanaTypeParam,
       },
     });
@@ -129,15 +125,17 @@ export async function GET(request: Request): Promise<NextResponse> {
       accuracy: selectedCard.accuracy,
     };
 
-    return NextResponse.json({
+    return createSuccessResponse({
       success: true,
       data: response,
     });
   } catch (error) {
     console.error("Error getting random kana:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to get random kana" },
-      { status: 500 },
-    );
+    
+    if (error instanceof Error && error.message === "User ID does not match authenticated session") {
+      return createErrorResponse(error.message, 401);
+    }
+    
+    return createErrorResponse("Failed to get random kana", 500);
   }
-}
+});

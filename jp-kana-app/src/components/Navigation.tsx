@@ -37,20 +37,12 @@ const Navigation: React.FC = () => {
                 </button>
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-sm px-3 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                >
-                  Sign up
-                </Link>
-              </>
+              <Link
+                href="/login"
+                className="text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Sign in
+              </Link>
             )}
           </div>
         </div>
