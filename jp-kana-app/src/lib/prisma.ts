@@ -30,6 +30,12 @@ export function getPrismaClient(): PrismaClient {
   if (!globalForPrisma.prisma) {
     globalForPrisma.prisma = new PrismaClient({
       log: ["error", "warn"],
+      datasources: {
+        db: {
+          // Prefer non-pooling URL for more reliable connections
+          url: process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL,
+        },
+      },
     });
   }
 

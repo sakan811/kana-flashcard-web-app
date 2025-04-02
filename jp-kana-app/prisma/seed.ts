@@ -1,5 +1,15 @@
 import { PrismaClient, KanaType } from "@prisma/client";
-const prisma = new PrismaClient();
+
+// Create a new PrismaClient with configuration to handle connection pooling
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL,
+    },
+  },
+  // Add these to help with connection pooling issues
+  log: ['warn', 'error'],
+});
 
 // Define interfaces for character data
 interface Character {
