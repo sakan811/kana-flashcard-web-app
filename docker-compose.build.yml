@@ -14,7 +14,7 @@ services:
       - GITHUB_ID=your-github-client-id
       - GITHUB_SECRET=your-github-client-secret
       - NODE_ENV=development
-    command: sh -c "npx prisma migrate deploy && npx next start"
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed && npx next start"
     depends_on:
       jp-kana-flashcard-app-db:
         condition: service_healthy

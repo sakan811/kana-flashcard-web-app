@@ -10,7 +10,7 @@ COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
 # Install dependencies and generate Prisma client
-RUN npm ci && \
+RUN npm install && \
     npx prisma generate && \
     npm cache clean --force
 
