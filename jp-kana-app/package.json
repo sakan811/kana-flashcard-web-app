@@ -31,7 +31,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma db push && prisma db seed && next build"
+    "vercel-build": "prisma migrate deploy && prisma db seed && next build"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
