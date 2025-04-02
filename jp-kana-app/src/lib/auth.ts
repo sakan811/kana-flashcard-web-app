@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import type { NextAuthOptions } from "next-auth";
+import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
@@ -61,10 +60,8 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 };
 
 // Function to check if user is authenticated, redirect if not
-export const requireAuth = async (
-  authOptions: NextAuthOptions,
-): Promise<User> => {
-  const session = await getServerSession(authOptions);
+export const requireAuth = async (): Promise<User> => {
+  const session = await auth();
 
   if (!session?.user) {
     redirect("/login");
@@ -74,10 +71,8 @@ export const requireAuth = async (
 };
 
 // Function to check if user is authenticated, return status
-export const checkAuth = async (
-  authOptions: NextAuthOptions,
-): Promise<{ isAuthenticated: boolean; user?: User }> => {
-  const session = await getServerSession(authOptions);
+export const checkAuth = async (): Promise<{ isAuthenticated: boolean; user?: User }> => {
+  const session = await auth();
 
   if (!session?.user) {
     return { isAuthenticated: false };

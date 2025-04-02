@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import prisma from "../../../lib/prisma";
-import { authOptions } from "@/lib/auth-options";
+import { auth } from "@/auth";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
+    // Check authentication using the new auth() function
+    const session = await auth();
     if (!session?.user) {
       return NextResponse.json(
         { error: "No authenticated session found" },
