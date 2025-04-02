@@ -58,5 +58,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget -q --spider http://localhost:3000/ || exit 1
 
-# Run the Next.js application - changed from "server.js" to use npx for Prisma and Next.js
-CMD ["sh", "-c", "npx prisma migrate deploy && npx next start"]
+# Run the Next.js application with Prisma migration and seeding
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && npx next start"]

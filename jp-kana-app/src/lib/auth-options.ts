@@ -1,12 +1,14 @@
 import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
-import { comparePassword } from "@/lib/auth";
+import GitHubProvider from "next-auth/providers/github";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import prisma from "./prisma";
 
 // For process in server component
 declare const process: {
   env: {
     NEXTAUTH_SECRET: string;
+    GITHUB_ID: string;
+    GITHUB_SECRET: string;
     NODE_ENV?: "development" | "production" | "test";
   };
 };
@@ -23,53 +25,17 @@ declare module "next-auth" {
   }
 }
 
-const prisma = new PrismaClient();
-
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        try {
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email },
-          });
-
-          if (!user) {
-            return null;
-          }
-
-          const isPasswordValid = await comparePassword(
-            credentials.password,
-            user.password,
-          );
-
-          if (!isPasswordValid) {
-            return null;
-          }
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-          };
-        } catch (error) {
-          console.error("Error in authorize:", error);
-          return null;
-        }
-      },
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // Initial sign in
       if (user) {
         token.id = user.id;
       }
@@ -84,6 +50,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
+    error: "/login", // Error code passed in query string as ?error=
   },
   session: {
     strategy: "jwt",
@@ -101,4 +68,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
 };

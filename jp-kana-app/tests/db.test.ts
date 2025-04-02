@@ -489,5 +489,129 @@ describe("Database Operations", () => {
       expect(updatedPerformance.correctCount).toBe(2);
       expect(updatedPerformance.totalCount).toBe(3);
     });
+
+    it("should upsert kana performance record", async () => {
+      // Mock the upsert operation for recordKanaPerformance
+      const mockUpsertedPerformance = {
+        id: 1,
+        userId: mockUser.id,
+        kana: "あ",
+        kanaType: "hiragana",
+        correctCount: 1,
+        totalCount: 1,
+        lastPracticed: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      (
+        mockPrismaClient.userKanaPerformance.upsert as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockUpsertedPerformance);
+
+      // Import the actual function we want to test
+      const { recordKanaPerformance } = await import("../src/lib/db");
+
+      // Execute test for a new record
+      await recordKanaPerformance(mockUser.id, "あ", KanaType.hiragana, true);
+
+      // Verify upsert was called with correct parameters
+      expect(mockPrismaClient.userKanaPerformance.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            userId_kana: {
+              userId: mockUser.id,
+              kana: "あ",
+            },
+          },
+          update: expect.objectContaining({
+            correctCount: expect.any(Object), // { increment: 1 }
+            totalCount: expect.any(Object), // { increment: 1 }
+            lastPracticed: expect.any(Date),
+          }),
+          create: expect.objectContaining({
+            userId: mockUser.id,
+            kana: "あ",
+            kanaType: KanaType.hiragana,
+            correctCount: 1,
+            totalCount: 1,
+          }),
+        }),
+      );
+    });
+
+    it("should handle incorrect answers in recordKanaPerformance", async () => {
+      // Mock the upsert operation for recordKanaPerformance
+      const mockUpsertedPerformance = {
+        id: 1,
+        userId: mockUser.id,
+        kana: "あ",
+        kanaType: "hiragana",
+        correctCount: 0,
+        totalCount: 1,
+        lastPracticed: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      (
+        mockPrismaClient.userKanaPerformance.upsert as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockUpsertedPerformance);
+
+      // Import the actual function we want to test
+      const { recordKanaPerformance } = await import("../src/lib/db");
+
+      // Execute test for an incorrect answer
+      await recordKanaPerformance(mockUser.id, "あ", KanaType.hiragana, false);
+
+      // Verify upsert was called with correct parameters
+      expect(mockPrismaClient.userKanaPerformance.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({
+            correctCount: 0, // For incorrect answers
+            totalCount: 1,
+          }),
+        }),
+      );
+    });
+
+    it("should default to hiragana when kanaType is undefined", async () => {
+      // Mock the upsert operation for recordKanaPerformance
+      const mockUpsertedPerformance = {
+        id: 1,
+        userId: mockUser.id,
+        kana: "あ",
+        kanaType: "hiragana",
+        correctCount: 1,
+        totalCount: 1,
+        lastPracticed: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      (
+        mockPrismaClient.userKanaPerformance.upsert as unknown as {
+          mockResolvedValue: (value: unknown) => void;
+        }
+      ).mockResolvedValue(mockUpsertedPerformance);
+
+      // Import the actual function we want to test
+      const { recordKanaPerformance } = await import("../src/lib/db");
+
+      // Execute test with undefined kanaType
+      await recordKanaPerformance(mockUser.id, "あ", undefined, true);
+
+      // Verify upsert was called with hiragana as default
+      expect(mockPrismaClient.userKanaPerformance.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({
+            kanaType: KanaType.hiragana,
+          }),
+        }),
+      );
+    });
   });
 });

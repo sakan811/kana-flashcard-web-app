@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "prisma": {
-    "schema": "./prisma/schema.prisma"
+    "schema": "./prisma/schema.prisma",
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@auth/core": "^0.38.0",
+    "@auth/prisma-adapter": "^2.8.0",
     "@next/eslint-plugin-next": "^15.2.4",
     "@prisma/client": "^6.5.0",
     "@tailwindcss/postcss": "^4.0.17",
@@ -23,9 +26,11 @@
     "format": "npx prettier . --write",
     "check": "tsc --noEmit",
     "test": "vitest",
+    "test:run": "vitest run",
     "update-deps": "npm update --save && npm update --save-dev",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "prisma db seed",
     "postinstall": "prisma generate"
   },
   "devDependencies": {

@@ -63,7 +63,7 @@ ci-verify:
 	cd $(APP_DIR) && npm run lint && \
 	npm run format && \
 	npm run check && \
-	npm run test && \
+	npm run test:run && \
 	npm run build
 
 # Update all dependencies to latest version
@@ -84,6 +84,10 @@ install:
 # Generate Prisma client
 prisma:
 	cd $(APP_DIR) && npx prisma generate
+
+# Run Prisma database seed (caution: does not create migrations)
+seed:
+	cd $(APP_DIR) && npx prisma db seed
 
 # Run Prisma database push (caution: does not create migrations)
 push:

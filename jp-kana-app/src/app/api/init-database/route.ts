@@ -14,10 +14,6 @@ export async function POST() {
   try {
     // Start a transaction
     const result = await prisma.$transaction(async (tx) => {
-      // Only clear existing flashcards
-      // We preserve userProgress and userKanaPerformance to maintain user history
-      await tx.flashcard.deleteMany();
-
       // Hiragana characters
       const hiraganaCharacters: Character[] = [
         // Vowels
@@ -200,11 +196,26 @@ export async function POST() {
         { kana: "ポ", romaji: "po", type: KanaType.katakana },
       ];
 
-      // Create all flashcards
+      // Create all flashcards using upsert instead of createMany to handle duplicates
       const allCharacters = [...hiraganaCharacters, ...katakanaCharacters];
-      await tx.flashcard.createMany({
-        data: allCharacters,
-      });
+
+      // Use Promise.all to perform all upsert operations in parallel
+      await Promise.all(
+        allCharacters.map((character) =>
+          tx.flashcard.upsert({
+            where: {
+              kana_type: {
+                kana: character.kana,
+                type: character.type,
+              },
+            },
+            update: {
+              romaji: character.romaji, // Update romaji in case it needs correction
+            },
+            create: character,
+          }),
+        ),
+      );
 
       return {
         success: true,

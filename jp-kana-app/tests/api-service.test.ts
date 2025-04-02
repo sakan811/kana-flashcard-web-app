@@ -138,16 +138,19 @@ describe("API Service", () => {
     it("should record performance successfully", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({}),
+        json: () => Promise.resolve({ success: true }),
       });
 
-      await recordKanaPerformance("test-user", "あ", "hiragana", true);
+      await recordKanaPerformance("test-user-id", "あ", "hiragana", true);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining("/api/record-performance"),
         expect.objectContaining({
           method: "POST",
-          body: expect.stringContaining("あ"),
+          body: expect.stringContaining('"userId":"test-user-id"'),
           credentials: "include",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+          }),
         }),
       );
     });
@@ -160,8 +163,22 @@ describe("API Service", () => {
       });
 
       await expect(
-        recordKanaPerformance("test-user", "あ", "hiragana", true),
+        recordKanaPerformance("test-user-id", "あ", "hiragana", true),
       ).rejects.toThrow();
+    });
+
+    it("should handle authentication errors", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        statusText: "Unauthorized",
+        json: () =>
+          Promise.resolve({ error: "No authenticated session found" }),
+      });
+
+      await expect(
+        recordKanaPerformance("test-user-id", "あ", "hiragana", true),
+      ).rejects.toThrow("No authenticated session found");
     });
   });
 

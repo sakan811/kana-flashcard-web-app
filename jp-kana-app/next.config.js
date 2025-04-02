@@ -6,9 +6,9 @@ const nextConfig = {
   eslint: {
     dirs: ["tests", "src"],
   },
-  output: "standalone",
-  outputFileTracingRoot:
-    process.env.NODE_ENV === "development" ? "/app" : undefined,
+  // Use 'standalone' for production builds only to avoid development issues
+  output: process.env.NODE_ENV === "production" ? "standalone" : undefined,
+  // Remove outputFileTracingRoot as it can cause path resolution issues
   distDir: ".next",
   // Optimize build output
   poweredByHeader: false,
