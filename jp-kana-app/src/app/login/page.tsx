@@ -1,20 +1,25 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-function LoginContent() {
+export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [redirected, setRedirected] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  
+  // Get callbackUrl from URL parameters or default to homepage
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   useEffect(() => {
-    // Check if user is already authenticated
-    if (session) {
-      router.push("/");
+    // If user is authenticated, redirect to the callback URL
+    if (status === "authenticated" && !redirected) {
+      setRedirected(true);
+      router.push(callbackUrl);
     }
 
     // Check for error in URL from NextAuth
@@ -23,13 +28,13 @@ function LoginContent() {
       setError(`Authentication error: ${errorMessage}`);
       setIsLoading(false);
     }
-  }, [searchParams, session, router]);
+  }, [searchParams, status, router, callbackUrl, redirected]);
 
   const handleGitHubSignIn = async () => {
     setIsLoading(true);
     try {
       await signIn("github", {
-        callbackUrl: "/",
+        callbackUrl,
         redirect: true,
       });
     } catch (err) {
@@ -38,6 +43,16 @@ function LoginContent() {
       setIsLoading(false);
     }
   };
+
+  // If already authenticated, show loading state while redirecting
+  if (status === "authenticated") {
+    return (
+      <div className="flex min-h-[80vh] flex-col justify-center items-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+        <p className="mt-4 text-gray-600">Already signed in, redirecting...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[80vh] flex-col justify-center px-6 py-12 lg:px-8">
@@ -57,7 +72,7 @@ function LoginContent() {
         <div className="mt-6">
           <button
             onClick={handleGitHubSignIn}
-            disabled={isLoading}
+            disabled={isLoading || status === "loading"}
             className="flex w-full justify-center items-center gap-3 rounded-md bg-slate-800 hover:bg-slate-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
           >
             <svg
@@ -85,20 +100,5 @@ function LoginContent() {
         </p>
       </div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[80vh] flex-col justify-center items-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      }
-    >
-      <LoginContent />
-    </Suspense>
   );
 }
