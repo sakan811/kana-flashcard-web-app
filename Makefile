@@ -1,10 +1,16 @@
-.PHONY: dev build preview test lint format check lint-format-check ci-verify update-deps clean clean-build install prisma migrate reset studio compose-build compose-up compose-down compose-clean help start
+.PHONY: dev build preview test lint format check lint-format-check ci-verify update-deps clean clean-build install prisma prisma-clear-cache migrate reset studio compose-build compose-up compose-down compose-clean help start seed push
 
 # Project configuration
 APP_DIR := jp-kana-app
+TIMESTAMP := $(shell date +"%Y-%m-%d %H:%M:%S")
+NPM_CMD := cd $(APP_DIR) && npm
+DOCKER_COMPOSE := docker compose
 
 # Display help information
 help:
+	@echo "╔════════════════════════════════════════════════════╗"
+	@echo "║        Kana Flashcard App - Makefile Help          ║"
+	@echo "╚════════════════════════════════════════════════════╝"
 	@echo "Available targets:"
 	@echo "  dev              - Run development server"
 	@echo "  build            - Build for production"
@@ -19,6 +25,7 @@ help:
 	@echo "  clean-build      - Remove only build artifacts (.next folder)"
 	@echo "  install          - Install dependencies"
 	@echo "  prisma           - Generate Prisma client"
+	@echo "  prisma-clear-cache - Clear Prisma cache and re-generate client"
 	@echo "  migrate          - Run Prisma migrations in dev mode"
 	@echo "  reset            - Reset Prisma database"
 	@echo "  studio           - Open Prisma Studio"
@@ -83,7 +90,16 @@ install:
 
 # Generate Prisma client
 prisma:
-	cd $(APP_DIR) && npx prisma generate
+	@echo "Generating Prisma client... ($(TIMESTAMP))"
+	@cd $(APP_DIR) && npx prisma generate || { echo "Error: Failed to generate Prisma client"; exit 1; }
+	@echo "Prisma client generated successfully!"
+
+# Clear Prisma cache and regenerate client
+prisma-clear-cache:
+	@echo "Clearing Prisma cache and regenerating client... ($(TIMESTAMP))"
+	@cd $(APP_DIR) && rm -rf node_modules/.prisma || { echo "Warning: Prisma cache folder could not be removed"; }
+	@cd $(APP_DIR) && npx prisma generate || { echo "Error: Failed to regenerate Prisma client"; exit 1; }
+	@echo "Prisma cache cleared and client regenerated successfully!"
 
 # Run Prisma database seed (caution: does not create migrations)
 seed:
