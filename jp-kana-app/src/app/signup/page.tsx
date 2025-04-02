@@ -2,11 +2,8 @@
 
 import { useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
-  const router = useRouter();
-
   useEffect(() => {
     // Automatically redirect to GitHub OAuth flow
     signIn("github", { callbackUrl: "/" });

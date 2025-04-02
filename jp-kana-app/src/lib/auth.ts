@@ -71,7 +71,10 @@ export const requireAuth = async (): Promise<User> => {
 };
 
 // Function to check if user is authenticated, return status
-export const checkAuth = async (): Promise<{ isAuthenticated: boolean; user?: User }> => {
+export const checkAuth = async (): Promise<{
+  isAuthenticated: boolean;
+  user?: User;
+}> => {
   const session = await auth();
 
   if (!session?.user) {

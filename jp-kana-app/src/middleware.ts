@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { auth } from "@/auth";
+import { getToken } from "next-auth/jwt";
 
 // Protected routes that require authentication
 const protectedRoutes = ["/hiragana", "/katakana", "/reference"];
@@ -31,11 +31,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Get session using Auth.js v5
-  const session = await auth();
+  // Use JWT token check instead of auth() to avoid Prisma in Edge Runtime
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-  // If there is no session and this is a protected route/API, handle accordingly
-  if (!session) {
+  // If there is no token and this is a protected route/API, handle accordingly
+  if (!token) {
     if (isProtectedApiRoute) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
