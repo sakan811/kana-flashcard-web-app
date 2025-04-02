@@ -70,6 +70,9 @@ ci-verify:
 update-deps:
 	cd $(APP_DIR) && npm update --save && npm update --save-dev
 
+update-deps-major:
+	cd $(APP_DIR) && npm update --save --force && npm update --save-dev --force
+
 # Clean build artifacts
 clean:
 	cd $(APP_DIR) && rm -rf node_modules/ && rm -rf package-lock.json && rm -rf .next
