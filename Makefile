@@ -24,3 +24,6 @@ prisma-seed:
 
 prisma-studio:
 	npx prisma studio
+
+prisma-reset:
+	npx prisma migrate reset
