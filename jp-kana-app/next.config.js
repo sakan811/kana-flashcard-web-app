@@ -14,6 +14,10 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: true,
   compress: true,
+  // Add image domains configuration for GitHub avatars
+  images: {
+    domains: ['avatars.githubusercontent.com'],
+  },
   // Ensure API routes work correctly
   async rewrites() {
     return [
