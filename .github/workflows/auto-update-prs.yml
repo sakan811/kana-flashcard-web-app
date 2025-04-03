@@ -1,11 +1,9 @@
 name: Auto-update PRs
 on:
-    push:
-      branches:
-        - "master"
-    pull_request:
-      branches:
-        - "master"
+  push:
+    branches:
+      - "master"
+  # Removed pull_request trigger to avoid duplicate runs
 
 permissions:
   contents: write
@@ -20,6 +18,19 @@ jobs:
         
       - name: Update PRs
         run: |
-          gh pr list --json number --jq '.[] | .number' | xargs -I{} gh pr update-branch {} --repo ${{ github.repository }}
+          # List only PRs that are open and not draft
+          OPEN_PRS=$(gh pr list --base master --state open --json number,isDraft --jq '.[] | select(.isDraft==false) | .number')
+          
+          # Check if there are any PRs to update
+          if [ -z "$OPEN_PRS" ]; then
+            echo "No open PRs to update"
+            exit 0
+          fi
+          
+          # Update each PR
+          for PR_NUM in $OPEN_PRS; do
+            echo "Updating PR #$PR_NUM"
+            gh pr update-branch $PR_NUM --repo ${{ github.repository }} || echo "Failed to update PR #$PR_NUM"
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
