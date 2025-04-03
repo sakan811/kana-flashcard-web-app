@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession, SessionProvider } from "next-auth/react"
+import { useSession, SessionProvider, signOut } from "next-auth/react"
 import Link from 'next/link';
 
 // Create a protected component that handles auth check
@@ -23,6 +23,15 @@ function ProtectedContent() {
   if (status === "authenticated") {
     return (
       <div className="max-w-4xl mx-auto p-8">
+        <div className="flex justify-end mb-4">
+          <button 
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md transition-colors"
+          >
+            Sign Out
+          </button>
+        </div>
+
         <h1 className="text-3xl font-bold mb-8 text-center">Japanese Kana Flashcard App</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
