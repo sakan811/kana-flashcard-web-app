@@ -2,8 +2,14 @@
 
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
+import { Dispatch, SetStateAction } from 'react';
 
-export default function Header() {
+interface HeaderProps {
+  activeTab: 'flashcards' | 'dashboard';
+  setActiveTab: Dispatch<SetStateAction<'flashcards' | 'dashboard'>>;
+}
+
+export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   const { data: session } = useSession();
 
   return (
