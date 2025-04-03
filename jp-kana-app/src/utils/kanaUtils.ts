@@ -17,37 +17,7 @@ export function createFallbackCharacter(type: KanaType): Character {
   };
 }
 
-/**
- * Fixes legacy data format to match updated Character type expectations
- * Ensures compatibility between old (kana property) and new (character property) formats
- */
-export function normalizeKanaData(data: any): Character {
-  if (!data) {
-    return createFallbackCharacter(KanaType.hiragana);
-  }
-  
-  // Create a normalized object
-  const normalized: Character = {
-    ...data,
-    // Ensure both kana and character properties exist for compatibility
-    kana: data.kana || data.character || '',
-    character: data.character || data.kana || '',
-    // Ensure proper type
-    type: typeof data.type === 'string' ? 
-      (data.type === 'hiragana' ? KanaType.hiragana : KanaType.katakana) : 
-      data.type,
-    // Ensure weight exists
-    weight: data.weight || 1,
-    romaji: data.romaji || ''
-  };
-  
-  // If normalized data is still invalid, return fallback
-  if (!normalized.kana || !normalized.character || !normalized.romaji) {
-    return createFallbackCharacter(KanaType.hiragana);
-  }
-  
-  return normalized;
-}
+// Removed legacy data normalization function as it is no longer used.
 
 export const isRecentlyShown = (
   kana: string,

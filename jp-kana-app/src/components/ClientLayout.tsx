@@ -2,7 +2,6 @@
 
 import React from "react";
 import Navigation from "./Navigation";
-import DatabaseInitializer from "./DatabaseInitializer";
 
 /**
  * Client-side layout component
@@ -12,7 +11,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <DatabaseInitializer />
       <main className="flex-grow py-6">
         <div className="container mx-auto px-4">{children}</div>
       </main>
