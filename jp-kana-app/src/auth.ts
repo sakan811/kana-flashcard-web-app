@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import GithubProvider from "next-auth/providers/github";
 import prisma from "./lib/prisma";
+import { getEnvVar } from "./lib/env";
 
 /**
  * Auth.js v5 configuration
@@ -11,8 +12,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     GithubProvider({
-      clientId: process.env.GITHUB_ID || "",
-      clientSecret: process.env.GITHUB_SECRET || "",
+      clientId: getEnvVar("GITHUB_ID"),
+      clientSecret: getEnvVar("GITHUB_SECRET"),
     }),
   ],
   session: {
@@ -27,7 +28,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const isLoggedIn = !!auth?.user;
       const isProtectedRoute = 
         request.nextUrl.pathname.startsWith('/hiragana') || 
-        request.nextUrl.pathname.startsWith('/katakana');
+        request.nextUrl.pathname.startsWith('/katakana') ||
+        request.nextUrl.pathname.startsWith('/profile') ||
+        request.nextUrl.pathname.startsWith('/settings');
       
       if (isProtectedRoute) {
         return isLoggedIn;

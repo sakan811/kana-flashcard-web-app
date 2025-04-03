@@ -44,9 +44,7 @@ export function createErrorResponse(
 }
 
 /**
- * Simplified middleware to handle API authentication
- * @param handler The API route handler function
- * @returns A wrapped handler with authentication and error handling
+ * Middleware to handle API authentication
  */
 export function withAuth(handler: ApiHandler) {
   return async (request: NextRequest) => {
@@ -64,15 +62,10 @@ export function withAuth(handler: ApiHandler) {
       console.error("API error:", error);
       
       if (error instanceof Error) {
-        // Simplified error handling for common cases
         const errorMessage = error.message;
         
         if (errorMessage.includes('Unauthorized') || errorMessage.includes('authentication')) {
           return createErrorResponse(errorMessage, 401);
-        }
-        
-        if (errorMessage.includes('database') || errorMessage.includes('connection')) {
-          return createErrorResponse("Database error", 503);
         }
         
         return createErrorResponse(errorMessage, 400);
@@ -85,9 +78,6 @@ export function withAuth(handler: ApiHandler) {
 
 /**
  * Verify that a requested userId matches the authenticated userId
- * @param requestedUserId The userId requested in the API call
- * @param authenticatedUserId The authenticated userId from the session
- * @returns The validated userId to use
  */
 export function verifyUserId(
   requestedUserId: string | null,
