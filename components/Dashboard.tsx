@@ -49,7 +49,9 @@ export default function Dashboard() {
       });
   
   const averageAccuracy = stats.length > 0
-    ? stats.reduce((sum, kana) => sum + kana.accuracy, 0) / stats.length
+    ? stats.filter(kana => kana.attempts > 0)
+        .reduce((sum, kana) => sum + kana.accuracy, 0) / 
+        stats.filter(kana => kana.attempts > 0).length
     : 0;
   
   if (loading) {
