@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { auth } from "./auth";
 
 export default auth((req) => {
-  // Add user ID to headers for API routes
-  if (req.auth?.user?.id && req.nextUrl.pathname.startsWith('/api')) {
+  // For API routes, add the user ID to headers
+  if (req.auth?.user?.id && req.nextUrl.pathname.startsWith('/api') && 
+      !req.nextUrl.pathname.startsWith('/api/auth')) {
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set('x-user-id', req.auth.user.id);
     
@@ -17,7 +18,6 @@ export default auth((req) => {
   return NextResponse.next();
 });
 
-// Specify which routes should be processed by the middleware
 export const config = {
   matcher: [
     // Protected routes

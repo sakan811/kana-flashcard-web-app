@@ -78,6 +78,7 @@ export function withAuth(handler: ApiHandler) {
 
 /**
  * Verify that a requested userId matches the authenticated userId
+ * with enhanced error handling for session issues
  */
 export function verifyUserId(
   requestedUserId: string | null,
@@ -92,4 +93,42 @@ export function verifyUserId(
   }
 
   return authenticatedUserId;
+}
+
+/**
+ * Helper function to handle session-related errors
+ * Useful for debugging auth issues in Next.js + Auth.js
+ */
+export function handleSessionError(error: unknown): NextResponse {
+  console.error("Session error:", error);
+  
+  const errorMessage = error instanceof Error 
+    ? error.message 
+    : "Unknown session error";
+    
+  // If the error contains HTML (like when we get a <!DOCTYPE> response)
+  if (typeof errorMessage === 'string' && 
+      (errorMessage.includes('<!DOCTYPE') || errorMessage.includes('<html'))) {
+    return createErrorResponse(
+      "Invalid session response format. The server returned HTML instead of JSON.", 
+      500
+    );
+  }
+  
+  return createErrorResponse(
+    `Session error: ${errorMessage}`, 
+    401
+  );
+}
+
+/**
+ * Parse JSON safely with error handling
+ */
+export function safeJsonParse<T>(text: string): T | null {
+  try {
+    return JSON.parse(text) as T;
+  } catch (e) {
+    console.error("Failed to parse JSON:", e);
+    return null;
+  }
 }

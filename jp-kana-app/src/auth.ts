@@ -2,22 +2,22 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import GithubProvider from "next-auth/providers/github";
 import prisma from "./lib/prisma";
-import { getEnvVar } from "./lib/env";
 
 /**
  * Auth.js v5 configuration
- * Following best practices from the official documentation
+ * Updated to ensure proper session handling
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     GithubProvider({
-      clientId: getEnvVar("GITHUB_ID"),
-      clientSecret: getEnvVar("GITHUB_SECRET"),
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
     }),
   ],
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: "/login",
@@ -30,7 +30,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         request.nextUrl.pathname.startsWith('/hiragana') || 
         request.nextUrl.pathname.startsWith('/katakana') ||
         request.nextUrl.pathname.startsWith('/profile') ||
-        request.nextUrl.pathname.startsWith('/settings');
+        request.nextUrl.pathname.startsWith('/settings') ||
+        (request.nextUrl.pathname.startsWith('/api') && 
+         !request.nextUrl.pathname.startsWith('/api/auth'));
       
       if (isProtectedRoute) {
         return isLoggedIn;
@@ -51,6 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
+  debug: process.env.NODE_ENV === 'development',
 });
 
 // Export only the essential auth helpers
