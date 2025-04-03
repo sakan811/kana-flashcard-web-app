@@ -6,12 +6,12 @@
 **/*.sublime-project
 **/*.sublime-workspace
 
-**/*/node_modules
-**/*/dist
-**/*/build
-**/*/coverage
-**/*/out-tsc
-**/*/out-tsc-*
+**/*node_modules
+**/*dist
+**/*build
+**/*coverage
+**/*out-tsc
+**/*out-tsc-*
 **/*.next
 
 /.cursor
