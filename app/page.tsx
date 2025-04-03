@@ -7,7 +7,7 @@ import FlashcardApp from '@/components/FlashcardApp';
 
 // Create a protected component that handles auth check
 function ProtectedContent() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   
   useEffect(() => {
