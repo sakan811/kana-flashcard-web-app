@@ -1,8 +1,7 @@
 import { useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { KanaType, KanaPerformanceData } from "@/types/kana";
-import { useKanaState, KanaMessageState } from "./useKanaState";
+import { useKanaState } from "./useKanaState";
 import apiClient from "@/lib/api-client";
 import { normalizeKanaData } from "@/utils/kanaUtils";
 
@@ -15,10 +14,7 @@ export function useKanaFlashcard(
   isNavigatingRef: { current: boolean },
 ) {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const userId = session?.user?.id;
-
-  // Remove redundant redirect - AuthGuard already handles this
   
   const {
     currentKana,
@@ -196,7 +192,6 @@ export function useKanaFlashcard(
     
     // Clean up function
     return () => {
-      // This helps prevent state updates after unmount
       mountedRef.current = false;
     };
   }, [userId, status, isDataInitialized, loadPerformanceData, fetchRandomKana, isInitialLoadRef, mountedRef]);
