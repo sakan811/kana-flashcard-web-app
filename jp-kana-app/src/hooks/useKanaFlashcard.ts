@@ -18,13 +18,8 @@ export function useKanaFlashcard(
   const router = useRouter();
   const userId = session?.user?.id;
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
-
+  // Remove redundant redirect - AuthGuard already handles this
+  
   const {
     currentKana,
     setCurrentKana,
@@ -190,9 +185,10 @@ export function useKanaFlashcard(
     }
   }, [fetchRandomKana, mountedRef, setHasError]);
 
-  // Initialize data on component mount
+  // Initialize data only when auth is confirmed
   useEffect(() => {
-    if (userId && !isDataInitialized && isInitialLoadRef.current) {
+    // Only fetch data when authentication is confirmed and we have a userId
+    if (userId && status === "authenticated" && !isDataInitialized && isInitialLoadRef.current) {
       isInitialLoadRef.current = false;
       loadPerformanceData();
       fetchRandomKana();
@@ -203,7 +199,7 @@ export function useKanaFlashcard(
       // This helps prevent state updates after unmount
       mountedRef.current = false;
     };
-  }, [userId, isDataInitialized, loadPerformanceData, fetchRandomKana, isInitialLoadRef, mountedRef]);
+  }, [userId, status, isDataInitialized, loadPerformanceData, fetchRandomKana, isInitialLoadRef, mountedRef]);
 
   return {
     currentKana,

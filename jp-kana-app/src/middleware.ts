@@ -4,17 +4,19 @@ import { AUTH_ROUTES, AUTH_HEADERS } from "@/lib/auth-constants";
 
 /**
  * Auth.js v5 middleware for route protection
- * Edge Runtime compatible
+ * Edge Runtime compatible with reduced complexity
  */
 export default auth((req) => {
   const { nextUrl } = req;
   const { pathname } = nextUrl;
   
-  // Skip middleware for authentication API routes and static files
+  // Skip middleware for authentication API routes, static files and public routes
   if (
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/_next') ||
-    pathname.includes('favicon.ico')
+    pathname.includes('favicon.ico') ||
+    pathname === '/' ||
+    pathname === '/login'
   ) {
     return NextResponse.next();
   }
@@ -35,7 +37,7 @@ export default auth((req) => {
 
   // Check if user is authenticated
   if (req.auth?.user) {
-    // Important: For API routes, add the user ID to headers so API handlers can access it
+    // For API routes, add the user ID to headers so API handlers can access it
     if (isProtectedApiRoute) {
       const headers = new Headers(req.headers);
       headers.set(AUTH_HEADERS.USER_ID, req.auth.user.id);
@@ -56,35 +58,23 @@ export default auth((req) => {
     }, { status: 401 });
   }
   
-  if (isProtectedPageRoute) {
-    // Create a safe URL for the login page
-    const encodedFrom = encodeURIComponent(pathname);
-    const redirectUrl = `/login?callbackUrl=${encodedFrom}`;
-    
-    return NextResponse.redirect(new URL(redirectUrl, nextUrl.origin));
-  }
+  // Redirect to login page with callback URL for protected pages
+  const encodedFrom = encodeURIComponent(pathname);
+  const redirectUrl = `/login?callbackUrl=${encodedFrom}`;
   
-  return NextResponse.next();
+  return NextResponse.redirect(new URL(redirectUrl, nextUrl.origin));
 });
 
 /**
  * Define which routes this middleware should run on
- * Explicitly exclude auth routes to avoid conflicts
  */
 export const config = {
   matcher: [
-    // Include protected routes
-    '/api/record-performance/:path*',
-    '/api/kana-performance/:path*',
-    '/api/random-kana/:path*',
-    '/api/kana-weights/:path*',
-    '/api/update-progress/:path*',
-    '/api/user-progress/:path*',
-    '/hiragana/:path*', 
-    '/katakana/:path*',
-    '/login',
-    
-    // Exclude auth API routes and static files
-    '/((?!api/auth|_next/static|_next/image|favicon.ico).*)',
+    // Match all paths except those that:
+    // - Start with /api/auth
+    // - Start with /_next/static
+    // - Start with /_next/image
+    // - Are favicon.ico
+    "/((?!api/auth|_next/static|_next/image|favicon.ico).*)"
   ]
 };

@@ -6,7 +6,6 @@ import { useKanaForm } from "../hooks/useKanaForm";
 import KanaDisplay from "./kana/KanaDisplay";
 import KanaInput from "./kana/KanaInput";
 import MessageDisplay from "./kana/MessageDisplay";
-import AuthGuard from "./auth/AuthGuard";
 import KanaHeader from "./kana/KanaHeader";
 import KanaTable from "./kana/KanaTable";
 import { KanaType } from "@/types/kana";
@@ -52,40 +51,38 @@ const RandomKana: React.FC<KanaProps> = ({ kanaType, onNavigateBack }) => {
   };
 
   return (
-    <AuthGuard>
-      <div className="max-w-4xl mx-auto p-6">
-        <KanaHeader
-          kanaType={kanaType}
-          onBackClick={handleBackClick}
-          isNavigating={isNavigatingRef.current}
-        />
+    <div className="max-w-4xl mx-auto p-6">
+      <KanaHeader
+        kanaType={kanaType}
+        onBackClick={handleBackClick}
+        isNavigating={isNavigatingRef.current}
+      />
 
-        <MessageDisplay
-          message={message}
-          hasError={hasError}
-          onRetry={() => {
-            clearErrorMessage();
-            handleRetry();
-          }}
-        />
+      <MessageDisplay
+        message={message}
+        hasError={hasError}
+        onRetry={() => {
+          clearErrorMessage();
+          handleRetry();
+        }}
+      />
 
-        <KanaDisplay
-          currentKana={currentKana}
-          isLoading={isLoading}
-          isDataInitialized={isDataInitialized}
-        />
+      <KanaDisplay
+        currentKana={currentKana}
+        isLoading={isLoading}
+        isDataInitialized={isDataInitialized}
+      />
 
-        <KanaInput
-          inputValue={inputValue}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-          disabled={disabled}
-          inputRef={inputRef}
-        />
+      <KanaInput
+        inputValue={inputValue}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        disabled={disabled}
+        inputRef={inputRef}
+      />
 
-        <KanaTable kanaType={kanaType} performanceData={performanceData} />
-      </div>
-    </AuthGuard>
+      <KanaTable kanaType={kanaType} performanceData={performanceData} />
+    </div>
   );
 };
 

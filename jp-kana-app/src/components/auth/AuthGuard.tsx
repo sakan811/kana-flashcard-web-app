@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import AuthLoading from "./AuthLoading";
-import { useAuth } from "@/hooks/useAuth";
+import { useSession } from "next-auth/react";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -10,50 +10,36 @@ interface AuthGuardProps {
 }
 
 /**
- * AuthGuard component - Client-side auth protection
- * Acts as a fallback to middleware protection and handles loading states
+ * AuthGuard component - Simplified client-side auth protection
+ * Directly uses useSession from next-auth for better compatibility with Auth.js v5
  */
 const AuthGuard: React.FC<AuthGuardProps> = ({ 
   children, 
   fallback,
   loadingMessage = "Verifying authentication..."
 }) => {
+  const { data: session, status } = useSession();
   const pathname = usePathname();
   const router = useRouter();
-  const { 
-    isLoading, 
-    isAuthenticated, 
-    refreshSession,
-    authError
-  } = useAuth({
-    requireAuth: true, 
-    redirectTo: "/login"
-  });
-  
-  // Attempt to refresh session if auth error is detected
-  useEffect(() => {
-    if (authError) {
-      console.warn("Auth error detected:", authError);
-      // Try to refresh the session
-      refreshSession().catch(e => {
-        console.error("Failed to refresh session:", e);
-        // If refresh fails, redirect to login
-        router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
-      });
-    }
-  }, [authError, refreshSession, router, pathname]);
   
   // Show loading state while checking auth
-  if (isLoading) {
+  if (status === "loading") {
     return <AuthLoading message={loadingMessage} />;
   }
 
   // If authenticated, show the protected content
-  if (isAuthenticated) {
+  if (status === "authenticated") {
     return <>{children}</>;
   }
 
-  // If not authenticated, show fallback or redirect (handled by useAuth)
+  // If not authenticated, redirect to login
+  // This should only happen as a fallback if middleware didn't catch it
+  if (status === "unauthenticated") {
+    const callbackUrl = encodeURIComponent(pathname);
+    router.replace(`/login?callbackUrl=${callbackUrl}`);
+  }
+
+  // Show fallback during the brief redirect moment
   return fallback ? <>{fallback}</> : null;
 };
 

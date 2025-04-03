@@ -2,7 +2,7 @@
 
 /**
  * Centralized API client for making requests to backend endpoints
- * Follows Next.js best practices for data fetching
+ * Updated to follow Auth.js v5 best practices with Next.js
  */
 
 import { Session } from "next-auth";
@@ -22,18 +22,11 @@ const handleApiResponse = async <T>(response: Response): Promise<T> => {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage = errorData.error || response.statusText || "API request failed";
     
-    // Handle authentication errors explicitly
+    // Handle authentication errors explicitly without redirecting
+    // Auth.js middleware and AuthGuard will handle redirection
     if (response.status === 401) {
       console.error("Authentication error:", errorMessage);
-      
-      // If we're not already on the login page, redirect to it
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-        // Get the current URL to use as a callback
-        const callbackUrl = encodeURIComponent(window.location.pathname);
-        window.location.href = `/login?callbackUrl=${callbackUrl}`;
-        // Throw a clearer error for debugging
-        throw new Error("Unauthorized: Authentication required");
-      }
+      throw new Error("Unauthorized: Authentication required");
     }
     
     throw new Error(errorMessage);
@@ -130,7 +123,7 @@ export const kanaApi = {
         correctCount: number;
         totalCount: number;
         accuracy: number;
-      }>;
+      }> 
     }>(response);
     
     return result.data;
