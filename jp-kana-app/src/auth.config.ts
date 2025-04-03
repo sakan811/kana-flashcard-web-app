@@ -1,54 +1,58 @@
-import GitHub from "next-auth/providers/github";
-import type { NextAuthConfig } from "next-auth";
-import { getEnvVar } from "./lib/env";
-import { UserRole } from "./types/auth-types";
+import { NextAuthConfig } from "next-auth";
+import GitHubProvider from "next-auth/providers/github";
+import { env } from "@/lib/env";
+
+const SESSION_STRATEGY = "jwt";
 
 /**
- * Auth.js configuration that is safe to use in Edge Runtime
- * This configuration is used in middleware and does NOT include adapters
+ * Auth.js v5 config without the adapter - for edge compatibility
+ * Used in middleware and auth.edge.ts
  */
 export const authConfig: NextAuthConfig = {
   providers: [
-    GitHub({
-      clientId: getEnvVar('GITHUB_ID'),
-      clientSecret: getEnvVar('GITHUB_SECRET'),
-      authorization: { 
-        params: { scope: "read:user user:email" } 
-      },
+    GitHubProvider({
+      clientId: env.GITHUB_ID,
+      clientSecret: env.GITHUB_SECRET,
     }),
   ],
+  pages: {
+    signIn: "/login",
+    error: "/auth/error",
+  },
   callbacks: {
-    authorized({ auth }) {
-      return !!auth?.user;
+    authorized({ token, request }) {
+      const isLoggedIn = !!token?.id;
+      const isOnDashboard = (
+        request.nextUrl.pathname.startsWith('/hiragana') || 
+        request.nextUrl.pathname.startsWith('/katakana')
+      );
+      
+      // If we're on a dashboard route, we need to be logged in
+      if (isOnDashboard) {
+        return isLoggedIn; // Allow access only if logged in
+      }
+      
+      return true; // Allow access to non-dashboard routes
     },
-    async jwt({ token, user }) {
-      if (user) {
+    jwt({ token, user }) {
+      if (user && user.id) {
         token.id = user.id;
-        if ('role' in user && user.role) {
-          token.role = user.role;
-        }
       }
       return token;
     },
-    async session({ session, token }) {
-      if (session.user) {
+    session({ session, token }) {
+      if (token && session.user) {
         session.user.id = token.id as string;
-        if (token.role) {
-          token.role = token.role as UserRole;
-        }
+      } else if (token) {
+        session.user = { id: token.id as string };
       }
       return session;
-    },
-  },
-  pages: {
-    signIn: "/login",
-    error: "/login",
+    }
   },
   session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    strategy: SESSION_STRATEGY,
   },
-  basePath: "/api/auth",
-  debug: process.env.NODE_ENV === "development",
+  // Enables trusting the host for production environments or when behind a trusted proxy.
+  // This is necessary for proper callback URL handling in some deployment setups.
   trustHost: true,
 };

@@ -1,28 +1,54 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import GithubProvider from "next-auth/providers/github";
 import prisma from "./lib/prisma";
-import { authConfig } from "./auth.config";
 
 /**
- * Complete Auth.js configuration with Prisma adapter
- * This is used in regular API routes and server components
- * but NOT in middleware or edge functions
+ * Auth.js v5 configuration
+ * Following best practices from the official documentation
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  ...authConfig,
   adapter: PrismaAdapter(prisma),
-  events: {
-    async signIn({ user }) {
-      // Simple logging, no need for console.log
+  providers: [
+    GithubProvider({
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
+    }),
+  ],
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/login",
+    error: "/login?error=auth",
+  },
+  callbacks: {
+    authorized({ auth, request }) {
+      const isLoggedIn = !!auth?.user;
+      const isProtectedRoute = 
+        request.nextUrl.pathname.startsWith('/hiragana') || 
+        request.nextUrl.pathname.startsWith('/katakana');
+      
+      if (isProtectedRoute) {
+        return isLoggedIn;
+      }
+      
+      return true;
     },
-    async signOut() {
-      // Simple logging, no need for console.log
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
     },
   },
 });
 
-// Export only the essential auth helpers from lib/auth
-export {
-  requireAuth,
-  checkAuth,
-} from './lib/auth';
+// Export only the essential auth helpers
+export { requireAuth, checkAuth } from './lib/auth';

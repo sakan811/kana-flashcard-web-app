@@ -4,41 +4,29 @@
  */
 
 /**
- * Routes that require authentication
+ * Constants for authentication-related features
  */
+
 export const AUTH_ROUTES = {
-  // Protected API routes requiring authentication
+  // API routes that require authentication
   PROTECTED_API_ROUTES: [
-    "/api/record-performance",
-    "/api/kana-performance",
-    "/api/random-kana", 
-    "/api/kana-weights",
-    "/api/update-progress",
-    "/api/user-progress",
+    '/api/kana-performance',
+    '/api/kana-weights',
+    '/api/record-performance',
+    '/api/update-progress',
+    '/api/user-progress'
   ],
-
-  // Protected page routes requiring authentication
+  // Page routes that require authentication
   PROTECTED_PAGE_ROUTES: [
-    "/hiragana",
-    "/katakana",
-  ],
-
-  // Auth API routes that should always be allowed
-  AUTH_API_ROUTES: [
-    "/api/auth/callback",
-    "/api/auth/signin",
-    "/api/auth/session",
-    "/api/auth/csrf",
-    "/api/auth/providers",
-    "/api/auth/callback/github",
+    '/hiragana',
+    '/katakana',
+    '/profile',
+    '/settings'
   ]
 };
 
-/**
- * Headers used for authentication
- */
 export const AUTH_HEADERS = {
-  USER_ID: "x-user-id",
+  USER_ID: 'x-user-id'
 };
 
 /**

@@ -75,6 +75,13 @@ export const config = {
     // - Start with /_next/static
     // - Start with /_next/image
     // - Are favicon.ico
-    "/((?!api/auth|_next/static|_next/image|favicon.ico).*)"
+    "/((?!api/auth|_next/static|_next/image|favicon.ico).*)",
+    // Protected routes
+    '/hiragana/:path*',
+    '/katakana/:path*',
+    '/profile/:path*',
+    '/settings/:path*',
+    // API routes
+    '/api/:path*',
   ]
 };

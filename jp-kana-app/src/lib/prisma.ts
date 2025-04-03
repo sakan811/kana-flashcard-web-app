@@ -3,47 +3,20 @@ import type { Flashcard, UserKanaPerformance } from "@prisma/client";
 // Import the KanaType enum to ensure proper typing
 import { KanaType } from "@/types/kana";
 
-// This approach ensures the Prisma Client is only initialized once
-// and properly handles both development and production environments
+// This approach follows recommended best practices for Next.js with Prisma
+// to prevent multiple client instances during development
 
-// Define our PrismaClient holder
 const globalForPrisma = globalThis as unknown as {
-  prisma?: PrismaClient;
+  prisma: PrismaClient | undefined;
 };
 
-// Create a safer export to prevent issues on the client
-export function getPrismaClient(): PrismaClient {
-  // Check if we're in a browser environment
-  if (typeof window !== "undefined") {
-    // Return a fake client that logs helpful error messages
-    return new Proxy({} as PrismaClient, {
-      get() {
-        console.error(
-          "PrismaClient cannot be used in the browser. Create a server API endpoint to handle database operations. See https://pris.ly/d/help/next-js-best-practices",
-        );
-        throw new Error("PrismaClient cannot be used in the browser.");
-      },
-    }) as PrismaClient;
-  }
+const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+});
 
-  // We're on the server, so we can use PrismaClient
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient({
-      log: ["error", "warn"],
-      datasources: {
-        db: {
-          // Prefer non-pooling URL for more reliable connections
-          url: process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL,
-        },
-      },
-    });
-  }
-
-  return globalForPrisma.prisma;
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
 }
-
-// Export a singleton instance
-const prisma = getPrismaClient();
 
 // Helper functions for user progress - optimized to reduce database queries
 export async function getUserProgressWithFlashcard(userId: string): Promise<
