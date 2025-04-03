@@ -1,7 +1,8 @@
 "use client";
 
 import { SessionProvider, useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { SESSION_CONFIG } from "@/lib/auth-constants";
 
 /**
  * Internal component to handle session refresh logic
@@ -11,10 +12,10 @@ function SessionRefreshHandler() {
   const { update } = useSession();
   
   useEffect(() => {
-    // Setup refresh interval
+    // Setup refresh interval using centralized config
     const interval = setInterval(() => {
       update();
-    }, 5 * 60 * 1000); // Refresh every 5 minutes
+    }, SESSION_CONFIG.REFRESH_INTERVAL);
     
     // Handle tab visibility changes
     const handleVisibilityChange = () => {
@@ -49,7 +50,7 @@ function SessionRefreshHandler() {
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Configuration for development vs production
-  const refreshInterval = process.env.NODE_ENV === 'development' ? 0 : 5 * 60;
+  const refreshInterval = process.env.NODE_ENV === 'development' ? 0 : SESSION_CONFIG.UPDATE_AGE;
   const refetchOnWindowFocus = process.env.NODE_ENV !== 'development';
   
   return (

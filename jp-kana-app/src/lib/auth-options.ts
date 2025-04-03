@@ -103,8 +103,7 @@ export const authOptions: NextAuthConfig = {
     // Enhanced authorized callback for middleware protection
     authorized({ auth, request }) {
       const isLoggedIn = !!auth?.user;
-      const isOnProtectedPage = !request.nextUrl?.pathname.startsWith('/login') && 
-                               !request.nextUrl?.pathname.startsWith('/signup');
+      const isOnProtectedPage = !request.nextUrl?.pathname.startsWith('/login');
       
       // For API routes, auth check is handled in middleware
       if (request.nextUrl?.pathname.startsWith('/api/')) {

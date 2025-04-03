@@ -4,21 +4,7 @@ import React, { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthLoading from "@/components/auth/AuthLoading";
-
-// Map of Auth.js error codes to user-friendly messages
-const AUTH_ERROR_MESSAGES: Record<string, string> = {
-  'OAuthCallback': 'Error during authentication. Please try again.',
-  'OAuthSignin': 'Error starting authentication flow. Please try again.',
-  'OAuthAccountNotLinked': 'This email is already associated with another account.',
-  'AccessDenied': 'Authentication was denied.',
-  'Verification': 'The verification link expired or has already been used.',
-  'Configuration': 'There is a problem with the server configuration.',
-  'CredentialsSignin': 'Sign in failed. Check your credentials.',
-  'SessionRequired': 'Please sign in to access this page.',
-  'CallbackRouteError': 'There was a problem with the authentication callback.',
-  'EmailCreateAccount': 'Could not create email account.',
-  'Default': 'An error occurred during authentication.',
-};
+import { AUTH_ERROR_MESSAGES } from "@/lib/auth-constants";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,7 +16,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(
     // Set initial error from URL if present
-    authError ? AUTH_ERROR_MESSAGES[authError] || AUTH_ERROR_MESSAGES.Default : null
+    authError ? AUTH_ERROR_MESSAGES[authError] || AUTH_ERROR_MESSAGES.default : null
   );
 
   // Handle GitHub sign-in
