@@ -1,33 +1,52 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFlashcard } from './FlashcardProvider';
 
 export default function Flashcard() {
   const { currentKana, loadingKana, submitAnswer, result, nextCard } = useFlashcard();
   const [answer, setAnswer] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   
+  // Focus input when component mounts, when card changes, or after result is cleared
+  useEffect(() => {
+    if (inputRef.current && !loadingKana && currentKana && !result && !isProcessing) {
+      inputRef.current.focus();
+    }
+  }, [currentKana, loadingKana, result, isProcessing]);
+
   // Handle Enter key when result is shown
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && result) {
+      if (e.key === 'Enter' && result && !isProcessing) {
+        setIsProcessing(true);
         nextCard();
         setAnswer('');
+        // Allow a brief delay before enabling the next action
+        setTimeout(() => setIsProcessing(false), 500);
       }
     };
     
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [result, nextCard]);
+  }, [result, nextCard, isProcessing]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isProcessing) return;
+    
+    setIsProcessing(true);
+    
     if (!result) {
       submitAnswer(answer);
     } else {
       nextCard();
       setAnswer('');
     }
+    
+    // Allow a brief delay before enabling the next action
+    setTimeout(() => setIsProcessing(false), 500);
   };
   
   if (loadingKana) {
@@ -65,19 +84,30 @@ export default function Flashcard() {
         )}
         
         <form onSubmit={handleSubmit} className="flex flex-col">
-          <input
-            type="text"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Type romaji equivalent..."
-            disabled={!!result}
-            className="mb-4 rounded-md border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
-          />
+          {!result ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="Type romaji equivalent..."
+              className="mb-4 rounded-md border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+              disabled={isProcessing}
+              autoFocus
+            />
+          ) : (
+            <div></div> // Empty space placeholder when result is showing
+          )}
           <button
             type="submit"
-            className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700"
+            disabled={isProcessing}
+            className={`rounded-md px-4 py-2 font-medium text-white transition ${
+              isProcessing 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
-            {result ? 'Next Card' : 'Submit'}
+            {result ? (isProcessing ? 'Loading...' : 'Next Card') : (isProcessing ? 'Submitting...' : 'Submit')}
           </button>
         </form>
       </div>
