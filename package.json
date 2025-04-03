@@ -28,13 +28,14 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.1",
-    "@types/node": "22.14.0",
+    "@types/node": "^22.14.0",
     "@types/react": "19.1.0",
     "eslint": "9.23.0",
     "eslint-config-next": "15.2.4",
     "postcss": "^8.5.3",
     "prisma": "^6.5.0",
     "tailwindcss": "^4.1.1",
-    "typescript": "5.8.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
   }
 }
