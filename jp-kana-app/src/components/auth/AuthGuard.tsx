@@ -1,5 +1,5 @@
-import React from "react";
-import { usePathname } from "next/navigation";
+import React, { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import AuthLoading from "./AuthLoading";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -19,14 +19,30 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   loadingMessage = "Verifying authentication..."
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const { 
     isLoading, 
     isAuthenticated, 
-    handleGitHubSignIn 
+    handleGitHubSignIn,
+    refreshSession,
+    authError
   } = useAuth({
     requireAuth: true, 
     redirectTo: "/login"
   });
+  
+  // Attempt to refresh session if auth error is detected
+  useEffect(() => {
+    if (authError) {
+      console.warn("Auth error detected:", authError);
+      // Try to refresh the session
+      refreshSession().catch(e => {
+        console.error("Failed to refresh session:", e);
+        // If refresh fails, redirect to login
+        router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+      });
+    }
+  }, [authError, refreshSession, router, pathname]);
   
   // Show loading state while checking auth
   if (isLoading) {
@@ -57,6 +73,11 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
       <p className="text-xl mb-6 max-w-2xl text-gray-600 dark:text-gray-300">
         Please sign in with GitHub to access this content.
       </p>
+      {authError && (
+        <p className="mb-6 text-red-500">
+          Error: {authError}. Please try again.
+        </p>
+      )}
       <button
         onClick={onGitHubSignIn}
         className="flex items-center gap-2 px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700 transition-colors"

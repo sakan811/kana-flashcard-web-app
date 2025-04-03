@@ -50,6 +50,16 @@ export default auth((req) => {
 
   // Check if user is authenticated
   if (req.auth?.user) {
+    // Important: For API routes, add the user ID to headers so API handlers can access it
+    if (isProtectedApiRoute) {
+      const headers = new Headers(req.headers);
+      headers.set('x-user-id', req.auth.user.id);
+      return NextResponse.next({
+        request: {
+          headers
+        }
+      });
+    }
     return NextResponse.next();
   }
 
@@ -57,7 +67,7 @@ export default auth((req) => {
   if (isProtectedApiRoute) {
     return NextResponse.json({ 
       success: false, 
-      error: "Unauthorized" 
+      error: "Unauthorized: Authentication required" 
     }, { status: 401 });
   }
   

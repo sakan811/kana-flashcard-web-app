@@ -4,7 +4,7 @@
  */
 
 import { Session } from "next-auth";
-import { Kana } from "@/types/kana";
+import { Character, KanaType } from "@/types/kana";
 
 // Default fetch options with credentials and JSON headers
 const defaultOptions: RequestInit = {
@@ -19,6 +19,18 @@ const handleApiResponse = async <T>(response: Response): Promise<T> => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const errorMessage = errorData.error || response.statusText || "API request failed";
+    
+    // Handle authentication errors explicitly
+    if (response.status === 401) {
+      console.error("Authentication error:", errorMessage);
+      // If we're not already on the login page, redirect to it
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        window.location.href = `/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
+        // Throw a clearer error for debugging
+        throw new Error("Unauthorized: Authentication required");
+      }
+    }
+    
     throw new Error(errorMessage);
   }
   
@@ -32,10 +44,10 @@ export const kanaApi = {
   /**
    * Get all kana characters of a specific type
    */
-  getKana: async (type?: 'hiragana' | 'katakana'): Promise<Kana[]> => {
+  getKana: async (type?: 'hiragana' | 'katakana'): Promise<Character[]> => {
     const url = type ? `/api/kana/${type}` : '/api/kana';
     const response = await fetch(url, defaultOptions);
-    const result = await handleApiResponse<{ success: boolean; data: Kana[] }>(response);
+    const result = await handleApiResponse<{ success: boolean; data: Character[] }>(response);
     return result.data;
   },
   
@@ -45,7 +57,7 @@ export const kanaApi = {
   getRandomKana: async (
     type?: 'hiragana' | 'katakana',
     userId?: string
-  ): Promise<Kana & { weight: number; correctCount: number; totalCount: number; accuracy: number }> => {
+  ): Promise<Character & { correctCount: number; totalCount: number; accuracy: number }> => {
     const params = new URLSearchParams();
     if (type) params.append("kanaType", type);
     if (userId) params.append("userId", userId);
@@ -54,8 +66,7 @@ export const kanaApi = {
     const response = await fetch(url, defaultOptions);
     const result = await handleApiResponse<{ 
       success: boolean; 
-      data: Kana & { 
-        weight: number; 
+      data: Character & { 
         correctCount: number; 
         totalCount: number; 
         accuracy: number 
