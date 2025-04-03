@@ -5,10 +5,6 @@ import prisma from "./prisma";
 import { getEnvVar, validateEnv } from "./env";
 import { User } from "@/types/auth-types";
 
-// Check if we're running in Edge Runtime
-const isEdgeRuntime = typeof process.env.NEXT_RUNTIME === 'string' && 
-  process.env.NEXT_RUNTIME === 'edge';
-
 // Validate environment variables on module load
 try {
   validateEnv();
@@ -25,22 +21,6 @@ declare module "next-auth" {
   interface Session {
     user: User;
   }
-
-  interface User {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    role?: string | null;
-  }
-  
-  interface JWT {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    picture?: string | null;
-    role?: string | null;
-  }
 }
 
 /**
@@ -48,8 +28,7 @@ declare module "next-auth" {
  * Centralized configuration for consistent authentication behavior
  */
 export const authOptions: NextAuthConfig = {
-  // Only use PrismaAdapter when not in Edge Runtime
-  adapter: isEdgeRuntime ? undefined : PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   providers: [
     GitHub({
       clientId: getEnvVar('GITHUB_ID'),
@@ -105,30 +84,15 @@ export const authOptions: NextAuthConfig = {
       // Default fallback to home page
       return baseUrl;
     },
-    // Enhanced authorized callback for middleware protection
-    authorized({ auth, request }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnProtectedPage = !request.nextUrl?.pathname.startsWith('/login');
-      
-      // For API routes, auth check is handled in middleware
-      if (request.nextUrl?.pathname.startsWith('/api/')) {
-        return true;
-      }
-      
-      // For protected pages, require login
-      return isOnProtectedPage ? isLoggedIn : true;
+    // Simplified authorized callback
+    authorized({ auth }) {
+      return !!auth?.user;
     },
   },
   events: {
     async signIn({ user }) {
       // Log successful sign-ins for security monitoring
       console.log(`User signed in: ${user.id}`);
-    },
-    async signOut({ token }) {
-      // Log sign-outs for security monitoring
-      if (token?.id) {
-        console.log(`User signed out: ${token.id}`);
-      }
     },
   },
   pages: {
@@ -169,16 +133,6 @@ export const authOptions: NextAuthConfig = {
         secure: process.env.NODE_ENV === "production",
       },
     },
-    pkceCodeVerifier: {
-      name: "next-auth.pkce.code_verifier",
-      options: {
-        httpOnly: true,
-        sameSite: "lax", 
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 10 // 10 minutes in seconds
-      }
-    }
   },
   secret: getEnvVar('NEXTAUTH_SECRET'),
   debug: process.env.NODE_ENV === "development",

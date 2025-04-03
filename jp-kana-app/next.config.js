@@ -14,6 +14,26 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: true,
   compress: true,
+  // Ensure API routes work correctly
+  async rewrites() {
+    return [
+      // Auth API routes
+      {
+        source: '/api/auth/:path*',
+        destination: '/api/auth/:path*',
+      },
+      // API routes
+      {
+        source: '/api/:path*',
+        destination: '/api/:path*',
+      },
+      // Pages fallback
+      {
+        source: '/:path*',
+        destination: '/:path*',
+      }
+    ];
+  },
   // Add security headers for authentication best practices
   async headers() {
     return [

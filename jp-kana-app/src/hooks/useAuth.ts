@@ -3,11 +3,10 @@
 import { useEffect, useCallback } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { AUTH_PATHS } from '@/lib/auth-constants';
 
 /**
  * Custom hook for authentication operations
- * Centralizes authentication logic following Next.js and Auth.js best practices
+ * Centralized auth logic using Auth.js v5 with Next.js
  */
 export function useAuth(options?: {
   requireAuth?: boolean;
@@ -17,9 +16,9 @@ export function useAuth(options?: {
 }) {
   const {
     requireAuth = false,
-    redirectTo = AUTH_PATHS.SIGN_IN,
+    redirectTo = '/login',
     redirectIfAuthenticated = false,
-    redirectIfAuthenticatedTo = AUTH_PATHS.DEFAULT_REDIRECT,
+    redirectIfAuthenticatedTo = '/',
   } = options || {};
 
   const { data: session, status, update: updateSession } = useSession();
@@ -48,7 +47,7 @@ export function useAuth(options?: {
    * Sign out the current user
    */
   const handleSignOut = useCallback(async (customCallbackUrl?: string) => {
-    const effectiveCallbackUrl = customCallbackUrl || AUTH_PATHS.DEFAULT_REDIRECT;
+    const effectiveCallbackUrl = customCallbackUrl || '/';
     return signOut({ callbackUrl: effectiveCallbackUrl });
   }, []);
 
@@ -56,6 +55,11 @@ export function useAuth(options?: {
    * Handle authentication state changes and redirects
    */
   useEffect(() => {
+    // Skip during SSR or when status is still loading
+    if (typeof window === 'undefined' || status === 'loading') {
+      return;
+    }
+    
     // Redirect to login if authentication is required but user is not authenticated
     if (requireAuth && status === 'unauthenticated') {
       const encodedCallbackUrl = encodeURIComponent(pathname);

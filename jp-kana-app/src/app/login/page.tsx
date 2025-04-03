@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import AuthLoading from "@/components/auth/AuthLoading";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const { status, isLoading: sessionLoading, handleGitHubSignIn } = useAuth({
@@ -12,6 +13,30 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
+
+  // Parse error from URL if present
+  useEffect(() => {
+    if (errorParam) {
+      switch (errorParam) {
+        case "OAuthAccountNotLinked":
+          setError("This account is already linked to another provider.");
+          break;
+        case "OAuthSignInError":
+          setError("There was a problem signing in with GitHub.");
+          break;
+        case "OAuthCallback":
+          setError("Error during GitHub sign-in callback.");
+          break;
+        case "EmailSignin":
+          setError("The email couldn't be sent.");
+          break;
+        default:
+          setError("An authentication error occurred. Please try again.");
+      }
+    }
+  }, [errorParam]);
 
   const onGitHubSignIn = async () => {
     try {

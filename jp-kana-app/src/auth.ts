@@ -1,11 +1,17 @@
 import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth-options";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import prisma from "./lib/prisma";
+import { authConfig } from "./auth.config";
 
 /**
- * Central export for all Auth.js functionality
- * This centralizes authentication configuration to ensure consistency
+ * Complete Auth.js configuration with Prisma adapter
+ * This is used in regular API routes and server components
+ * but NOT in middleware or edge functions
  */
-export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+  adapter: PrismaAdapter(prisma),
+});
 
 /**
  * Export convenience functions for authentication
