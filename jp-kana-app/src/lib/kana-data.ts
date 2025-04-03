@@ -3,7 +3,16 @@
  * Single source of truth for hiragana and katakana characters
  */
 
-import { Kana } from '@/types/kana';
+import { KanaType } from '@/types/kana';
+
+// Define the Kana interface used in this file
+export interface Kana {
+  id: string;
+  character: string;
+  romaji: string;
+  type: string; 
+  group: string;
+}
 
 /**
  * Complete collection of hiragana characters with metadata

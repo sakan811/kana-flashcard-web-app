@@ -6,6 +6,10 @@ const nextConfig = {
   eslint: {
     dirs: ["tests", "src"],
   },
+  // Environment variables that need to be available to the client
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+  },
   // Use 'standalone' for production builds only to avoid development issues
   output: process.env.NODE_ENV === "production" ? "standalone" : undefined,
   // Remove outputFileTracingRoot as it can cause path resolution issues

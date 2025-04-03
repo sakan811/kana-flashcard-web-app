@@ -42,7 +42,9 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
       setError(null);
-      await handleGitHubSignIn();
+      // Get callbackUrl from query parameters or default to '/'
+      const callbackUrl = searchParams.get('callbackUrl') || '/';
+      await handleGitHubSignIn(callbackUrl);
     } catch (err) {
       console.error("Sign in error:", err);
       setError("An unexpected error occurred. Please try again.");

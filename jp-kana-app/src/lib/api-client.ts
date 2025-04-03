@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Centralized API client for making requests to backend endpoints
  * Follows Next.js best practices for data fetching
@@ -23,9 +25,12 @@ const handleApiResponse = async <T>(response: Response): Promise<T> => {
     // Handle authentication errors explicitly
     if (response.status === 401) {
       console.error("Authentication error:", errorMessage);
+      
       // If we're not already on the login page, redirect to it
       if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-        window.location.href = `/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
+        // Get the current URL to use as a callback
+        const callbackUrl = encodeURIComponent(window.location.pathname);
+        window.location.href = `/login?callbackUrl=${callbackUrl}`;
         // Throw a clearer error for debugging
         throw new Error("Unauthorized: Authentication required");
       }

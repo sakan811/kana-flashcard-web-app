@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth.edge";
+import { AUTH_ROUTES, AUTH_HEADERS } from "@/lib/auth-constants";
 
 /**
  * Auth.js v5 middleware for route protection
@@ -18,28 +19,12 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  // Protected API paths
-  const protectedApiPaths = [
-    '/api/record-performance',
-    '/api/kana-performance',
-    '/api/random-kana',
-    '/api/kana-weights',
-    '/api/update-progress',
-    '/api/user-progress',
-  ];
-  
-  // Protected page paths
-  const protectedPagePaths = [
-    '/hiragana',
-    '/katakana',
-  ];
-
   // Only protect specific routes
-  const isProtectedApiRoute = protectedApiPaths.some(route => 
+  const isProtectedApiRoute = AUTH_ROUTES.PROTECTED_API_ROUTES.some(route => 
     pathname.startsWith(route)
   );
   
-  const isProtectedPageRoute = protectedPagePaths.some(route => 
+  const isProtectedPageRoute = AUTH_ROUTES.PROTECTED_PAGE_ROUTES.some(route => 
     pathname.startsWith(route)
   );
 
@@ -53,7 +38,7 @@ export default auth((req) => {
     // Important: For API routes, add the user ID to headers so API handlers can access it
     if (isProtectedApiRoute) {
       const headers = new Headers(req.headers);
-      headers.set('x-user-id', req.auth.user.id);
+      headers.set(AUTH_HEADERS.USER_ID, req.auth.user.id);
       return NextResponse.next({
         request: {
           headers
@@ -72,11 +57,13 @@ export default auth((req) => {
   }
   
   if (isProtectedPageRoute) {
-    return NextResponse.redirect(
-      new URL(`/login`, req.url)
-    );
+    // Create a safe URL for the login page
+    const encodedFrom = encodeURIComponent(pathname);
+    const redirectUrl = `/login?callbackUrl=${encodedFrom}`;
+    
+    return NextResponse.redirect(new URL(redirectUrl, nextUrl.origin));
   }
-
+  
   return NextResponse.next();
 });
 
@@ -97,7 +84,7 @@ export const config = {
     '/katakana/:path*',
     '/login',
     
-    // Exclude auth routes
-    '/((?!api/auth|_next/static|_next/image).*)',
+    // Exclude auth API routes and static files
+    '/((?!api/auth|_next/static|_next/image|favicon.ico).*)',
   ]
 };

@@ -1,8 +1,8 @@
 import React from "react";
-import { KanaMessage } from "@/types/kana";
+import { KanaMessageState } from "@/hooks/useKanaState";
 
 interface MessageDisplayProps {
-  message: KanaMessage;
+  message: KanaMessageState;
   hasError: boolean;
   onRetry: () => void;
 }
@@ -12,36 +12,34 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
   hasError,
   onRetry,
 }) => {
-  if (!message.correct && !message.incorrect && !message.error) {
+  if (!message.text) {
     return null;
   }
 
   return (
     <div className="mt-4">
-      {message.correct && (
+      {message.type === "success" && (
         <p className="text-green-600 dark:text-green-400 font-medium text-lg text-center">
-          {message.correct}
+          {message.text}
         </p>
       )}
-      {message.incorrect && (
+      {message.type === "error" && !hasError && (
         <p
           className="text-red-600 dark:text-red-400 font-medium text-lg text-center"
-          dangerouslySetInnerHTML={{ __html: message.incorrect }}
+          dangerouslySetInnerHTML={{ __html: message.text }}
         />
       )}
-      {message.error && (
+      {hasError && (
         <div className="text-center">
           <p className="text-red-600 dark:text-red-400 font-medium text-lg">
-            {message.error}
+            {message.text}
           </p>
-          {hasError && (
-            <button
-              onClick={onRetry}
-              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Retry
-            </button>
-          )}
+          <button
+            onClick={onRetry}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Retry
+          </button>
         </div>
       )}
     </div>

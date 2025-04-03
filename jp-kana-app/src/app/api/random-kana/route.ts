@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { KanaType } from "@/types/kana";
 import { withAuth, verifyUserId, createErrorResponse, createSuccessResponse } from "@/lib/api-utils";
-import { getKanaByType, getKanaById } from "@/lib/kana-data";
+import { getKanaByType, getKanaById, Kana } from "@/lib/kana-data";
 
 /**
  * GET /api/random-kana
@@ -108,10 +108,7 @@ export const GET = withAuth(async (request: NextRequest, userId: string) => {
       }
     }
 
-    return createSuccessResponse({
-      success: true,
-      data: selectedKana,
-    });
+    return createSuccessResponse(selectedKana);
   } catch (error) {
     console.error("Error getting random kana:", error);
     

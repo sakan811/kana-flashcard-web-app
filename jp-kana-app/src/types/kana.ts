@@ -6,6 +6,7 @@ export enum KanaType {
 export interface Character {
   id?: number;
   kana?: string;
+  character?: string;
   hiragana?: string;
   katakana?: string;
   romaji: string;

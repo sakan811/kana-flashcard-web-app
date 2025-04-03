@@ -20,7 +20,7 @@ export async function submitAnswer(
   try {
     await recordKanaPerformance(
       userId,
-      currentKana.kana || "",
+      currentKana.character || "",
       kanaType || KanaType.hiragana,
       isCorrect,
       currentKana.id,

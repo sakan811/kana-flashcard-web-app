@@ -37,9 +37,9 @@ const KanaDisplay: React.FC<KanaDisplayProps> = ({
           <>
             <h1 
               className="text-8xl font-bold text-gray-900 dark:text-white"
-              aria-label={`${currentKana.kana}, which is pronounced as ${currentKana.romaji}`}
+              aria-label={`${currentKana.character}, which is pronounced as ${currentKana.romaji}`}
             >
-              {currentKana.kana}
+              {currentKana.character}
             </h1>
             <span className="sr-only">
               This is a {kanaType || currentKana.type} character pronounced as {currentKana.romaji}

@@ -31,51 +31,7 @@ export const AUTH_ROUTES = {
     "/api/auth/csrf",
     "/api/auth/providers",
     "/api/auth/callback/github",
-  ],
-
-  // Routes that need rate limiting
-  RATE_LIMITED_ROUTES: [
-    "/api/auth/signin",
-    "/api/auth/callback",
-    "/login",
-  ],
-};
-
-/**
- * Session configuration
- */
-export const SESSION_CONFIG = {
-  // Max session age in seconds
-  MAX_AGE: 30 * 24 * 60 * 60, // 30 days
-  
-  // How often to renew session (in seconds)
-  UPDATE_AGE: 24 * 60 * 60, // 24 hours
-  
-  // Auto-refresh interval (in milliseconds) for client
-  REFRESH_INTERVAL: 5 * 60 * 1000, // 5 minutes
-  
-  // Rate limit config
-  RATE_LIMIT_MAX: 5, // 5 requests
-  RATE_LIMIT_WINDOW: 60 * 1000, // per minute
-};
-
-/**
- * Cookie names used by Auth.js
- */
-export const AUTH_COOKIE_NAMES = {
-  SESSION: "next-auth.session-token",
-  CSRF: "next-auth.csrf-token",
-  CALLBACK_URL: "next-auth.callback-url",
-  PKCE_CODE_VERIFIER: "next-auth.pkce.code_verifier",
-};
-
-/**
- * Paths used for authentication
- */
-export const AUTH_PATHS = {
-  SIGN_IN: "/login",
-  ERROR: "/login",
-  DEFAULT_REDIRECT: "/",
+  ]
 };
 
 /**
@@ -100,6 +56,4 @@ export const AUTH_ERROR_MESSAGES = {
   'CallbackRouteError': 'There was a problem with the authentication callback.',
   'EmailCreateAccount': 'Could not create email account.',
   'EmailSignin': 'The e-mail could not be sent.',
-  'TokenError': 'Verification token error.',
-  'default': 'Authentication error. Please try again.'
 };

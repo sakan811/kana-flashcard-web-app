@@ -61,7 +61,7 @@ export function updateWeights(
   // Use map to iterate over each Kana character in the initial array
   return initialKanaCharacters.map((char: Character): Character => {
     // Find the corresponding data item in the performance data
-    const dataItem = performanceData.find((item) => item.kana === char.kana);
+    const dataItem = performanceData.find((item) => item.kana === char.character);
 
     // If a matching data item is found, calculate the new weight
     if (dataItem) {
@@ -98,7 +98,7 @@ export const submitAnswer = async (
 ): Promise<void> => {
   // Get the kana character based on type (defaulting to hiragana if undefined)
   const effectiveType: KanaType = kanaType || KanaType.hiragana;
-  const kana = currentKana.kana;
+  const kana = currentKana.character;
 
   // Skip if kana is undefined
   if (!kana) {

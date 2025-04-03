@@ -28,32 +28,23 @@ export function useAuth(options?: {
   const callbackUrl = searchParams.get('callbackUrl') || '/';
   const authError = searchParams.get('error');
 
-  /**
-   * Force refresh of the session
-   */
+  // Force refresh of the session
   const refreshSession = useCallback(() => {
     return updateSession();
   }, [updateSession]);
 
-  /**
-   * Sign in with GitHub
-   */
-  const handleGitHubSignIn = useCallback(async (customCallbackUrl?: string) => {
+  // Sign in with GitHub
+  const handleGitHubSignIn = useCallback((customCallbackUrl?: string) => {
     const effectiveCallbackUrl = customCallbackUrl || callbackUrl;
     return signIn('github', { callbackUrl: effectiveCallbackUrl, redirect: true });
   }, [callbackUrl]);
 
-  /**
-   * Sign out the current user
-   */
-  const handleSignOut = useCallback(async (customCallbackUrl?: string) => {
-    const effectiveCallbackUrl = customCallbackUrl || '/';
-    return signOut({ callbackUrl: effectiveCallbackUrl });
+  // Sign out the current user
+  const handleSignOut = useCallback(async () => {
+    return signOut({ callbackUrl: '/' });
   }, []);
 
-  /**
-   * Handle authentication state changes and redirects
-   */
+  // Handle authentication state changes and redirects
   useEffect(() => {
     // Skip during SSR or when status is still loading
     if (typeof window === 'undefined' || status === 'loading') {

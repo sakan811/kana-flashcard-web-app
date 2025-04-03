@@ -11,6 +11,19 @@ import { authConfig } from "./auth.config";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
+  events: {
+    async signIn({ user }) {
+      console.log("User signed in:", user.id);
+    },
+    async signOut() {
+      console.log("User signed out");
+    },
+  },
+  logger: {
+    error(error) {
+      console.error("Auth error:", error);
+    },
+  },
 });
 
 /**

@@ -13,9 +13,7 @@ export const authConfig: NextAuthConfig = {
       clientId: getEnvVar('GITHUB_ID'),
       clientSecret: getEnvVar('GITHUB_SECRET'),
       authorization: { 
-        params: { 
-          scope: "read:user user:email"
-        } 
+        params: { scope: "read:user user:email" } 
       },
     }),
   ],
@@ -36,7 +34,7 @@ export const authConfig: NextAuthConfig = {
       if (session.user) {
         session.user.id = token.id as string;
         if (token.role) {
-          session.user.role = token.role as UserRole;
+          token.role = token.role as UserRole;
         }
       }
       return session;
@@ -44,14 +42,13 @@ export const authConfig: NextAuthConfig = {
   },
   pages: {
     signIn: "/login",
-    error: "/auth/error",
+    error: "/login",
   },
   session: {
-    // Always use JWT for Edge compatibility
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  basePath: "/api/auth",
   debug: process.env.NODE_ENV === "development",
   trustHost: true,
-  useSecureCookies: process.env.NODE_ENV === "production",
-}; 
+};
