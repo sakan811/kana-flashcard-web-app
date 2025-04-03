@@ -39,7 +39,7 @@ function ProtectedContent() {
             <div className="text-center">
               <h2 className="text-xl font-bold mb-2">Hiragana Practice</h2>
               <p className="text-5xl mb-4">あいう</p>
-              <p className="text-gray-600">Practice the basic Japanese hiragana characters</p>
+              <p className="text-gray-600">Practice the Hiragana characters</p>
             </div>
           </Link>
           
@@ -47,7 +47,7 @@ function ProtectedContent() {
             <div className="text-center">
               <h2 className="text-xl font-bold mb-2">Katakana Practice</h2>
               <p className="text-5xl mb-4">アイウ</p>
-              <p className="text-gray-600">Practice the basic Japanese katakana characters</p>
+              <p className="text-gray-600">Practice the Katakana characters</p>
             </div>
           </Link>
         </div>
