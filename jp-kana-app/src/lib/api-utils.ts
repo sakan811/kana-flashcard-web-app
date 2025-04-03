@@ -64,18 +64,33 @@ export function withAuth(handler: ApiHandler) {
     } catch (error) {
       console.error("API error:", error);
       
-      // Handle known error types
+      // Handle known error types with more structured approach
       if (error instanceof Error) {
-        if (error.message.includes('Unauthorized')) {
-          return createErrorResponse(`Authentication error: ${error.message}`, 401);
+        // Use a more structured approach to classify errors
+        const errorMessage = error.message;
+        
+        // Authentication errors
+        if (errorMessage.includes('Unauthorized') || errorMessage.includes('authentication')) {
+          return createErrorResponse(errorMessage, 401);
         }
-        if (error.message.includes('Forbidden')) {
-          return createErrorResponse(error.message, 403);
+        
+        // Authorization errors
+        if (errorMessage.includes('Forbidden') || errorMessage.includes('permission')) {
+          return createErrorResponse(errorMessage, 403);
         }
-        if (error.message.includes('Not found')) {
-          return createErrorResponse(error.message, 404);
+        
+        // Not found errors
+        if (errorMessage.includes('Not found') || errorMessage.includes('not exist')) {
+          return createErrorResponse(errorMessage, 404);
         }
-        return createErrorResponse(error.message, 400);
+        
+        // Database connection errors
+        if (errorMessage.includes('database') || errorMessage.includes('connection')) {
+          return createErrorResponse("Database error: " + errorMessage, 503);
+        }
+        
+        // Default client error case
+        return createErrorResponse(errorMessage, 400);
       }
       
       // Generic error response

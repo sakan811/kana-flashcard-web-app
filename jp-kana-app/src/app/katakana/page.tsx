@@ -1,17 +1,24 @@
 "use client";
 
 import React from "react";
-import KatakanaClient from "./katakana-client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-options";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import RandomKana from "@/components/showKana";
+import { KanaType } from "@/types/kana";
+import AuthGuard from "@/components/auth/AuthGuard";
 
-export default async function KatakanaPage() {
-  const session = await getServerSession(authOptions);
-  
-  if (!session) {
-    redirect("/login");
-  }
-  
-  return <KatakanaClient />;
+export default function KatakanaPage() {
+  const router = useRouter();
+
+  const handleNavigateBack = () => {
+    router.push("/");
+  };
+
+  return (
+    <AuthGuard>
+      <RandomKana
+        kanaType={KanaType.katakana}
+        onNavigateBack={handleNavigateBack}
+      />
+    </AuthGuard>
+  );
 }

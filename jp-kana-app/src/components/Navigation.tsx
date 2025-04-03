@@ -3,15 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSession, signOut } from "next-auth/react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation: React.FC = () => {
-  const { data: session, status } = useSession();
-  const isLoading = status === "loading";
-
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: "/" });
-  };
+  const { isLoading, isAuthenticated, user, handleSignOut } = useAuth();
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-md">
@@ -31,13 +26,13 @@ const Navigation: React.FC = () => {
               <div className="animate-pulse px-3 py-1 rounded bg-gray-100 dark:bg-gray-700">
                 <span className="text-transparent">Loading...</span>
               </div>
-            ) : session ? (
+            ) : isAuthenticated && user ? (
               <div className="flex items-center gap-3">
-                {session.user?.image && (
+                {user.image && (
                   <div className="w-8 h-8 rounded-full overflow-hidden">
                     <Image
-                      src={session.user.image}
-                      alt={session.user?.name || "User avatar"}
+                      src={user.image}
+                      alt={user.name || "User avatar"}
                       width={32}
                       height={32}
                       className="object-cover"
@@ -45,10 +40,10 @@ const Navigation: React.FC = () => {
                   </div>
                 )}
                 <span className="text-gray-600 dark:text-gray-300 hidden sm:inline">
-                  {session.user?.name || session.user?.email}
+                  {user.name || user.email}
                 </span>
                 <button
-                  onClick={handleSignOut}
+                  onClick={() => handleSignOut()}
                   className="text-sm px-3 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 transition-colors"
                   aria-label="Sign out"
                 >

@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { useSession, signIn } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
+import React from "react";
+import { usePathname } from "next/navigation";
 import AuthLoading from "./AuthLoading";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -18,25 +18,23 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   fallback,
   loadingMessage = "Verifying authentication..."
 }) => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
   const pathname = usePathname();
+  const { 
+    isLoading, 
+    isAuthenticated, 
+    handleGitHubSignIn 
+  } = useAuth({
+    requireAuth: true, 
+    redirectTo: "/login"
+  });
   
-  // Handle redirection when authentication state changes
-  useEffect(() => {
-    if (status === "unauthenticated" && !pathname.includes("/login")) {
-      const callbackUrl = encodeURIComponent(pathname);
-      router.replace(`/login?callbackUrl=${callbackUrl}`);
-    }
-  }, [status, router, pathname]);
-
   // Show loading state while checking auth
-  if (status === "loading") {
+  if (isLoading) {
     return <AuthLoading message={loadingMessage} />;
   }
 
   // If authenticated, show the protected content
-  if (status === "authenticated") {
+  if (isAuthenticated) {
     return <>{children}</>;
   }
 
@@ -46,9 +44,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   }
 
   // Handle GitHub sign-in directly from the guard
-  const handleGitHubSignIn = () => {
-    const callbackUrl = encodeURIComponent(pathname);
-    signIn("github", { callbackUrl: pathname });
+  const onGitHubSignIn = () => {
+    handleGitHubSignIn(pathname);
   };
 
   // Default fallback with GitHub sign-in option
@@ -61,7 +58,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
         Please sign in with GitHub to access this content.
       </p>
       <button
-        onClick={handleGitHubSignIn}
+        onClick={onGitHubSignIn}
         className="flex items-center gap-2 px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700 transition-colors"
       >
         <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">

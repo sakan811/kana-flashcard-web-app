@@ -1,36 +1,36 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import AuthLoading from "@/components/auth/AuthLoading";
 import { AUTH_ERROR_MESSAGES } from "@/lib/auth-constants";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
-  const authError = searchParams.get("error");
+  const { 
+    status, 
+    isLoading: sessionLoading, 
+    authError: errorCode, 
+    handleGitHubSignIn 
+  } = useAuth({
+    redirectIfAuthenticated: true,
+    redirectIfAuthenticatedTo: "/"
+  });
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(
     // Set initial error from URL if present
-    authError ? AUTH_ERROR_MESSAGES[authError] || AUTH_ERROR_MESSAGES.default : null
+    errorCode ? AUTH_ERROR_MESSAGES[errorCode] || AUTH_ERROR_MESSAGES.default : null
   );
 
   // Handle GitHub sign-in
-  const handleGitHubSignIn = async () => {
+  const onGitHubSignIn = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      
-      // Sign in with GitHub provider using Auth.js
-      await signIn("github", {
-        callbackUrl,
-        redirect: true,
-      });
-      // NextAuth will handle the redirect after successful sign-in
+      await handleGitHubSignIn();
+      // Auth hook will handle redirection
     } catch (err) {
       console.error("Sign in error:", err);
       setError("An unexpected error occurred");
@@ -38,13 +38,8 @@ export default function LoginPage() {
     }
   };
 
-  // If already authenticated, show loading state
-  if (status === "authenticated") {
-    return <AuthLoading message="Already signed in, redirecting..." size="large" />;
-  }
-
   // If checking auth status, show loading state
-  if (status === "loading") {
+  if (status === "loading" || sessionLoading) {
     return <AuthLoading message="Checking authentication status..." />;
   }
 
@@ -70,7 +65,7 @@ export default function LoginPage() {
 
         <div className="space-y-6">
           <button
-            onClick={handleGitHubSignIn}
+            onClick={onGitHubSignIn}
             disabled={isLoading}
             className="flex w-full justify-center items-center rounded-md bg-gray-800 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 disabled:bg-gray-400"
           >

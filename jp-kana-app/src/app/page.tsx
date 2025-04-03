@@ -2,14 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/hooks/useAuth";
+import AuthLoading from "@/components/auth/AuthLoading";
 
 export default function HomePage() {
-  const { data: session, status } = useSession();
-  const isLoading = status === "loading";
+  const { isLoading, isAuthenticated, user } = useAuth();
 
   // If user is not authenticated, show login prompt
-  if (!isLoading && !session) {
+  if (!isLoading && !isAuthenticated) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
         <h1 className="text-4xl font-bold mb-6 text-gray-800 dark:text-white">
@@ -35,11 +35,7 @@ export default function HomePage() {
 
   // If loading, show a loading message
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <p className="text-xl text-gray-600 dark:text-gray-300">Loading...</p>
-      </div>
-    );
+    return <AuthLoading message="Loading..." size="large" />;
   }
 
   // If authenticated, show the actual app content
