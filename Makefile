@@ -1,31 +1,9 @@
-.PHONY: dev build preview test lint format check lint-format-check ci-verify update-deps clean clean-build install prisma migrate reset studio compose-build compose-up compose-down compose-clean help start
+.PHONY: dev build preview test lint format check lint-format-check ci-verify update-deps clean clean-build install prisma prisma-clear-cache migrate reset studio compose-build compose-up compose-down compose-clean start seed push
 
 # Project configuration
 APP_DIR := jp-kana-app
-
-# Display help information
-help:
-	@echo "Available targets:"
-	@echo "  dev              - Run development server"
-	@echo "  build            - Build for production"
-	@echo "  start            - Start the production server"
-	@echo "  test             - Run tests"
-	@echo "  lint             - Run linting"
-	@echo "  format           - Format code"
-	@echo "  check            - Run type checking"
-	@echo "  lint-format-check - Run lint, format and check in sequence"
-	@echo "  ci-verify        - Run lint, format, check, test and build (CI pipeline)"
-	@echo "  clean            - Remove all build artifacts and dependencies"
-	@echo "  clean-build      - Remove only build artifacts (.next folder)"
-	@echo "  install          - Install dependencies"
-	@echo "  prisma           - Generate Prisma client"
-	@echo "  migrate          - Run Prisma migrations in dev mode"
-	@echo "  reset            - Reset Prisma database"
-	@echo "  studio           - Open Prisma Studio"
-	@echo "  compose-build    - Build and start containers with docker-compose build config"
-	@echo "  compose-up       - Start containers with docker-compose"
-	@echo "  compose-down     - Stop containers"
-	@echo "  compose-clean    - Stop containers and remove volumes"
+NPM_CMD := cd $(APP_DIR) && npm
+DOCKER_COMPOSE := docker compose
 
 # Run development server
 dev:
@@ -63,7 +41,7 @@ ci-verify:
 	cd $(APP_DIR) && npm run lint && \
 	npm run format && \
 	npm run check && \
-	npm run test && \
+	npm run test:run && \
 	npm run build
 
 # Update all dependencies to latest version
@@ -84,6 +62,14 @@ install:
 # Generate Prisma client
 prisma:
 	cd $(APP_DIR) && npx prisma generate
+
+# Run Prisma database seed (caution: does not create migrations)
+seed:
+	cd $(APP_DIR) && npx prisma db seed
+
+# Run Prisma database push (caution: does not create migrations)
+push:
+	cd $(APP_DIR) && npx prisma db push
 
 # Run Prisma migrations in development
 migrate:
