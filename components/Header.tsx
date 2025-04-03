@@ -1,56 +1,35 @@
 'use client';
 
+import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 
-type HeaderProps = {
-  activeTab: 'flashcards' | 'dashboard';
-  setActiveTab: (tab: 'flashcards' | 'dashboard') => void;
-};
-
-export default function Header({ activeTab, setActiveTab }: HeaderProps) {
+export default function Header() {
   const { data: session } = useSession();
-  
+
   return (
     <header className="bg-white shadow">
-      <div className="container mx-auto flex max-w-4xl flex-col items-center justify-between px-4 py-4 sm:flex-row">
-        <h1 className="mb-4 text-2xl font-bold text-gray-800 sm:mb-0">
-          Japanese Kana Flashcards
-        </h1>
+      <div className="container mx-auto p-4 flex justify-between items-center">
+        <Link href="/" className="text-xl font-bold text-gray-800">
+          Kana Flashcards
+        </Link>
         
-        <div className="flex items-center gap-4">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveTab('flashcards')}
-              className={`rounded-md px-3 py-1 ${
-                activeTab === 'flashcards'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800'
-              }`}
-            >
-              Flashcards
-            </button>
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className={`rounded-md px-3 py-1 ${
-                activeTab === 'dashboard'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800'
-              }`}
-            >
-              Dashboard
-            </button>
-          </div>
-          
+        <div className="flex items-center space-x-4">
+          <Link href="/hiragana" className="text-gray-700 hover:text-blue-600">
+            Hiragana
+          </Link>
+          <Link href="/katakana" className="text-gray-700 hover:text-blue-600">
+            Katakana
+          </Link>
+          <Link href="/dashboard" className="text-gray-700 hover:text-blue-600">
+            Dashboard
+          </Link>
           {session?.user && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">{session.user.name}</span>
-              <button
-                onClick={() => signOut()}
-                className="text-sm text-red-600 underline hover:text-red-800"
-              >
-                Sign Out
-              </button>
-            </div>
+            <button 
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              className="text-sm px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800"
+            >
+              Sign Out
+            </button>
           )}
         </div>
       </div>

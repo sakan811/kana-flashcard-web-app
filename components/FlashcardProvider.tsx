@@ -28,7 +28,14 @@ export function useFlashcard() {
   return context;
 }
 
-export function FlashcardProvider({ children }: { children: React.ReactNode }) {
+// Add kanaType to the props
+export function FlashcardProvider({ 
+  children, 
+  kanaType 
+}: { 
+  children: React.ReactNode;
+  kanaType?: 'hiragana' | 'katakana';
+}) {
   const { data: session } = useSession();
   const [kanaList, setKanaList] = useState<KanaWithAccuracy[]>([]);
   const [currentKana, setCurrentKana] = useState<KanaWithAccuracy | null>(null);
@@ -40,7 +47,7 @@ export function FlashcardProvider({ children }: { children: React.ReactNode }) {
     if (session?.user) {
       fetchKanaData();
     }
-  }, [session]);
+  }, [session, kanaType]);
 
   const fetchKanaData = async () => {
     setLoadingKana(true);
@@ -49,7 +56,16 @@ export function FlashcardProvider({ children }: { children: React.ReactNode }) {
       if (!response.ok) {
         throw new Error('Failed to fetch kana data');
       }
-      const data = await response.json();
+      let data = await response.json();
+      
+      // Filter by kana type if specified
+      if (kanaType) {
+        data = data.filter((kana: KanaWithAccuracy) => {
+          const isHiragana = kana.character.charCodeAt(0) >= 0x3040 && kana.character.charCodeAt(0) <= 0x309F;
+          return kanaType === 'hiragana' ? isHiragana : !isHiragana;
+        });
+      }
+      
       setKanaList(data);
       selectRandomKana(data);
     } catch (error) {
