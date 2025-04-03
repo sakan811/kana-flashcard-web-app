@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { KanaType } from "@/types/kana";
 import { useKanaState } from "./useKanaState";
-import { kanaApi } from "@/lib/api-client";
+import apiClient from "@/lib/api-client";
 
 /**
  * Custom hook for managing kana flashcard state and interactions
@@ -54,7 +54,7 @@ export function useKanaFlashcard(
     
     try {
       setIsLoading(true);
-      const data = await kanaApi.getKanaPerformance(userId, kanaType);
+      const data = await apiClient.kana.getUserPerformance(userId, kanaType);
       if (mountedRef.current) {
         setPerformanceData(data);
       }
@@ -80,7 +80,7 @@ export function useKanaFlashcard(
     
     try {
       setIsLoading(true);
-      const kana = await kanaApi.getRandomKana(userId, kanaType);
+      const kana = await apiClient.kana.getRandomKana(kanaType, userId);
       
       if (mountedRef.current && !isNavigatingRef.current) {
         setCurrentKana(kana);
@@ -113,19 +113,11 @@ export function useKanaFlashcard(
       const isCorrect = answer.toLowerCase() === currentKana.romaji.toLowerCase();
       
       // Record performance
-      await kanaApi.recordPerformance(
-        userId, 
-        currentKana.kana, 
-        kanaType, 
-        isCorrect
-      );
-      
-      // Update progress
-      await kanaApi.updateProgress(
-        userId,
+      await apiClient.kana.recordPerformance(
         currentKana.kana,
+        isCorrect,
         kanaType,
-        isCorrect
+        userId
       );
       
       // Show feedback message
@@ -143,12 +135,15 @@ export function useKanaFlashcard(
       await loadPerformanceData();
       
       // Fetch next kana after a delay
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         if (mountedRef.current && !isNavigatingRef.current) {
           clearErrorMessage();
           fetchRandomKana();
         }
       }, 1500);
+      
+      // Clean up timeout if component unmounts
+      return () => clearTimeout(timeoutId);
     } catch (error) {
       console.error("Error submitting answer:", error);
       if (mountedRef.current && !isNavigatingRef.current) {
@@ -172,7 +167,13 @@ export function useKanaFlashcard(
       loadPerformanceData();
       fetchRandomKana();
     }
-  }, [userId, isDataInitialized, loadPerformanceData, fetchRandomKana, isInitialLoadRef]);
+    
+    // Clean up function
+    return () => {
+      // This helps prevent state updates after unmount
+      mountedRef.current = false;
+    };
+  }, [userId, isDataInitialized, loadPerformanceData, fetchRandomKana, isInitialLoadRef, mountedRef]);
 
   return {
     currentKana,
