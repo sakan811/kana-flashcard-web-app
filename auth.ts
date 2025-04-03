@@ -6,12 +6,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [GitHub],
   callbacks: {
     async signIn({ user }) {
+
       // Check if this is a valid user object with email
-      if (user && user.id) {
+      if (user && user.email) {
         try {
           // Try to find the user first
           const existingUser = await prisma.user.findUnique({
-            where: { id: user.id }
+            where: { email: user.email }
           });
           
           // If user doesn't exist in database yet, create them

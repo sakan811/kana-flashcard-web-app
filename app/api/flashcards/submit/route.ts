@@ -5,7 +5,7 @@ import { auth } from "@/auth"
 export async function POST(request: NextRequest) {
   const session = await auth()
 
-  if (!session || !session.user) {
+  if (!session || !session.user ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
     // Find or create UserAccuracy record
     const userAccuracy = await prisma.userAccuracy.upsert({
       where: {
-        user_id_kana_id: {
-          user_id: session.user.id,
+        user_email_kana_id: {
+          user_email: session.user.email,
           kana_id: kanaId,
         },
       },
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         correct_attempts: isCorrect ? { increment: 1 } : undefined,
       },
       create: {
-        user_id: session.user.id,
+        user_email: session.user.email,
         kana_id: kanaId,
         attempts: 1,
         correct_attempts: isCorrect ? 1 : 0,

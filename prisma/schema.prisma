@@ -25,14 +25,14 @@ model Kana {
 
 model UserAccuracy {
   id              String   @id @default(uuid())
-  user_id         String
+  user_email      String
   kana_id         String
   attempts        Int      @default(0)
   correct_attempts Int      @default(0)
   accuracy        Float    @default(0)
   
-  user            User     @relation(fields: [user_id], references: [id])
+  user            User     @relation(fields: [user_email], references: [email])
   kana            Kana     @relation(fields: [kana_id], references: [id])
 
-  @@unique([user_id, kana_id])
+  @@unique([user_email, kana_id])
 }
