@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_PRISMA_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String?        @unique
+  created_at    DateTime       @default(now())
+  userAccuracy  UserAccuracy[]
+}
+
+model Kana {
+  id           String         @id @default(uuid())
+  character    String         @unique
+  romaji       String
+  userAccuracy UserAccuracy[]
+}
+
+model UserAccuracy {
+  id              String   @id @default(uuid())
+  user_email      String
+  kana_id         String
+  attempts        Int      @default(0)
+  correct_attempts Int      @default(0)
+  accuracy        Float    @default(0)
+  
+  user            User     @relation(fields: [user_email], references: [email])
+  kana            Kana     @relation(fields: [kana_id], references: [id])
+
+  @@unique([user_email, kana_id])
+}

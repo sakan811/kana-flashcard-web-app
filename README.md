@@ -4,35 +4,68 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
 ## Status
 
-[![Docker Build](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml)
-
-[![Push to Docker Hub](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-push.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-push.yml)
-
 [![Web-App Test](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-app.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-app.yml)
 
-## How to Use the Web App
+## The Web App
 
 - Navigate to <https://kana-flashcard-web-app-671v.vercel.app/>
 
 ### Local Version
 
+#### Prerequisites
+
+Before starting the setup, ensure you have the following installed:
+
+- **Make**: The utility to run Makefile commands
+  - Pre-installed on most Linux/macOS systems
+  - For Windows, install via [Chocolatey](https://chocolatey.org/): `choco install make` or [Scoop](https://scoop.sh/): `scoop install make`
+- **Node.js**: Required for running the application
+- **Docker**: Required for the database setup
+- **Git**: For cloning the repository
+
 #### Setup the Web App
 
-- Download [docker-compose.yml](./docker-compose.yml) file from this repository and place it in your desired directory
-- Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Run:
+1. Clone the repository:
 
-  ```bash
-  docker-compose up -d
-  ```
+   ```bash
+   git clone https://github.com/sakan811/kana-flashcard-web-app.git
+   cd kana-flashcard-web-app
+   ```
 
-This will:
+2. Install the dependencies:
 
-- Start a PostgreSQL database container on port 7777
-- Start the Kana Flashcard application container on port 3000
-- Automatically run database migrations
+   ```bash
+   npm install
+   ```
 
-#### Run the Web App
+3. Set up the database:
 
-- Make sure that **Docker Desktop** and the containers are running
-- Navigate to <http://localhost:3000/>
+   ```bash
+   make compose-up
+   make prisma-generate
+   make prisma-migrate
+   make prisma-seed
+   ```
+
+4. Setup the environment variables:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   4.1. Edit the .env file with your configuration:
+      - Generate an auth secret: `make auth-secret` and copy the output to AUTH_SECRET
+      - Set up GitHub OAuth:
+        1. Go to GitHub > Settings > Developer settings > OAuth Apps > New OAuth App
+        2. Set Homepage URL to `http://localhost:3000`
+        3. Set Authorization callback URL to `http://localhost:3000/api/auth/callback/github`
+        4. Copy Client ID to AUTH_GITHUB_ID and Client Secret to AUTH_GITHUB_SECRET
+      - Your database connection string should already be set correctly for local development
+
+5. Start the development server:
+
+   ```bash
+   make dev
+   ```
+
+6. Open your browser and navigate to `http://localhost:3000`.
