@@ -12,6 +12,17 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
 ### Local Version
 
+#### Prerequisites
+
+Before starting the setup, ensure you have the following installed:
+
+- **Make**: The utility to run Makefile commands
+  - Pre-installed on most Linux/macOS systems
+  - For Windows, install via [Chocolatey](https://chocolatey.org/): `choco install make` or [Scoop](https://scoop.sh/): `scoop install make`
+- **Node.js**: Required for running the application
+- **Docker**: Required for the database setup
+- **Git**: For cloning the repository
+
 #### Setup the Web App
 
 1. Clone the repository:
