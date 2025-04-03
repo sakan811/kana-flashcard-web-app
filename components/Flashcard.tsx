@@ -1,11 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFlashcard } from './FlashcardProvider';
 
 export default function Flashcard() {
   const { currentKana, loadingKana, submitAnswer, result, nextCard } = useFlashcard();
   const [answer, setAnswer] = useState('');
+  
+  // Handle Enter key when result is shown
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && result) {
+        nextCard();
+        setAnswer('');
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [result, nextCard]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
