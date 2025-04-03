@@ -4,6 +4,12 @@ dev:
 lint:
 	npm run lint
 
+test:
+	npm run test
+
+test-run:
+	npm run test:run
+
 compose-up:
 	docker-compose up -d
 	

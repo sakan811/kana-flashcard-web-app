@@ -52,7 +52,7 @@ export default function Flashcard() {
   if (loadingKana) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" role="status"></div>
       </div>
     );
   }
@@ -100,6 +100,7 @@ export default function Flashcard() {
           )}
           <button
             type="submit"
+            role='button'
             disabled={isProcessing}
             className={`rounded-md px-4 py-2 font-medium text-white transition ${
               isProcessing 
