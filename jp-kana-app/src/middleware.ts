@@ -6,6 +6,7 @@ import { AUTH_ROUTES, AUTH_HEADERS, SESSION_CONFIG, AUTH_PATHS } from "./lib/aut
 /**
  * Auth.js v5 middleware for route protection
  * Handles authentication, authorization and rate limiting
+ * Optimized for Edge Runtime compatibility
  */
 export default auth((req) => {
   const { nextUrl } = req;

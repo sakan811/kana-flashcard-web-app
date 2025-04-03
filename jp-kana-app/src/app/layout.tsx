@@ -5,7 +5,6 @@ import { Inter } from 'next/font/google';
 import Navigation from "../components/Navigation";
 import DatabaseInitializer from "../components/DatabaseInitializer";
 import { AuthProvider } from "@/components/AuthProvider";
-import ThemeProvider from "@/components/ThemeProvider";
 
 // Initialize the Inter font with Latin subset for better performance
 const inter = Inter({
@@ -77,20 +76,18 @@ export default function RootLayout({
         className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans"
       >
         <AuthProvider>
-          <ThemeProvider>
-            <div className="min-h-screen flex flex-col">
-              <Navigation />
-              <DatabaseInitializer />
-              <main className="flex-grow py-6">
-                <div className="container mx-auto px-4">{children}</div>
-              </main>
-              <footer className="py-4 text-center text-sm text-gray-600 dark:text-gray-400">
-                <div className="container mx-auto">
-                  © {new Date().getFullYear()} Japanese Kana Flashcard App
-                </div>
-              </footer>
-            </div>
-          </ThemeProvider>
+          <div className="min-h-screen flex flex-col">
+            <Navigation />
+            <DatabaseInitializer />
+            <main className="flex-grow py-6">
+              <div className="container mx-auto px-4">{children}</div>
+            </main>
+            <footer className="py-4 text-center text-sm text-gray-600 dark:text-gray-400">
+              <div className="container mx-auto">
+                © {new Date().getFullYear()} Japanese Kana Flashcard App
+              </div>
+            </footer>
+          </div>
         </AuthProvider>
       </body>
     </html>

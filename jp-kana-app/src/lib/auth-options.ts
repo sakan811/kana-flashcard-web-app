@@ -5,6 +5,10 @@ import prisma from "./prisma";
 import { getEnvVar, validateEnv } from "./env";
 import { User } from "@/types/auth-types";
 
+// Check if we're running in Edge Runtime
+const isEdgeRuntime = typeof process.env.NEXT_RUNTIME === 'string' && 
+  process.env.NEXT_RUNTIME === 'edge';
+
 // Validate environment variables on module load
 try {
   validateEnv();
@@ -44,7 +48,8 @@ declare module "next-auth" {
  * Centralized configuration for consistent authentication behavior
  */
 export const authOptions: NextAuthConfig = {
-  adapter: PrismaAdapter(prisma),
+  // Only use PrismaAdapter when not in Edge Runtime
+  adapter: isEdgeRuntime ? undefined : PrismaAdapter(prisma),
   providers: [
     GitHub({
       clientId: getEnvVar('GITHUB_ID'),
