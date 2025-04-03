@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { signIn } from "next-auth/react"
+import { signIn } from "next-auth/react";
 
 export default function SignIn() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="p-8 bg-white rounded-lg shadow-md text-center w-100">
         <h1 className="text-2xl font-bold mb-8">Japanese Kana Flashcard App</h1>
-        <button 
-          onClick={() => signIn("github", { callbackUrl: '/' })}
+        <button
+          onClick={() => signIn("github", { callbackUrl: "/" })}
           className="w-full px-6 py-3 bg-black text-white rounded-md flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors mx-auto"
         >
           <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -18,5 +18,5 @@ export default function SignIn() {
         </button>
       </div>
     </div>
-  )
+  );
 }

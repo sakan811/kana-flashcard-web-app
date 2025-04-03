@@ -1,8 +1,14 @@
 dev:
 	npm run dev
 
+build:
+	npm run build
+
 lint:
 	npm run lint
+
+format:
+	npm run format
 
 test:
 	npm run test
@@ -10,11 +16,20 @@ test:
 test-run:
 	npm run test:run
 
+pre-ci:
+	npm run lint && \
+	npm run format && \
+	npm run test && \
+	npm run build
+
 compose-up:
 	docker-compose up -d
 	
 compose-down:
 	docker-compose down
+
+compose-clean:
+	docker-compose down --volumes --remove-orphans
 
 auth-secret:
 	npx auth secret

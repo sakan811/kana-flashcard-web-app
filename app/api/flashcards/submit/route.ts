@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { auth } from "@/auth"
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
 export async function POST(request: NextRequest) {
-  const session = await auth()
+  const session = await auth();
 
-  if (!session || !session.user ) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
     const { kanaId, isCorrect } = await request.json();
-    
+
     // Find or create UserAccuracy record
     const userAccuracy = await prisma.userAccuracy.upsert({
       where: {
@@ -31,18 +31,21 @@ export async function POST(request: NextRequest) {
         correct_attempts: isCorrect ? 1 : 0,
       },
     });
-    
+
     // Calculate and update accuracy
     const accuracy = userAccuracy.correct_attempts / userAccuracy.attempts;
-    
+
     await prisma.userAccuracy.update({
       where: { id: userAccuracy.id },
       data: { accuracy },
     });
-    
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error submitting answer:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error submitting answer:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   jp-kana-flashcard-app-db:
     image: postgres:latest
