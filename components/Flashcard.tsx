@@ -66,14 +66,14 @@ export default function Flashcard() {
   }
   
   return (
-    <div className="mx-auto max-w-lg">
-      <div className="mb-8 rounded-lg bg-white p-8 shadow-lg">
-        <div className="mb-6 text-center">
-          <h2 className="text-8xl font-bold text-gray-800">{currentKana.character}</h2>
+    <div className="mx-auto max-w-md">
+      <div className="mb-8 rounded-lg bg-white shadow-lg border border-gray-200 aspect-[2.5/3.5] flex flex-col justify-between p-6">
+        <div className="flex-grow flex items-center justify-center">
+          <h2 className="text-[10rem] sm:text-[14rem] leading-none font-bold text-gray-800">{currentKana.character}</h2>
         </div>
         
         {result && (
-          <div className={`mb-6 rounded-md p-3 text-center ${
+          <div className={`mb-4 rounded-md p-3 text-center ${
             result === 'correct' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
           }`}>
             <p className="text-lg font-semibold">
@@ -83,7 +83,7 @@ export default function Flashcard() {
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="flex flex-col">
+        <form onSubmit={handleSubmit} className="mt-auto flex flex-col">
           {!result ? (
             <input
               ref={inputRef}
@@ -96,7 +96,7 @@ export default function Flashcard() {
               autoFocus
             />
           ) : (
-            <div></div> // Empty space placeholder when result is showing
+            <div></div>
           )}
           <button
             type="submit"
