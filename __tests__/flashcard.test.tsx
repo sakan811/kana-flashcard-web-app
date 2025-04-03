@@ -14,13 +14,27 @@ vi.mock('next-auth/react', () => ({
 
 // Mock the FlashcardProvider hook
 vi.mock('../components/FlashcardProvider', () => ({
-  useFlashcard: vi.fn(),
+  useFlashcard: vi.fn(() => ({
+    currentKana: null,
+    loadingKana: false,
+    submitAnswer: vi.fn(),
+    result: null,
+    nextCard: vi.fn(),
+  })),
 }));
 
 describe('Flashcard Component', () => {
   // Common test setup
   beforeEach(() => {
     vi.resetAllMocks();
+    // Re-establish the default implementation after reset
+    (useFlashcard as any).mockReturnValue({
+      currentKana: null,
+      loadingKana: false,
+      submitAnswer: vi.fn(),
+      result: null,
+      nextCard: vi.fn(),
+    });
   });
 
   test('renders loading state', () => {
