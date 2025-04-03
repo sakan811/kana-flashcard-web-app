@@ -1,59 +1,40 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import prisma, { updateUserProgressRecord } from "../../../lib/prisma";
+import { withAuth, verifyUserId, createErrorResponse, createSuccessResponse } from "@/lib/api-utils";
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
     const body = await request.json();
-    const { userId, flashcardId, kana, kanaType, isCorrect } = body;
+    const { userId: requestedUserId, kana, kanaType, isCorrect } = body;
 
-    if (!userId || !flashcardId || !kana || !kanaType) {
-      return NextResponse.json(
-        { error: "Missing required parameters" },
-        { status: 400 },
-      );
+    // Verify the requested userId matches the authenticated userId
+    const effectiveUserId = verifyUserId(requestedUserId, userId);
+
+    if (!kana || !kanaType) {
+      return createErrorResponse("Missing required parameters: kana or kanaType", 400);
     }
 
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
 
-    // Transaction to update both UserProgress and UserKanaPerformance
-    await prisma.$transaction(async (tx) => {
-      // Update UserProgress
-      await updateUserProgressRecord(userId, flashcardId, isCorrect);
-
-      // Update UserKanaPerformance
-      await tx.userKanaPerformance.upsert({
-        where: {
-          userId_kana: {
-            userId: userId,
-            kana: kana,
-          },
-        },
-        update: {
-          correctCount: { increment: isCorrect ? 1 : 0 },
-          totalCount: { increment: 1 },
-          lastPracticed: new Date(),
-        },
-        create: {
-          userId: userId,
-          kana: kana,
-          kanaType: kanaType,
-          correctCount: isCorrect ? 1 : 0,
-          totalCount: 1,
-          lastPracticed: new Date(),
-        },
-      });
+    // Get the flashcard
+    const flashcard = await prisma.flashcard.findFirst({
+      where: {
+        kana,
+        type: kanaType,
+      },
     });
 
-    return NextResponse.json({ success: true });
+    if (!flashcard) {
+      return createErrorResponse(`Flashcard not found for kana: ${kana}`, 404);
+    }
+
+    // Update user progress
+    await updateUserProgressRecord(effectiveUserId, flashcard.id, isCorrect);
+
+    return createSuccessResponse({ success: true });
   } catch (error) {
     console.error("Error updating user progress:", error);
-    return NextResponse.json(
-      {
-        error:
-          "Database connection error. Please check your database configuration and environment variables.",
-      },
-      { status: 500 },
-    );
+    return createErrorResponse("Database error occurred while updating progress", 500);
   }
-}
+});

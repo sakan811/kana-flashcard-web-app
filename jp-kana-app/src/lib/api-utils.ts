@@ -9,93 +9,101 @@ export type ApiHandler = (
 ) => Promise<NextResponse>;
 
 /**
- * Standard API error response format
+ * Standard API response formats
  */
 export interface ApiErrorResponse {
+  success: false;
   error: string;
-  details?: unknown;
+}
+
+export interface ApiSuccessResponse<T = any> {
+  success: true;
+  data: T;
+}
+
+export type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse;
+
+/**
+ * Create a standardized success response
+ */
+export function createSuccessResponse<T>(data: T): NextResponse<ApiSuccessResponse<T>> {
+  return NextResponse.json({ success: true, data });
+}
+
+/**
+ * Create a standardized error response
+ */
+export function createErrorResponse(
+  message: string,
+  status: number = 400
+): NextResponse<ApiErrorResponse> {
+  return NextResponse.json(
+    { success: false, error: message },
+    { status }
+  );
 }
 
 /**
  * Middleware to handle API authentication and common error patterns
+ * Follows the proximity principle by checking auth directly where data is accessed
  * @param handler The API route handler function
  * @returns A wrapped handler with authentication and error handling
  */
 export function withAuth(handler: ApiHandler) {
-  return async (request: NextRequest): Promise<NextResponse> => {
+  return async (request: NextRequest) => {
     try {
-      // Get user ID from request headers (set by middleware)
+      // Get the user ID from the request headers (set by middleware)
       const userId = request.headers.get('x-user-id');
       
-      // If no user ID in headers, return unauthorized
       if (!userId) {
-        console.error("No user ID found in request headers");
-        return createErrorResponse("Unauthorized: No authenticated session found", 401);
+        return createErrorResponse("Unauthorized: Authentication required", 401);
       }
 
-      // Execute the provided handler with the authenticated user ID
+      // Call the handler with the user ID
       return await handler(request, userId);
     } catch (error) {
       console.error("API error:", error);
-      return createErrorResponse(
-        error instanceof Error ? error.message : "Internal server error", 
-        500
-      );
+      
+      // Handle known error types
+      if (error instanceof Error) {
+        if (error.message.includes('Unauthorized')) {
+          return createErrorResponse(`Authentication error: ${error.message}`, 401);
+        }
+        if (error.message.includes('Forbidden')) {
+          return createErrorResponse(error.message, 403);
+        }
+        if (error.message.includes('Not found')) {
+          return createErrorResponse(error.message, 404);
+        }
+        return createErrorResponse(error.message, 400);
+      }
+      
+      // Generic error response
+      return createErrorResponse("An unexpected error occurred", 500);
     }
   };
 }
 
 /**
  * Verify that a requested userId matches the authenticated userId
+ * Implements the proximity principle by verifying user access at the point of data access
  * @param requestedUserId The userId requested in the API call
  * @param authenticatedUserId The authenticated userId from the session
- * @returns true if the IDs match or requestedUserId is not provided
- * @throws Error if the IDs don't match
+ * @returns The validated userId to use
  */
-export function verifyUserId(requestedUserId: string | null, authenticatedUserId: string): string {
-  // If no requestedUserId is provided, use the authenticated ID
+export function verifyUserId(
+  requestedUserId: string | null,
+  authenticatedUserId: string
+): string {
+  // If no specific user ID was requested, use the authenticated user's ID
   if (!requestedUserId) {
     return authenticatedUserId;
   }
-  
-  // Verify userId matches authenticated user
+
+  // If a specific user ID was requested, verify it matches the authenticated user
   if (requestedUserId !== authenticatedUserId) {
-    console.error("User ID mismatch:", { requestedUserId, authenticatedUserId });
-    throw new Error("User ID does not match authenticated session");
+    throw new Error('Forbidden: You can only access your own data');
   }
-  
-  return requestedUserId;
-}
 
-/**
- * Create a standardized error response
- * @param message Error message
- * @param status HTTP status code
- * @param details Optional additional error details
- * @returns NextResponse with error data
- */
-export function createErrorResponse(
-  message: string, 
-  status: number = 400, 
-  details?: unknown
-): NextResponse {
-  const errorResponse: ApiErrorResponse = { 
-    error: message 
-  };
-  
-  if (details) {
-    errorResponse.details = details;
-  }
-  
-  return NextResponse.json(errorResponse, { status });
+  return authenticatedUserId;
 }
-
-/**
- * Create a standardized success response
- * @param data Response data
- * @param status HTTP status code
- * @returns NextResponse with success data
- */
-export function createSuccessResponse(data: unknown, status: number = 200): NextResponse {
-  return NextResponse.json(data, { status });
-} 

@@ -11,6 +11,34 @@ export const metadata: Metadata = {
     "Practice Hiragana and Katakana with this interactive flashcard application",
 };
 
+// Define CSP headers
+export const headers = () => {
+  const cspHeader = [
+    // Default sources
+    "default-src 'self'",
+    // Scripts
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    // Styles
+    "style-src 'self' 'unsafe-inline'",
+    // Images
+    "img-src 'self' blob: data: https://avatars.githubusercontent.com",
+    // Fonts
+    "font-src 'self'",
+    // Connect (API endpoints, WebSockets)
+    "connect-src 'self'",
+    // Form actions
+    "form-action 'self'",
+    // Frame ancestors (prevents clickjacking)
+    "frame-ancestors 'none'",
+  ].join("; ");
+
+  return [
+    {
+      "Content-Security-Policy": cspHeader,
+    },
+  ];
+};
+
 export default function RootLayout({
   children,
 }: {

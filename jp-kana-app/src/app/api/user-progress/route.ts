@@ -1,16 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import prisma, { getUserProgressWithFlashcard } from "../../../lib/prisma";
+import { withAuth, verifyUserId, createErrorResponse, createSuccessResponse } from "@/lib/api-utils";
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, userId: string) => {
   const searchParams = request.nextUrl.searchParams;
-  const userId = searchParams.get("userId") || "current-user";
+  const requestedUserId = searchParams.get("userId");
 
   try {
+    // Verify the requested userId matches the authenticated userId
+    const effectiveUserId = verifyUserId(requestedUserId, userId);
+    
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
 
     // Get user progress with flashcard data
-    const progressData = await getUserProgressWithFlashcard(userId);
+    const progressData = await getUserProgressWithFlashcard(effectiveUserId);
 
     // Transform data for easier consumption by the frontend
     const formattedProgress = progressData
@@ -20,12 +24,12 @@ export async function GET(request: NextRequest) {
         }
 
         return {
-          flashcardId: progress.flashcard.id, // Using flashcard ID instead of non-existent flashcardId
+          flashcardId: progress.flashcard.id,
           kana: progress.flashcard.kana,
           romaji: progress.flashcard.romaji,
           type: progress.flashcard.type,
           correctCount: progress.correctCount,
-          incorrectCount: progress.totalCount - progress.correctCount, // Calculate incorrectCount from totalCount - correctCount
+          incorrectCount: progress.totalCount - progress.correctCount,
           totalCount: progress.totalCount,
           accuracy:
             progress.totalCount > 0
@@ -36,15 +40,12 @@ export async function GET(request: NextRequest) {
       })
       .filter(Boolean); // Remove nulls (entries without flashcard)
 
-    return NextResponse.json(formattedProgress);
+    return createSuccessResponse(formattedProgress);
   } catch (error) {
     console.error("Error fetching user progress:", error);
-    return NextResponse.json(
-      {
-        error:
-          "Database connection error. Please check your database configuration and environment variables.",
-      },
-      { status: 500 },
+    return createErrorResponse(
+      "Database connection error. Please check your database configuration and environment variables.",
+      500
     );
   }
-}
+});

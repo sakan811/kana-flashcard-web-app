@@ -1,37 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const hiragana = [
-  { character: "あ", romaji: "a" },
-  { character: "い", romaji: "i" },
-  { character: "う", romaji: "u" },
-  { character: "え", romaji: "e" },
-  { character: "お", romaji: "o" },
-];
-
-const katakana = [
-  { character: "ア", romaji: "a" },
-  { character: "イ", romaji: "i" },
-  { character: "ウ", romaji: "u" },
-  { character: "エ", romaji: "e" },
-  { character: "オ", romaji: "o" },
-];
+import { getAllKana, getKanaByType } from "@/lib/kana-data";
+import { KanaType } from "@/types/kana";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type") || "all";
 
-  let data;
-
-  switch (type) {
-    case "hiragana":
-      data = hiragana;
-      break;
-    case "katakana":
-      data = katakana;
-      break;
-    default:
-      data = { hiragana, katakana };
+  try {
+    if (type === "hiragana") {
+      return NextResponse.json(getKanaByType(KanaType.hiragana));
+    } else if (type === "katakana") {
+      return NextResponse.json(getKanaByType(KanaType.katakana));
+    } else {
+      return NextResponse.json(getAllKana());
+    }
+  } catch (error) {
+    console.error("Error fetching kana data:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch kana data" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(data);
 }
