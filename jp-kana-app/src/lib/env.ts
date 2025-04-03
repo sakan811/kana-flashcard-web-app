@@ -26,70 +26,48 @@ const dbEnvVars = [
  * @throws {Error} If any required variable is missing in production
  */
 export function validateEnv(): void {
-  const missingVars: string[] = [];
-  const isProduction = process.env.NODE_ENV === 'production';
-  
-  // Check required environment variables
-  requiredEnvVars.forEach(envVar => {
-    if (!process.env[envVar]) {
-      missingVars.push(envVar);
-    }
-  });
+  const isProd = process.env.NODE_ENV === 'production';
+  const errors: string[] = [];
 
-  // Check OAuth variables (required in production)
-  if (isProduction) {
-    oauthEnvVars.forEach(envVar => {
-      if (!process.env[envVar]) {
-        missingVars.push(envVar);
+  // Always check core auth variables
+  for (const key of requiredEnvVars) {
+    if (!process.env[key]) {
+      errors.push(`Required environment variable ${key} is missing`);
+    }
+  }
+
+  // Only strictly require OAuth variables in production
+  if (isProd) {
+    for (const key of oauthEnvVars) {
+      if (!process.env[key]) {
+        errors.push(`Required environment variable ${key} is missing in production`);
       }
-    });
-  } else {
-    // In development, just warn about missing OAuth variables
-    const missingOAuthVars = oauthEnvVars.filter(envVar => !process.env[envVar]);
-    if (missingOAuthVars.length > 0) {
-      console.warn(`Warning: Missing OAuth environment variables in development: ${missingOAuthVars.join(', ')}`);
     }
   }
 
-  // Check that at least one database URL is defined
-  const hasDbConnection = dbEnvVars.some(envVar => !!process.env[envVar]);
-  if (!hasDbConnection) {
-    missingVars.push('Database connection (POSTGRES_PRISMA_URL or POSTGRES_URL_NON_POOLING)');
+  // Check if at least one database URL is provided
+  const hasDbUrl = dbEnvVars.some(key => !!process.env[key]);
+  if (!hasDbUrl) {
+    errors.push(`At least one database connection URL is required: ${dbEnvVars.join(' or ')}`);
   }
 
-  // Throw error if any required variables are missing
-  if (missingVars.length > 0) {
-    throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
-  }
-  
-  // Validate NEXTAUTH_SECRET has sufficient entropy
-  if (process.env.NEXTAUTH_SECRET && process.env.NEXTAUTH_SECRET.length < 32) {
-    console.warn('Warning: NEXTAUTH_SECRET should be at least 32 characters long for security');
+  if (errors.length > 0) {
+    if (isProd) {
+      throw new Error(`Environment validation failed:\n${errors.join('\n')}`);
+    } else {
+      console.warn(`Environment validation warnings (safe to ignore in development):\n${errors.join('\n')}`);
+    }
   }
 }
 
 /**
  * Get an environment variable with a fallback for development
- * @param key The environment variable name
- * @param defaultValue Optional default value
- * @returns The environment variable value or a placeholder in development
  */
-export function getEnvVar(key: string, defaultValue?: string): string {
-  const value = process.env[key] || defaultValue;
-  
-  // In development mode, provide fallbacks for missing values
-  if (!value && process.env.NODE_ENV !== 'production') {
-    // For OAuth credentials in development, return placeholder values
-    if (key === 'GITHUB_ID') return 'dev-github-id';
-    if (key === 'GITHUB_SECRET') return 'dev-github-secret';
-    
-    console.warn(`Warning: Using placeholder for missing environment variable: ${key}`);
-    return `placeholder-${key}`;
-  }
-  
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${key}`);
-  }
-  
-  return value;
-}
+export const env = {
+  GITHUB_ID: process.env.GITHUB_ID || '',
+  GITHUB_SECRET: process.env.GITHUB_SECRET || '',
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL || (
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
+  ),
+  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'development-secret-do-not-use-in-production'
+};
