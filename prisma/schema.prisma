@@ -10,7 +10,6 @@ datasource db {
 
 model User {
   id            String         @id @default(uuid())
-  github_id     String         @unique
   name          String
   email         String?        @unique
   created_at    DateTime       @default(now())
