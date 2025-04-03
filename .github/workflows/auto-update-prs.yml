@@ -1,0 +1,21 @@
+name: Auto-update PRs
+on:
+    push:
+      branches:
+        - "master"
+    pull_request:
+      branches:
+        - "master"
+
+jobs:
+  auto-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Update PRs
+        run: |
+          gh pr list --json number --jq '.[] | .number' | xargs -I{} gh pr update {} --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
