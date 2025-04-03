@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 type KanaStats = {
   id: string;
@@ -61,6 +62,13 @@ export default function Dashboard() {
   
   return (
     <div>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+        <Link href="/" className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
+          Back to Home
+        </Link>
+      </div>
+      
       <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
         <h2 className="mb-4 text-xl font-semibold text-gray-800">Your Progress</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
