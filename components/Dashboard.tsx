@@ -47,11 +47,11 @@ export default function Dashboard() {
         const isHiragana = kana.character.charCodeAt(0) >= 0x3040 && kana.character.charCodeAt(0) <= 0x309F;
         return filter === 'hiragana' ? isHiragana : !isHiragana;
       });
-  
-  const averageAccuracy = stats.length > 0
-    ? stats.filter(kana => kana.attempts > 0)
+
+  const averageAccuracy = filteredStats.length > 0
+    ? filteredStats.filter(kana => kana.attempts > 0)
         .reduce((sum, kana) => sum + kana.accuracy, 0) / 
-        stats.filter(kana => kana.attempts > 0).length
+        filteredStats.filter(kana => kana.attempts > 0).length
     : 0;
   
   if (loading) {
@@ -76,7 +76,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-md bg-blue-50 p-4 text-center">
             <p className="text-sm text-gray-600">Total Characters Practiced</p>
-            <p className="text-2xl font-bold text-blue-700">{stats.filter(s => s.attempts > 0).length}</p>
+            <p className="text-2xl font-bold text-blue-700">{filteredStats.filter(s => s.attempts > 0).length}</p>
           </div>
           <div className="rounded-md bg-green-50 p-4 text-center">
             <p className="text-sm text-gray-600">Average Accuracy</p>
@@ -84,7 +84,7 @@ export default function Dashboard() {
           </div>
           <div className="rounded-md bg-purple-50 p-4 text-center">
             <p className="text-sm text-gray-600">Total Attempts</p>
-            <p className="text-2xl font-bold text-purple-700">{stats.reduce((sum, kana) => sum + kana.attempts, 0)}</p>
+            <p className="text-2xl font-bold text-purple-700">{filteredStats.reduce((sum, kana) => sum + kana.attempts, 0)}</p>
           </div>
         </div>
       </div>
