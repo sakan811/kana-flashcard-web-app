@@ -16,7 +16,7 @@ export async function GET() {
     // Get user accuracy data
     const userAccuracies = await prisma.userAccuracy.findMany({
       where: {
-        user_id: session.user.id,
+        user_email: session.user.email,
       },
     });
 

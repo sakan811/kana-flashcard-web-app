@@ -4,10 +4,6 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
 ## Status
 
-[![Docker Build](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-build.yml)
-
-[![Push to Docker Hub](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-push.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-push.yml)
-
 [![Web-App Test](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-app.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-app.yml)
 
 ## How to Use the Web App

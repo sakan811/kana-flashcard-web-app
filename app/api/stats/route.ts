@@ -18,7 +18,7 @@ export async function GET() {
         romaji: true,
         userAccuracy: {
           where: {
-            user_id: session.user.id,
+            user_email: session.user.email,
           },
           select: {
             attempts: true,

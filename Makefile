@@ -19,7 +19,7 @@ test-run:
 pre-ci:
 	npm run lint && \
 	npm run format && \
-	npm run test && \
+	npm run test:run && \
 	npm run build
 
 compose-up:
