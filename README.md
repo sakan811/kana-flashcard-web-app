@@ -8,7 +8,7 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
 ## The Web App
 
-- Navigate to <https://kana-flashcard-web-app-671v.vercel.app/>
+- Navigate to <https://kana-flashcard-web-app.vercel.app/>
 
 ### Local Version
 
