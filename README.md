@@ -8,11 +8,7 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
 ## The Web App
 
-- Navigate to <https://kana-flashcard-web-app.vercel.app/>
-
-### Local Version
-
-#### Prerequisites
+### Prerequisites
 
 Before starting the setup, ensure you have the following installed:
 
@@ -23,7 +19,7 @@ Before starting the setup, ensure you have the following installed:
 - **Docker**: Required for the database setup
 - **Git**: For cloning the repository
 
-#### Setup the Web App
+### Setup the Web App
 
 1. Clone the repository:
 
