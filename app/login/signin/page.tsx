@@ -29,7 +29,9 @@ export default function SignInPage() {
       <div className="p-8 bg-white rounded-lg shadow-md w-96">
         <h1 className="text-2xl font-bold mb-6 text-center">Sign In</h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <label htmlFor="username" className="text-left font-medium">Username</label>
+          <label htmlFor="username" className="text-left font-medium">
+            Username
+          </label>
           <input
             id="username"
             name="username"
@@ -38,9 +40,11 @@ export default function SignInPage() {
             required
             className="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={username}
-            onChange={e => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
-          <label htmlFor="password" className="text-left font-medium">Password</label>
+          <label htmlFor="password" className="text-left font-medium">
+            Password
+          </label>
           <input
             id="password"
             name="password"
@@ -49,7 +53,7 @@ export default function SignInPage() {
             required
             className="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
           {error && <div className="text-red-600 text-sm">{error}</div>}
           <button

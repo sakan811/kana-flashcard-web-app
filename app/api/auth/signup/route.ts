@@ -6,12 +6,20 @@ export async function POST(req: Request) {
   try {
     const { username, password } = await req.json();
     if (!username || !password) {
-      return NextResponse.json({ error: "Missing username or password" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing username or password" },
+        { status: 400 },
+      );
     }
     // Check if user already exists
-    const existing = await prisma.user.findUnique({ where: { email: username } });
+    const existing = await prisma.user.findUnique({
+      where: { email: username },
+    });
     if (existing) {
-      return NextResponse.json({ error: "User already exists" }, { status: 409 });
+      return NextResponse.json(
+        { error: "User already exists" },
+        { status: 409 },
+      );
     }
     const hashed = await bcrypt.hash(password, 10);
     await prisma.user.create({
@@ -22,7 +30,10 @@ export async function POST(req: Request) {
       },
     });
     return NextResponse.json({ success: true });
-  } catch (e) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

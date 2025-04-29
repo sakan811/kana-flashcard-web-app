@@ -1,7 +1,6 @@
 name: Prisma DB Push
 
-on:
-  workflow_dispatch
+on: workflow_dispatch
 
 jobs:
   db_push:

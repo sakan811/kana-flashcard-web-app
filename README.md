@@ -43,8 +43,9 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
    ```
 
    4.1. Edit the .env file with your configuration:
-      - Generate an auth secret: `make auth-secret` and copy the output to `AUTH_SECRET`
-      - Your database connection string should already be set correctly for local development
+
+   - Generate an auth secret: `make auth-secret` and copy the output to `AUTH_SECRET`
+   - Your database connection string should already be set correctly for local development
 
 5. Start the development server:
 
