@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SignInPage() {
   const [username, setUsername] = useState("");
@@ -11,20 +12,15 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    try {
-      const res = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-      if (res.ok) {
-        router.replace("/");
-      } else {
-        const data = await res.json();
-        setError(data.error || "Sign in failed");
-      }
-    } catch (err) {
-      setError("Sign in failed");
+    const result = await signIn("credentials", {
+      redirect: false,
+      username,
+      password,
+    });
+    if (result?.ok) {
+      router.replace("/");
+    } else {
+      setError(result?.error || "Sign in failed");
     }
   };
 
