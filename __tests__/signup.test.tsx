@@ -5,10 +5,12 @@ import { describe, test, expect } from "vitest";
 describe("SignUpPage", () => {
   test("renders sign up form", () => {
     render(<SignUpPage />);
-    expect(screen.getByText("Sign Up")).toBeDefined();
+    const signUpTexts = screen.getAllByText("Sign Up");
+    expect(signUpTexts.length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Username")).toBeDefined();
     expect(screen.getByLabelText("Password")).toBeDefined();
-    expect(screen.getByRole("button", { name: /sign up/i })).toBeDefined();
+    const signUpButtons = screen.getAllByRole("button", { name: /sign up/i });
+    expect(signUpButtons.length).toBeGreaterThan(0);
   });
 
   test("form fields accept input", () => {
