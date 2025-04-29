@@ -26,6 +26,7 @@
   "dependencies": {
     "@next/eslint-plugin-next": "^15.2.4",
     "@prisma/client": "^6.7.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/user-event": "^14.6.1",
     "bcryptjs": "^3.0.2",
     "next": "^15.2.4",
