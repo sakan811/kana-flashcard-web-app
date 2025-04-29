@@ -1,37 +1,38 @@
 import NextAuth from "next-auth";
-import GitHub from "next-auth/providers/github";
+import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [GitHub],
+  providers: [
+    Credentials({
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) return null;        
+        const username = String(credentials.username);
+        const password = String(credentials.password);        
+        const user = await prisma.user.findUnique({
+          where: { email: username },
+          select: { id: true, name: true, email: true, password: true },
+        });
+        if (!user || !user.password) return null;
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) return null;
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        };
+      },
+    }),
+  ],
   callbacks: {
     async signIn({ user }) {
-      // Check if this is a valid user object with email
-      if (user && user.email) {
-        try {
-          // Try to find the user first
-          const existingUser = await prisma.user.findUnique({
-            where: { email: user.email },
-          });
-
-          // If user doesn't exist in database yet, create them
-          if (!existingUser) {
-            await prisma.user.create({
-              data: {
-                email: user.email,
-                name: user.name || "GitHub User",
-              },
-            });
-            console.log(`Created new user: ${user.email}`);
-          }
-
-          return true;
-        } catch (error) {
-          console.error("Error creating/finding user:", error);
-          return false;
-        }
-      }
-      return true;
+      // Only allow sign in if user object is valid
+      return !!user && !!user.email;
     },
   },
 });
