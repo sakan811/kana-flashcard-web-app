@@ -47,7 +47,7 @@
     "prisma": "^6.7.0",
     "tailwindcss": "^4.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2",
+    "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.1"
   }
