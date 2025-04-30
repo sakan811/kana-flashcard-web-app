@@ -19,7 +19,7 @@ test-run:
 pre-ci:
 	npm run lint && \
 	npm run format && \
-	npm run test:run && \
+	npm run test:run
 
 up:
 	docker compose --profile pull up -d 
