@@ -1,0 +1,34 @@
+# Node modules and build output
+node_modules
+dist
+build
+.next
+coverage
+out-tsc
+out-tsc-*
+
+# Logs and environment files
+*.log
+*.env
+*.env.*
+
+# OS and editor files
+.DS_Store
+.idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+
+# Test and debug files
+__tests__/
+*.test.*
+*.spec.*
+*.sql
+
+# Prisma generated client (if you want to generate inside container, otherwise remove this)
+prisma/app/generated/
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
