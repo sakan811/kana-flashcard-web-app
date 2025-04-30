@@ -10,7 +10,7 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
 ### Prerequisites
 
-- **Docker**: Required for the database setup
+- **Docker**: Required for the web-app and database setup
 
 ### Setup the Web App
 
@@ -21,36 +21,19 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
    cd kana-flashcard-web-app
    ```
 
-2. Install the dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Set up the database:
-
-   ```bash
-   docker-compose up -d
-   npx prisma generate
-   npx prisma migrate dev
-   npx prisma db seed
-   ```
-
-4. Setup the environment variables:
+2. Setup the environment variables:
 
    ```bash
    cp .env.example .env
    ```
 
-   4.1. Edit the .env file with your configuration:
+   - Generate an auth secret: <https://auth-secret-gen.vercel.app/>
+   - Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
 
-   - Generate an auth secret: `make auth-secret` and copy the output to `AUTH_SECRET`
-   - Your database connection string should already be set correctly for local development
-
-5. Start the development server:
+3. Deploy the web-app with Docker on your local machine:
 
    ```bash
-   npm run dev
+   docker compose --profile pull up -d 
    ```
 
-6. Open your browser and navigate to `http://localhost:3000`.
+4. Open your browser and navigate to `http://localhost:3000`.
