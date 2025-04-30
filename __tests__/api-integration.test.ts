@@ -15,7 +15,10 @@ describe("API Integration", () => {
     const res = await fetch("http://localhost:3000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: "apitestuser", password: "apitestpass" }),
+      body: JSON.stringify({
+        username: "apitestuser",
+        password: "apitestpass",
+      }),
     });
     // 409 if already exists, 200 if created
     expect([200, 409]).toContain(res.status);

@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { FlashcardProvider, useFlashcard } from "../components/FlashcardProvider";
+import {
+  FlashcardProvider,
+  useFlashcard,
+} from "../components/FlashcardProvider";
 import { SessionProvider } from "next-auth/react";
 
 describe("FlashcardProvider", () => {

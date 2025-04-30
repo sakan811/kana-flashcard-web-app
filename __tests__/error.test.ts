@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 
-
 describe("API Error Handling", () => {
   it("returns 400 for missing fields on signup", async () => {
     const res = await fetch("http://localhost:3000/api/auth/signup", {

@@ -16,16 +16,13 @@ vi.mock("next/link", () => {
 
 describe("Header", () => {
   it("renders navigation links", () => {
-    render(
-      <Header activeTab="flashcards" setActiveTab={() => {}} />
-    );
+    render(<Header activeTab="flashcards" setActiveTab={() => {}} />);
     expect(screen.getByText("Hiragana")).toBeDefined();
     expect(screen.getByText("Katakana")).toBeDefined();
     expect(screen.getByText("Dashboard")).toBeDefined();
-  });  it("calls signOut on button click", () => {
-    render(
-      <Header activeTab="dashboard" setActiveTab={() => {}} />
-    );
+  });
+  it("calls signOut on button click", () => {
+    render(<Header activeTab="dashboard" setActiveTab={() => {}} />);
     const buttons = screen.getAllByTestId("header-sign-out-button");
     fireEvent.click(buttons[0]);
     expect(signOut).toHaveBeenCalled();

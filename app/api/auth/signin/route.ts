@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     if (!username || !password) {
       return NextResponse.json(
         { error: "Missing username or password" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     // Find user by username (email)
@@ -18,22 +18,25 @@ export async function POST(req: Request) {
     if (!user || !user.password) {
       return NextResponse.json(
         { error: "Invalid username or password" },
-        { status: 401 }
+        { status: 401 },
       );
     }
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return NextResponse.json(
         { error: "Invalid username or password" },
-        { status: 401 }
+        { status: 401 },
       );
     }
     // Optionally, return user info (never password)
-    return NextResponse.json({ success: true, user: { id: user.id, email: user.email, name: user.name } });
+    return NextResponse.json({
+      success: true,
+      user: { id: user.id, email: user.email, name: user.name },
+    });
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
