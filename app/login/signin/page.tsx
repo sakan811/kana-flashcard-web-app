@@ -22,25 +22,38 @@ export default function SignInPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const form = e.currentTarget;
-    const username = (form.username as HTMLInputElement).value;
-    const password = (form.password as HTMLInputElement).value;
+
     try {
-      const res = await signIn("credentials", {
-        redirect: false,
-        username,
-        password,
+      if (!username || !password) {
+        setError("Username and password are required");
+        return;
+      }
+      
+      // Instead of using NextAuth's signIn, make a custom API request
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
       });
       
-      // Special case: NextAuth sometimes returns ok:true with error:Configuration
-      if (res?.error) {
-        setError(`Sign in failed`);
-      } else if (res?.ok) {
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        // After successful authentication, establish session with NextAuth
+        await signIn("credentials", {
+          redirect: false,
+          username,
+          password,
+        });
+        
+        // Redirect to homepage
         router.replace("/");
       } else {
-        setError("Sign in failed. Please try again.");
+        // Display specific error message from API
+        setError(data.error || "Sign in failed. Please try again.");
       }
     } catch (error) {
+      console.error("Sign-in error:", error);
       setError("Sign in failed: " + (error instanceof Error ? error.message : "Unknown error"));
     } finally {
       setLoading(false);
