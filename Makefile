@@ -25,16 +25,16 @@ up:
 	docker compose --profile pull up -d 
 
 build-up:
-	COMPOSE_BAKE=true docker compose --profile build up -d
+	docker compose --profile build up -d
 	
 down:
 	docker compose down
 
 clean:
-	docker compose down --volumes --remove-orphans --profile pull
+	docker compose --profile pull down --volumes --remove-orphans 
 
 clean-build:
-	docker compose down --volumes --remove-orphans --profile build
+	docker compose --profile build down --volumes --remove-orphans 
 
 auth-secret:
 	npx auth secret
