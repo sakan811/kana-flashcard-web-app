@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 export default function SignInPage() {
   const [username, setUsername] = useState("");
@@ -9,21 +9,42 @@ export default function SignInPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { status } = useSession();
+
+  // Redirect if already signed in
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/");
+    }
+  }, [status, router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    if (!username.trim() || !password.trim()) {
+      setError("Username and password are required");
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await signIn("credentials", {
         redirect: false,
         username,
         password,
       });
-      if (result && result.ok) {
-        router.replace("/");
+
+      if (result?.ok) {
+        // Success - will redirect via the useEffect above
       } else {
-        setError(result?.error || "Sign in failed");
+        // Show specific error messages based on the error code
+        if (result?.error === "CredentialsSignin") {
+          setError("Invalid username or password");
+        } else {
+          setError(result?.error || "Sign in failed");
+        }
       }
     } catch {
       setError("Sign in failed");

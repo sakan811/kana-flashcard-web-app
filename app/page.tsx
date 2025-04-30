@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, SessionProvider, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 // Create a protected component that handles auth check
@@ -80,11 +80,7 @@ function ProtectedContent() {
   return null;
 }
 
-// Wrap everything in SessionProvider
+// No longer need to wrap in SessionProvider since it's in layout
 export default function Home() {
-  return (
-    <SessionProvider>
-      <ProtectedContent />
-    </SessionProvider>
-  );
+  return <ProtectedContent />;
 }

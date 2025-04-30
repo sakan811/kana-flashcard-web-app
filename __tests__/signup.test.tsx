@@ -1,10 +1,22 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import SignUpPage from "../app/login/signup/page";
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, vi } from "vitest";
+import { SessionProvider } from "next-auth/react";
+
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn().mockReturnValue({
+    replace: vi.fn(),
+  }),
+}));
 
 describe("SignUpPage", () => {
   test("renders sign up form", () => {
-    render(<SignUpPage />);
+    render(
+      <SessionProvider>
+        <SignUpPage />
+      </SessionProvider>,
+    );
     const signUpTexts = screen.getAllByText("Sign Up");
     expect(signUpTexts.length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Username")).toBeDefined();
@@ -14,7 +26,11 @@ describe("SignUpPage", () => {
   });
 
   test("form fields accept input", () => {
-    render(<SignUpPage />);
+    render(
+      <SessionProvider>
+        <SignUpPage />
+      </SessionProvider>,
+    );
     const usernameInput = screen.getByLabelText("Username");
     const passwordInput = screen.getByLabelText("Password");
     fireEvent.change(usernameInput, { target: { value: "newuser" } });

@@ -14,6 +14,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - kana-app-network
 
   jp-kana-flashcard-app-build:
     build:
@@ -28,6 +30,8 @@ services:
       - "3000:3000"
     profiles:
       - build
+    networks:
+      - kana-app-network
     command: sh -c "npx prisma migrate dev --name init && npx prisma db seed && npm start"
 
   jp-kana-flashcard-app:
@@ -40,7 +44,13 @@ services:
       - "3000:3000"
     profiles:
       - pull
+    networks:
+      - kana-app-network
     command: sh -c "npx prisma migrate dev --name init && npx prisma db seed && npm start"
 
 volumes:
   postgres_data:
+
+networks:
+  kana-app-network:
+    driver: bridge

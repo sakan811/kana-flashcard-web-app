@@ -5,6 +5,11 @@ import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
+  session: {
+    // Use JWT for better session management
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   providers: [
     Credentials({
       credentials: {
@@ -12,16 +17,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.username || !credentials?.password) return null;
-        const username = String(credentials.username);
-        const password = String(credentials.password);
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error("Please enter your username and password");
+        }
+
+        const username = String(credentials.username).trim();
+        const password = String(credentials.password).trim();
+
+        if (!username || !password) {
+          throw new Error("Username and password cannot be empty");
+        }
+
         const user = await prisma.user.findUnique({
           where: { email: username },
           select: { id: true, name: true, email: true, password: true },
         });
-        if (!user || !user.password) return null;
+
+        if (!user || !user.password) {
+          throw new Error("User not found");
+        }
+
         const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) return null;
+        if (!isValid) {
+          throw new Error("Invalid password");
+        }
+
         return {
           id: user.id,
           name: user.name,
@@ -35,5 +55,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Only allow sign in if user object is valid
       return !!user && !!user.email;
     },
+    async session({ session, token }) {
+      // Add user ID to session from token
+      if (token && session.user) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login/signin",
+    error: "/login/signin", // Send users back to sign-in page for errors
   },
 });
