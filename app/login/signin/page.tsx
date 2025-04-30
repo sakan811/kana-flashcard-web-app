@@ -28,16 +28,16 @@ export default function SignInPage() {
         setError("Username and password are required");
         return;
       }
-      
+
       // Instead of using NextAuth's signIn, make a custom API request
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok && data.success) {
         // After successful authentication, establish session with NextAuth
         await signIn("credentials", {
@@ -45,7 +45,7 @@ export default function SignInPage() {
           username,
           password,
         });
-        
+
         // Redirect to homepage
         router.replace("/");
       } else {
@@ -54,7 +54,10 @@ export default function SignInPage() {
       }
     } catch (error) {
       console.error("Sign-in error:", error);
-      setError("Sign in failed: " + (error instanceof Error ? error.message : "Unknown error"));
+      setError(
+        "Sign in failed: " +
+          (error instanceof Error ? error.message : "Unknown error"),
+      );
     } finally {
       setLoading(false);
     }

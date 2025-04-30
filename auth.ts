@@ -36,7 +36,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
         } catch (error) {
           console.error("Database error:", error);
-          throw new Error("Database error: " + (error instanceof Error ? error.message : "Unknown error"));
+          throw new Error(
+            "Database error: " +
+              (error instanceof Error ? error.message : "Unknown error"),
+          );
         }
 
         if (!user || !user.password) {

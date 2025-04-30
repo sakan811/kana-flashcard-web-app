@@ -31,7 +31,10 @@ down:
 	docker compose down
 
 clean:
-	docker compose down --volumes --remove-orphans
+	docker compose down --volumes --remove-orphans --profile pull
+
+clean-build:
+	docker compose down --volumes --remove-orphans --profile build
 
 auth-secret:
 	npx auth secret
