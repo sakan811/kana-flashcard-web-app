@@ -26,8 +26,8 @@ WORKDIR /app
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/.next ./.next
 COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/public ./public
 COPY --from=base /app/prisma ./prisma
+COPY --from=base /app/prisma/app/generated /app/prisma/app/generated
 
 # Expose port (Next.js default)
 EXPOSE 3000

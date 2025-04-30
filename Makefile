@@ -22,16 +22,16 @@ pre-ci:
 	npm run test:run && \
 
 up:
-	docker-compose up -d --profile pull
+	docker compose --profile pull up -d 
 
 build-up:
-	docker-compose up -d --profile build
+	docker compose --profile build up -d
 	
 down:
-	docker-compose down
+	docker compose down
 
 clean:
-	docker-compose down --volumes --remove-orphans
+	docker compose down --volumes --remove-orphans
 
 auth-secret:
 	npx auth secret
