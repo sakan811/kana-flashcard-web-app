@@ -10,12 +10,38 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  jp-kana-flashcard-app-build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kana-flashcard-app:latest
+    depends_on:
+      - jp-kana-flashcard-app-db
+    environment:
+      - POSTGRES_PRISMA_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres
+      - AUTH_SECRET=${AUTH_SECRET}
+    ports:
+      - "3000:3000"
+    profiles:
+      - build
+
+  jp-kana-flashcard-app:
+    image: kana-flashcard-app:latest
+    depends_on:
+      - jp-kana-flashcard-app-db
+    environment:
+      - POSTGRES_PRISMA_URL=postgresql://postgres:postgres@jp-kana-flashcard-app-db:5432/postgres
+      - AUTH_SECRET=${AUTH_SECRET}
+    ports:
+      - "3000:3000"
+    profiles:
+      - pull
 
 volumes:
   postgres_data:

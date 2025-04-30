@@ -20,31 +20,33 @@ pre-ci:
 	npm run lint && \
 	npm run format && \
 	npm run test:run && \
-	npm run build
 
-compose-up:
-	docker-compose up -d
+up:
+	docker-compose up -d --profile pull
+
+build-up:
+	docker-compose up -d --profile build
 	
-compose-down:
+down:
 	docker-compose down
 
-compose-clean:
+clean:
 	docker-compose down --volumes --remove-orphans
 
 auth-secret:
 	npx auth secret
 
-prisma-generate:
+generate:
 	npx prisma generate
 
-prisma-migrate:
+migrate:
 	npx prisma migrate dev
 
-prisma-seed:
+seed:
 	npx prisma db seed
 
-prisma-studio:
+studio:
 	npx prisma studio
 
-prisma-reset:
+reset:
 	npx prisma migrate reset
