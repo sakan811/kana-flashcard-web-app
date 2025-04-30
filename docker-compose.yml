@@ -28,7 +28,7 @@ services:
       - "3000:3000"
     profiles:
       - build
-    command: "npx prisma migrate dev && npx prisma seed && npm start"
+    command: sh -c "npx prisma migrate dev --name init && npx prisma db seed && npm start"
 
   jp-kana-flashcard-app:
     image: sakanbeer88/jp-kana-flashcard-app:latest
@@ -40,7 +40,7 @@ services:
       - "3000:3000"
     profiles:
       - pull
-    command: "npx prisma migrate dev && npx prisma seed && npm start"
+    command: sh -c "npx prisma migrate dev --name init && npx prisma db seed && npm start"
 
 volumes:
   postgres_data:
