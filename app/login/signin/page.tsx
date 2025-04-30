@@ -7,22 +7,30 @@ export default function SignInPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    const result = await signIn("credentials", {
-      redirect: false,
-      username,
-      password,
-    });
-    if (result?.ok) {
-      router.replace("/");
-    } else {
-      setError(result?.error || "Sign in failed");
+    setLoading(true);
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        username,
+        password,
+      });
+      if (result && result.ok) {
+        router.replace("/");
+      } else {
+        setError(result?.error || "Sign in failed");
+      }
+    } catch {
+      setError("Sign in failed");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -59,8 +67,16 @@ export default function SignInPage() {
           <button
             type="submit"
             className="mt-4 w-full px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-semibold"
+            disabled={loading}
           >
-            Sign In
+            {loading ? "Signing In..." : "Sign In"}
+          </button>
+          <button
+            type="button"
+            className="mt-1 w-full px-6 py-3 bg-gray-200 text-black rounded-md hover:bg-gray-300 transition-colors font-semibold"
+            onClick={() => router.push("/login")}
+          >
+            Back
           </button>
         </form>
       </div>

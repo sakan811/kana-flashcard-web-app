@@ -63,10 +63,17 @@ export default function SignUpPage() {
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <button
             type="submit"
-            className="mt-4 w-full px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-semibold"
+            className="mt-3 w-full px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-semibold"
             disabled={loading}
           >
             {loading ? "Signing Up..." : "Sign Up"}
+          </button>
+          <button
+            type="button"
+            className="mt-1 w-full px-6 py-3 bg-gray-200 text-black rounded-md hover:bg-gray-300 transition-colors font-semibold"
+            onClick={() => router.push("/login")}
+          >
+            Back
           </button>
         </form>
       </div>
