@@ -28,10 +28,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("Username and password cannot be empty");
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: username },
-          select: { id: true, name: true, email: true, password: true },
-        });
+        let user;
+        try {
+          user = await prisma.user.findUnique({
+            where: { email: username },
+            select: { id: true, name: true, email: true, password: true },
+          });
+        } catch (error) {
+          console.error("Database error:", error);
+          throw new Error("Database error: " + (error instanceof Error ? error.message : "Unknown error"));
+        }
 
         if (!user || !user.password) {
           throw new Error("User not found");
@@ -61,6 +67,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.sub;
       }
       return session;
+    },
+    async jwt({ token, account, user }) {
+      // Pass any error information to the token
+      if (account?.error) {
+        token.error = account.error;
+      }
+      return token;
     },
   },
 });

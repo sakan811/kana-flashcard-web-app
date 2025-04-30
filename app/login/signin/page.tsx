@@ -22,32 +22,26 @@ export default function SignInPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
-    if (!username.trim() || !password.trim()) {
-      setError("Username and password are required");
-      setLoading(false);
-      return;
-    }
-
+    const form = e.currentTarget;
+    const username = (form.username as HTMLInputElement).value;
+    const password = (form.password as HTMLInputElement).value;
     try {
-      const result = await signIn("credentials", {
+      const res = await signIn("credentials", {
         redirect: false,
         username,
         password,
       });
-
-      if (result?.ok) {
-        // Success - will redirect via the useEffect above
+      
+      // Special case: NextAuth sometimes returns ok:true with error:Configuration
+      if (res?.error) {
+        setError(`Sign in failed`);
+      } else if (res?.ok) {
+        router.replace("/");
       } else {
-        // Show specific error messages based on the error code
-        if (result?.error === "CredentialsSignin") {
-          setError("Invalid username or password");
-        } else {
-          setError(result?.error || "Sign in failed");
-        }
+        setError("Sign in failed. Please try again.");
       }
-    } catch {
-      setError("Sign in failed");
+    } catch (error) {
+      setError("Sign in failed: " + (error instanceof Error ? error.message : "Unknown error"));
     } finally {
       setLoading(false);
     }
@@ -84,7 +78,7 @@ export default function SignInPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <div className="text-red-600 text-sm">{error}</div>}
+          {error && <div className="text-red-500 text-sm">{error}</div>}
           <button
             type="submit"
             className="mt-4 w-full px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-semibold"
