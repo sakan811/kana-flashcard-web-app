@@ -1,5 +1,4 @@
 // Test setup file
-import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
 // Mock ResizeObserver which isn't available in test environment
@@ -23,3 +22,16 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: vi.fn(),
   })),
 });
+
+// Mock next/navigation for useRouter and related hooks
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    refresh: vi.fn(),
+    back: vi.fn(),
+  }),
+  usePathname: () => "/",
+  useSearchParams: () => new URLSearchParams(),
+}));

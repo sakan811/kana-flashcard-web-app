@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, SessionProvider } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import FlashcardApp from "@/components/FlashcardApp";
 
 function HiraganaPageSession() {
@@ -31,9 +31,5 @@ function HiraganaPageSession() {
 }
 
 export default function HiraganaPage() {
-  return (
-    <SessionProvider>
-      <HiraganaPageSession />
-    </SessionProvider>
-  );
+  return <HiraganaPageSession />;
 }

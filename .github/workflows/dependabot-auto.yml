@@ -16,7 +16,7 @@ jobs:
         run: gh pr review --approve "${{ github.event.pull_request.html_url }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Enable Auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge "${{ github.event.pull_request.html_url }}"
         env:
