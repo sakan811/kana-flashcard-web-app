@@ -1,5 +1,5 @@
 # Use the latest Node.js Alpine image
-FROM node:22.15.0-alpine3.21 AS base
+FROM node:23.11.0-alpine3.21 AS base
 
 # Set working directory
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Production image, copy only necessary files
-FROM node:22.15.0-alpine3.21 AS prod
+FROM node:23.11.0-alpine3.21 AS prod
 
 WORKDIR /app
 
