@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     // Validation
     if (!username || !password) {
       return NextResponse.json(
-        { error: "Username and password are required" },
+        { error: "Please provide both username and password" },
         { status: 400 },
       );
     }
@@ -22,13 +22,19 @@ export async function POST(req: Request) {
 
     // User not found
     if (!user || !user.password) {
-      return NextResponse.json({ error: "User not found" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Account not found. Please check your username or sign up." },
+        { status: 401 }
+      );
     }
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Incorrect password. Please try again." },
+        { status: 401 }
+      );
     }
 
     // Authentication successful
@@ -44,9 +50,7 @@ export async function POST(req: Request) {
     console.error("Signin error:", error);
     return NextResponse.json(
       {
-        error:
-          "Database error: " +
-          (error instanceof Error ? error.message : "Unknown error"),
+        error: "Unable to sign in. Please try again later.",
       },
       { status: 500 },
     );
