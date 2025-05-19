@@ -29,7 +29,7 @@ describe("SignInPage", () => {
     );
     const signInTexts = screen.getAllByText("Sign In");
     expect(signInTexts.length).toBeGreaterThan(0);
-    expect(screen.getByLabelText("Username")).toBeDefined();
+    expect(screen.getByLabelText("Email")).toBeDefined();
     expect(screen.getByLabelText("Password")).toBeDefined();
     const signInButtons = screen.getAllByRole("button", { name: /sign in/i });
     expect(signInButtons.length).toBeGreaterThan(0);
@@ -41,7 +41,7 @@ describe("SignInPage", () => {
         <SignInPage />
       </SessionProvider>,
     );
-    const usernameInput = screen.getByLabelText("Username");
+    const usernameInput = screen.getByLabelText("Email");
     const passwordInput = screen.getByLabelText("Password");
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
     fireEvent.change(passwordInput, { target: { value: "testpass" } });
