@@ -3,20 +3,14 @@ import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
-import type { JWT } from "next-auth/jwt";
 
-// Define types for JSON values
-type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
-type JsonObject = { [key: string]: JsonValue };
-type JsonArray = JsonValue[];
-
-// Define the NextAuth configuration
+// Optimized Auth.js configuration following best practices
 const authConfig: NextAuthConfig = {
   trustHost: true,
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 0, // Force session check on each request
+    updateAge: 24 * 60 * 60, // Update session every 24 hours (not on every request)
   },
   providers: [
     Credentials({
@@ -36,103 +30,84 @@ const authConfig: NextAuthConfig = {
           throw new Error("Username and password cannot be empty");
         }
 
-        let user;
         try {
-          user = await prisma.user.findUnique({
-            where: {
-              email: username,
-            },
+          const user = await prisma.user.findUnique({
+            where: { email: username },
             select: { id: true, name: true, email: true, password: true },
           });
+
+          if (!user || !user.password) {
+            throw new Error("Account not found. Please check your username or sign up.");
+          }
+
+          const isValid = await bcrypt.compare(password, user.password);
+          if (!isValid) {
+            throw new Error("Incorrect password. Please try again.");
+          }
+
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+          };
         } catch (error) {
+          if (error instanceof Error) {
+            throw error; // Re-throw application errors
+          }
           console.error("Database error:", error);
           throw new Error("Unable to connect to database. Please try again later.");
         }
-
-        if (!user || !user.password) {
-          throw new Error("Account not found. Please check your username or sign up.");
-        }
-
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
-          throw new Error("Incorrect password. Please try again.");
-        }
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        };
       },
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      return !!user && !!user.email;
-    },
-    async session({ session, token }) {
-      if (token && session.user && token.sub) {
-        session.user.id = String(token.sub);
-      }
-      return session;
-    },
-    async jwt({ token, account, user }) {
-      if (account?.error) {
-        token.error = String(account.error);
+    async jwt({ token, user, trigger }) {
+      // Initial sign in
+      if (user) {
+        token.sub = user.id;
+        token.signInTimestamp = Date.now();
       }
 
-      if (user) {
-        token.signInTimestamp = Date.now();
+      // Update trigger (for session refresh)
+      if (trigger === "update") {
+        // Re-fetch user data if needed
+        token.lastUpdated = Date.now();
       }
 
       return token;
     },
+    async session({ session, token }) {
+      // Send properties to the client (only available when using JWT strategy)
+      if (token && session.user) {
+        session.user.id = String(token.sub);
+      }
+      return session;
+    },
   },
   events: {
-    async signIn(message) {
-      if (message.user.email) {
-        console.log(`User signed in: ${message.user.email}`);
-      }
+    async signIn({ user, isNewUser }) {
+      console.log(`User signed in: ${user.email}${isNewUser ? ' (new user)' : ''}`);
     },
-    async signOut(message: any) {
-      try {
-        const email =
-          message?.user?.email ||
-          message?.session?.user?.email ||
-          message?.token?.email;
-
-        if (email) {
-          console.log(`User signed out: ${email}`);
-        } else {
-          console.log("User signed out (no email available)");
-        }
-      } catch (error) {
-        console.log("User signed out (no email available)");
-      }
+    async signOut({ token }) {
+      console.log(`User signed out: ${token?.email || 'unknown'}`);
     },
   },
   pages: {
-    signIn: "/signin",
-    error: "/error",
+    signIn: "/login/signin",
+    error: "/login/error",
+  },
+  experimental: {
+    enableWebAuthn: false, // Set to true if using WebAuthn
   },
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
 
-// Add type declarations for JWT token
-declare module "next-auth/jwt" {
-  interface JWT {
-    sub?: string | number;
-    error?: string;
-    signInTimestamp?: number;
-  }
-}
-
-// Add type declarations for Session
+// Type declarations
 declare module "next-auth" {
   interface Session {
-    user?: {
-      id?: string;
+    user: {
+      id: string;
       name?: string | null;
       email?: string | null;
       image?: string | null;
@@ -144,5 +119,10 @@ declare module "next-auth" {
     name?: string | null;
     email?: string | null;
     image?: string | null;
+  }
+
+  interface JWT {
+    signInTimestamp?: number;
+    lastUpdated?: number;
   }
 }
