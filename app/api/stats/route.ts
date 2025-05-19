@@ -10,12 +10,9 @@ export async function GET() {
   }
 
   try {
-    // Get all kana with user accuracy data
-    const stats = await prisma.kana.findMany({
-      select: {
-        id: true,
-        character: true,
-        romaji: true,
+    // Single query with joins to get all data at once
+    const kanaWithAccuracy = await prisma.kana.findMany({
+      include: {
         userAccuracy: {
           where: {
             user_email: session.user.email,
@@ -29,24 +26,20 @@ export async function GET() {
       },
     });
 
-    // Format the response
-    const formattedStats = stats.map((kana) => {
-      const userAccuracy = kana.userAccuracy[0] || {
-        attempts: 0,
-        correct_attempts: 0,
-        accuracy: 0,
-      };
+    // Transform the data
+    const result = kanaWithAccuracy.map((kana) => {
+      const userAccuracy = kana.userAccuracy[0]; // Should be 0 or 1 record
       return {
         id: kana.id,
         character: kana.character,
         romaji: kana.romaji,
-        attempts: userAccuracy.attempts,
-        correct_attempts: userAccuracy.correct_attempts,
-        accuracy: userAccuracy.accuracy,
+        attempts: userAccuracy?.attempts || 0,
+        correct_attempts: userAccuracy?.correct_attempts || 0,
+        accuracy: userAccuracy?.accuracy || 0,
       };
     });
 
-    return NextResponse.json(formattedStats);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error fetching stats:", error);
     return NextResponse.json(

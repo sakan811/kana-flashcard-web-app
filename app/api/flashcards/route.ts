@@ -10,28 +10,29 @@ export async function GET() {
   }
 
   try {
-    // Get all kana
-    const allKana = await prisma.kana.findMany();
-
-    // Get user accuracy data
-    const userAccuracies = await prisma.userAccuracy.findMany({
-      where: {
-        user_email: session.user.email,
+    // Single query with joins
+    const kanaWithAccuracy = await prisma.kana.findMany({
+      include: {
+        userAccuracy: {
+          where: {
+            user_email: session.user.email,
+          },
+          select: {
+            accuracy: true,
+          },
+        },
       },
     });
 
-    // Map kana with user accuracy data
-    const kanaWithAccuracy = allKana.map((kana) => {
-      const accuracyRecord = userAccuracies.find(
-        (ua) => ua.kana_id === kana.id,
-      );
-      return {
-        ...kana,
-        accuracy: accuracyRecord?.accuracy || 0,
-      };
-    });
+    // Transform the data
+    const result = kanaWithAccuracy.map((kana) => ({
+      id: kana.id,
+      character: kana.character,
+      romaji: kana.romaji,
+      accuracy: kana.userAccuracy[0]?.accuracy || 0,
+    }));
 
-    return NextResponse.json(kanaWithAccuracy);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error fetching kana data:", error);
     return NextResponse.json(
