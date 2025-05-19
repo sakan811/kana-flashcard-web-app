@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 
 type KanaWithAccuracy = {
@@ -30,7 +30,6 @@ export function useFlashcard() {
   return context;
 }
 
-// Add kanaType to the props
 export function FlashcardProvider({
   children,
   kanaType,
@@ -43,10 +42,12 @@ export function FlashcardProvider({
   const [currentKana, setCurrentKana] = useState<KanaWithAccuracy | null>(null);
   const [loadingKana, setLoadingKana] = useState(true);
   const [result, setResult] = useState<"correct" | "incorrect" | null>(null);
+  const hasFetched = useRef(false);
 
-  // Fetch kana list with user's accuracy data
+  // Prevent double fetch in React strict mode
   useEffect(() => {
-    if (session?.user) {
+    if (session?.user && !hasFetched.current) {
+      hasFetched.current = true;
       fetchKanaData();
     }
   }, [session, kanaType]);
