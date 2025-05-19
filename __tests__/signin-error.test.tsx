@@ -30,10 +30,9 @@ describe("SignInPage Error Messages", () => {
     }
   });
   test("displays error message when authentication fails", async () => {
-    // Mock the fetch function to simulate API call
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-      json: async () => ({ error: "Invalid password" }),
+    // Mock signIn to return an error
+    (signIn as any).mockResolvedValue({
+      error: "Invalid password"
     });
 
     render(<SignInPage />);
@@ -56,10 +55,9 @@ describe("SignInPage Error Messages", () => {
     });
   });
   test("displays generic error message for other authentication errors", async () => {
-    // Mock the fetch function to simulate API call with a different error
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-      json: async () => ({ error: "Database connection error" }),
+    // Mock signIn to return a different error
+    (signIn as any).mockResolvedValue({
+      error: "Database connection error"
     });
 
     render(<SignInPage />);
@@ -82,10 +80,8 @@ describe("SignInPage Error Messages", () => {
     });
   });
   test("displays error message when exception occurs", async () => {
-    // Mock fetch to throw an exception
-    global.fetch = vi.fn().mockImplementation(() => {
-      throw new Error("Network error");
-    });
+    // Mock signIn to throw an error
+    (signIn as any).mockRejectedValue(new Error("Network error"));
 
     render(<SignInPage />);
 
