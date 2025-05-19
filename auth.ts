@@ -37,7 +37,9 @@ const authConfig: NextAuthConfig = {
           });
 
           if (!user || !user.password) {
-            throw new Error("Account not found. Please check your username or sign up.");
+            throw new Error(
+              "Account not found. Please check your username or sign up.",
+            );
           }
 
           const isValid = await bcrypt.compare(password, user.password);
@@ -55,7 +57,9 @@ const authConfig: NextAuthConfig = {
             throw error; // Re-throw application errors
           }
           console.error("Database error:", error);
-          throw new Error("Unable to connect to database. Please try again later.");
+          throw new Error(
+            "Unable to connect to database. Please try again later.",
+          );
         }
       },
     }),
@@ -86,10 +90,12 @@ const authConfig: NextAuthConfig = {
   },
   events: {
     async signIn({ user, isNewUser }) {
-      console.log(`User signed in: ${user.email}${isNewUser ? ' (new user)' : ''}`);
+      console.log(
+        `User signed in: ${user.email}${isNewUser ? " (new user)" : ""}`,
+      );
     },
     async signOut({ token }) {
-      console.log(`User signed out: ${token?.email || 'unknown'}`);
+      console.log(`User signed out: ${token?.email || "unknown"}`);
     },
   },
   pages: {
