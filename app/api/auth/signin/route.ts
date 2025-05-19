@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     if (!user || !user.password) {
       return NextResponse.json(
         { error: "Account not found. Please check your username or sign up." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     if (!isValidPassword) {
       return NextResponse.json(
         { error: "Incorrect password. Please try again." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
