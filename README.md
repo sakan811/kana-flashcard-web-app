@@ -39,7 +39,7 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 3. Deploy the web-app with Docker on your local machine:
 
    ```bash
-   docker compose --profile pull up -d 
+   docker compose --profile pull up -d
    ```
 
 4. Open your browser and navigate to `http://localhost:3000`.

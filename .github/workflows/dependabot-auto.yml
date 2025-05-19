@@ -17,13 +17,13 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-      
+
       # Auto-merge minor and patch updates for all dependencies
       - name: Enable Auto-merge for Dependabot PRs
         if: ${{steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch'}}

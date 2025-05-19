@@ -11,7 +11,7 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    
+
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(username)) {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    
+
     // Validate password strength
     if (password.length < 8) {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    
+
     // Check if user already exists
     const existing = await prisma.user.findUnique({
       where: { email: username },
@@ -39,19 +39,19 @@ export async function POST(req: Request) {
         { status: 409 },
       );
     }
-    
+
     const hashed = await bcrypt.hash(password, 10);
     const newUser = await prisma.user.create({
       data: {
         email: username,
-        name: username.split('@')[0], // Use part before @ as name
+        name: username.split("@")[0], // Use part before @ as name
         password: hashed,
       },
     });
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       success: true,
-      userId: newUser.id 
+      userId: newUser.id,
     });
   } catch (error) {
     console.error("Signup error:", error);
