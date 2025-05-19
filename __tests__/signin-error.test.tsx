@@ -32,7 +32,7 @@ describe("SignInPage Error Messages", () => {
   test("displays error message when authentication fails", async () => {
     // Mock signIn to return an error
     (signIn as any).mockResolvedValue({
-      error: "Invalid password"
+      error: "Invalid password",
     });
 
     render(<SignInPage />);
@@ -57,7 +57,7 @@ describe("SignInPage Error Messages", () => {
   test("displays generic error message for other authentication errors", async () => {
     // Mock signIn to return a different error
     (signIn as any).mockResolvedValue({
-      error: "Database connection error"
+      error: "Database connection error",
     });
 
     render(<SignInPage />);
