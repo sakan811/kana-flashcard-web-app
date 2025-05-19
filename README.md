@@ -30,44 +30,44 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 2. Setup the environment variables:
 
    - With Dockererized Web-App:
-  
-      ```bash
-      cp .env.docker.example .env.docker
-      ```
+
+     ```bash
+     cp .env.docker.example .env.docker
+     ```
 
    - With Only Postgres Docker:
 
-      ```bash
-      cp .env.local.example .env
-      ```
+     ```bash
+     cp .env.local.example .env
+     ```
 
-   2.1. Generate an auth secret: <https://auth-secret-gen.vercel.app/>
-
-     - With Dockererized Web-App:
-
-         2.1.1. Copy the generated secret to `.env.docker` file and paste to `AUTH_SECRET`.
+     2.1. Generate an auth secret: <https://auth-secret-gen.vercel.app/>
 
      - With Dockererized Web-App:
 
-         2.1.1. Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
+       2.1.1. Copy the generated secret to `.env.docker` file and paste to `AUTH_SECRET`.
+
+     - With Dockererized Web-App:
+
+       2.1.1. Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
 
 3. Setup the Web-App:
 
    - With Dockererized Web-App:
 
-      ```bash
-      docker compose --profile pull up -d
-      ```
+     ```bash
+     docker compose --profile pull up -d
+     ```
 
    - With Only Postgres Docker:
 
-      ```bash
-      docker compose --profile pull up -d 'jp-kana-flashcard-app-db' 
-      npm install
-      npx prisma generate
-      npx prisma migrate dev
-      npx prisma db seed
-      npm run dev
-      ```
+     ```bash
+     docker compose --profile pull up -d 'jp-kana-flashcard-app-db'
+     npm install
+     npx prisma generate
+     npx prisma migrate dev
+     npx prisma db seed
+     npm run dev
+     ```
 
 4. Open your browser and navigate to `http://localhost:3000`.
