@@ -11,7 +11,6 @@ export default function SignInPage() {
   const router = useRouter();
   const { status } = useSession();
 
-  // Redirect if already signed in
   useEffect(() => {
     if (status === "authenticated") {
       router.replace("/");
@@ -24,31 +23,45 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      if (!username || !password) {
-        setError("Username and password are required");
+      if (!username.trim() || !password.trim()) {
+        setError("Please enter both username and password");
         setLoading(false);
         return;
       }
 
-      // Use NextAuth's signIn directly (simplifies the flow)
+      // First, validate credentials with our API
+      const response = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          username: username.trim(), 
+          password: password.trim() 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Sign in failed");
+        setLoading(false);
+        return;
+      }
+
+      // If API validation succeeds, use NextAuth to establish session
       const result = await signIn("credentials", {
         redirect: false,
-        username,
-        password,
+        username: username.trim(),
+        password: password.trim(),
       });
 
       if (result?.error) {
-        setError(result.error);
+        setError("Unable to establish session. Please try again.");
       } else {
-        // Successful login
         router.replace("/");
       }
     } catch (error) {
       console.error("Sign-in error:", error);
-      setError(
-        "Sign in failed: " +
-          (error instanceof Error ? error.message : "Unknown error"),
-      );
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -60,17 +73,18 @@ export default function SignInPage() {
         <h1 className="text-2xl font-bold mb-6 text-center">Sign In</h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <label htmlFor="username" className="text-left font-medium">
-            Username
+            Email
           </label>
           <input
             id="username"
             name="username"
-            type="text"
+            type="email"
             autoComplete="username"
             required
             className="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            placeholder="your.email@example.com"
           />
           <label htmlFor="password" className="text-left font-medium">
             Password
@@ -85,10 +99,14 @@ export default function SignInPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <div className="text-red-500 text-sm">{error}</div>}
+          {error && (
+            <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md border border-red-200">
+              {error}
+            </div>
+          )}
           <button
             type="submit"
-            className="mt-4 w-full px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-semibold"
+            className="mt-4 w-full px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? "Signing In..." : "Sign In"}

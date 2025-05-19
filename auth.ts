@@ -16,7 +16,6 @@ const authConfig: NextAuthConfig = {
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    // Updating this to check the database on each request
     updateAge: 0, // Force session check on each request
   },
   providers: [
@@ -27,7 +26,7 @@ const authConfig: NextAuthConfig = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          throw new Error("Please enter your username and password");
+          throw new Error("Please enter both username and password");
         }
 
         const username = String(credentials.username).trim();
@@ -39,30 +38,24 @@ const authConfig: NextAuthConfig = {
 
         let user;
         try {
-          // Find user and make sure it exists and is active
           user = await prisma.user.findUnique({
             where: {
               email: username,
-              // Add an active flag if you want to support "soft deletes"
-              // active: true,
             },
             select: { id: true, name: true, email: true, password: true },
           });
         } catch (error) {
           console.error("Database error:", error);
-          throw new Error(
-            "Database error: " +
-              (error instanceof Error ? error.message : "Unknown error"),
-          );
+          throw new Error("Unable to connect to database. Please try again later.");
         }
 
         if (!user || !user.password) {
-          throw new Error("User not found");
+          throw new Error("Account not found. Please check your username or sign up.");
         }
 
         const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) {
-          throw new Error("Invalid password");
+          throw new Error("Incorrect password. Please try again.");
         }
 
         return {
@@ -75,17 +68,13 @@ const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     async signIn({ user }) {
-      // Only allow sign in if user object is valid
       return !!user && !!user.email;
     },
     async session({ session, token }) {
-      // Add user ID to session from token
       if (token && session.user) {
-        // Ensure sub is treated as string
         if (token.sub) {
           session.user.id = String(token.sub);
 
-          // Add an additional check here to verify the user still exists in the database
           try {
             const dbUser = await prisma.user.findUnique({
               where: { id: String(token.sub) },
@@ -93,25 +82,20 @@ const authConfig: NextAuthConfig = {
             });
 
             if (!dbUser) {
-              // User no longer exists in the database
-              return null as any; // This will force a session end
+              return null as any;
             }
           } catch (error) {
             console.error("Session verification error:", error);
-            // Continue with the session if DB check fails to prevent locking users out
           }
         }
       }
       return session;
     },
     async jwt({ token, account, user }) {
-      // Pass any error information to the token
       if (account?.error) {
-        // Convert account.error to string to ensure type compatibility
         token.error = String(account.error);
       }
 
-      // Add the signin timestamp to enable checking for session validity
       if (user) {
         token.signInTimestamp = Date.now();
       }
@@ -126,9 +110,7 @@ const authConfig: NextAuthConfig = {
       }
     },
     async signOut(message: any) {
-      // Use any type for message to accommodate different NextAuth versions/structures
       try {
-        // Get any email we can find from the message object
         const email =
           message?.user?.email ||
           message?.session?.user?.email ||
@@ -143,7 +125,6 @@ const authConfig: NextAuthConfig = {
         console.log("User signed out (no email available)");
       }
     },
-    // The session event is not used in this implementation
   },
   pages: {
     signIn: "/signin",
