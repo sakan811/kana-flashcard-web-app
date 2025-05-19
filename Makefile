@@ -36,6 +36,9 @@ clean:
 clean-build:
 	docker compose --profile build down --volumes --remove-orphans 
 
+rm-image:
+	docker rmi sakanbeer88/jp-kana-flashcard-app:latest
+
 auth-secret:
 	npx auth secret
 

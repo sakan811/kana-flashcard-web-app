@@ -25,7 +25,7 @@ services:
     depends_on:
       - jp-kana-flashcard-app-db
     env_file:
-      - ./.env
+      - ./.env.docker
     ports:
       - "3000:3000"
     profiles:
@@ -39,7 +39,7 @@ services:
     depends_on:
       - jp-kana-flashcard-app-db
     env_file:
-      - ./.env
+      - ./.env.docker
     ports:
       - "3000:3000"
     profiles:
