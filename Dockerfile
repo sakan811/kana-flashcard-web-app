@@ -4,8 +4,11 @@ FROM node:23.11.1-alpine3.21 AS base
 # Set working directory
 WORKDIR /app
 
-# Install dependencies (only package.json and package-lock.json first for better caching)
+# Copy package.json, package-lock.json, and prisma directory for dependency installation
 COPY package.json package-lock.json* ./
+COPY prisma ./prisma
+
+# Install dependencies
 RUN npm install
 
 # Copy the rest of the application code
