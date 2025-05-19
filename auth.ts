@@ -5,6 +5,11 @@ import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 
+// Define types for JSON values
+type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+type JsonObject = { [key: string]: JsonValue };
+type JsonArray = JsonValue[];
+
 // Define the NextAuth configuration
 const authConfig: NextAuthConfig = {
   trustHost: true,
@@ -102,7 +107,8 @@ const authConfig: NextAuthConfig = {
     async jwt({ token, account, user }) {
       // Pass any error information to the token
       if (account?.error) {
-        token.error = account.error;
+        // Convert account.error to string to ensure type compatibility
+        token.error = String(account.error);
       }
 
       // Add the signin timestamp to enable checking for session validity
@@ -119,9 +125,22 @@ const authConfig: NextAuthConfig = {
         console.log(`User signed in: ${message.user.email}`);
       }
     },
-    async signOut(message) {
-      if (message.session?.user?.email) {
-        console.log(`User signed out: ${message.session.user.email}`);
+    async signOut(message: any) {
+      // Use any type for message to accommodate different NextAuth versions/structures
+      try {
+        // Get any email we can find from the message object
+        const email =
+          message?.user?.email ||
+          message?.session?.user?.email ||
+          message?.token?.email;
+
+        if (email) {
+          console.log(`User signed out: ${email}`);
+        } else {
+          console.log("User signed out (no email available)");
+        }
+      } catch (error) {
+        console.log("User signed out (no email available)");
       }
     },
     // The session event is not used in this implementation
