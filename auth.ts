@@ -71,23 +71,8 @@ const authConfig: NextAuthConfig = {
       return !!user && !!user.email;
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        if (token.sub) {
-          session.user.id = String(token.sub);
-
-          try {
-            const dbUser = await prisma.user.findUnique({
-              where: { id: String(token.sub) },
-              select: { id: true },
-            });
-
-            if (!dbUser) {
-              return null as any;
-            }
-          } catch (error) {
-            console.error("Session verification error:", error);
-          }
-        }
+      if (token && session.user && token.sub) {
+        session.user.id = String(token.sub);
       }
       return session;
     },
