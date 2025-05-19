@@ -10,7 +10,7 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
 ## How to Use the Web App on Vercel
 
-Navigate to 
+Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
 ## How to Use the Web App Locally
 
