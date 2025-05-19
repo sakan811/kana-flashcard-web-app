@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 
 // Optimized Auth.js configuration following best practices
 const authConfig: NextAuthConfig = {
@@ -94,8 +95,12 @@ const authConfig: NextAuthConfig = {
         `User signed in: ${user.email}${isNewUser ? " (new user)" : ""}`,
       );
     },
-    async signOut({ token }) {
-      console.log(`User signed out: ${token?.email || "unknown"}`);
+    async signOut(params) {
+      if ("token" in params && params.token) {
+        console.log(`User signed out: ${params.token.email || "unknown"}`);
+      } else {
+        console.log("User signed out: unknown");
+      }
     },
   },
   pages: {
