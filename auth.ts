@@ -79,14 +79,14 @@ const authConfig: NextAuthConfig = {
         // Ensure sub is treated as string
         if (token.sub) {
           session.user.id = String(token.sub);
-        
+
           // Add an additional check here to verify the user still exists in the database
           try {
             const dbUser = await prisma.user.findUnique({
               where: { id: String(token.sub) },
               select: { id: true },
             });
-            
+
             if (!dbUser) {
               // User no longer exists in the database
               return null as any; // This will force a session end
@@ -104,12 +104,12 @@ const authConfig: NextAuthConfig = {
       if (account?.error) {
         token.error = account.error;
       }
-      
+
       // Add the signin timestamp to enable checking for session validity
       if (user) {
         token.signInTimestamp = Date.now();
       }
-      
+
       return token;
     },
   },
@@ -127,8 +127,8 @@ const authConfig: NextAuthConfig = {
     // The session event is not used in this implementation
   },
   pages: {
-    signIn: '/signin',
-    error: '/error',
+    signIn: "/signin",
+    error: "/error",
   },
 };
 
@@ -153,7 +153,7 @@ declare module "next-auth" {
       image?: string | null;
     };
   }
-  
+
   interface User {
     id: string;
     name?: string | null;
