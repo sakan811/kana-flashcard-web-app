@@ -12,8 +12,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Validate email format with a linear-time regex (avoiding ReDoS vulnerabilities)
+    const emailRegex =
+      /^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9.-]{1,253}\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(username)) {
       return NextResponse.json(
         { error: "Invalid email format" },
