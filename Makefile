@@ -25,7 +25,7 @@ up:
 	docker compose --profile pull up -d 
 
 build-up:
-	docker compose --profile build up -d
+	docker compose --profile build up -d --build
 	
 down:
 	docker compose down
@@ -35,6 +35,9 @@ clean:
 
 clean-build:
 	docker compose --profile build down --volumes --remove-orphans 
+
+rm-image:
+	docker rmi sakanbeer88/jp-kana-flashcard-app:latest
 
 auth-secret:
 	npx auth secret
