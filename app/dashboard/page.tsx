@@ -1,16 +1,12 @@
-import Dashboard from "@/components/Dashboard";
-import { Metadata } from "next";
-import { SessionProvider } from "next-auth/react";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Dashboard | Kana Flashcards",
-  description: "View your kana learning progress and statistics",
-};
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import Dashboard from "@/components/Dashboard";
 
 export default function DashboardPage() {
   return (
-    <SessionProvider>
+    <ProtectedRoute>
       <Dashboard />
-    </SessionProvider>
+    </ProtectedRoute>
   );
 }
