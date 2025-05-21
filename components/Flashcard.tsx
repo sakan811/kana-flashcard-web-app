@@ -7,6 +7,7 @@ export default function Flashcard() {
   const { currentKana, loadingKana, submitAnswer, result, nextCard } =
     useFlashcard();
   const [answer, setAnswer] = useState("");
+  const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -30,6 +31,7 @@ export default function Flashcard() {
         setIsProcessing(true);
         nextCard();
         setAnswer("");
+        setError("");
         // Allow a brief delay before enabling the next action
         setTimeout(() => setIsProcessing(false), 500);
       }
@@ -43,7 +45,14 @@ export default function Flashcard() {
     e.preventDefault();
     if (isProcessing) return;
 
+    // Validate the answer isn't empty
+    if (!result && !answer.trim()) {
+      setError("Please enter an answer");
+      return;
+    }
+
     setIsProcessing(true);
+    setError(""); // Clear any previous errors
 
     if (!result) {
       submitAnswer(answer);
@@ -103,16 +112,28 @@ export default function Flashcard() {
 
         <form onSubmit={handleSubmit} className="mt-auto flex flex-col">
           {!result ? (
-            <input
-              ref={inputRef}
-              type="text"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder="Type romaji equivalent..."
-              className="mb-4 rounded-md border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
-              disabled={isProcessing}
-              autoFocus
-            />
+            <>
+              <input
+                ref={inputRef}
+                type="text"
+                value={answer}
+                onChange={(e) => {
+                  setAnswer(e.target.value);
+                  if (error && e.target.value.trim()) {
+                    setError("");
+                  }
+                }}
+                placeholder="Type romaji equivalent..."
+                className={`mb-2 rounded-md border ${
+                  error ? "border-red-500" : "border-gray-300"
+                } px-4 py-2 focus:border-blue-500 focus:outline-none`}
+                disabled={isProcessing}
+                autoFocus
+              />
+              {error && (
+                <div className="mb-2 text-red-600 text-sm">{error}</div>
+              )}
+            </>
           ) : (
             <div></div>
           )}

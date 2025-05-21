@@ -45,7 +45,9 @@ describe("Authentication Flow", () => {
 
     render(<Home />);
 
-    expect(screen.getByText("Loading...")).toBeDefined();
+    // Check for the loading spinner instead of text
+    const spinnerElement = document.querySelector(".animate-spin");
+    expect(spinnerElement).toBeTruthy();
   });
 
   test("shows content when authenticated", () => {
@@ -56,9 +58,9 @@ describe("Authentication Flow", () => {
 
     render(<Home />);
 
-    expect(screen.getByText("Japanese Kana Flashcard App")).toBeDefined();
-    expect(screen.getByText("Hiragana Practice")).toBeDefined();
-    expect(screen.getByText("Katakana Practice")).toBeDefined();
+    expect(screen.getByText("Japanese Kana Flashcard App")).toBeTruthy();
+    expect(screen.getByText("Hiragana Practice")).toBeTruthy();
+    expect(screen.getByText("Katakana Practice")).toBeTruthy();
   });
 
   test("sign out button calls signOut function", () => {
