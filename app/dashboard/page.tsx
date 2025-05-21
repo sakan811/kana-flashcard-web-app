@@ -1,6 +1,8 @@
+"use client";
+
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Dashboard from "@/components/Dashboard";
 import { Metadata } from "next";
-import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "Dashboard | Kana Flashcards",
@@ -9,8 +11,8 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <SessionProvider>
+    <ProtectedRoute>
       <Dashboard />
-    </SessionProvider>
+    </ProtectedRoute>
   );
 }
