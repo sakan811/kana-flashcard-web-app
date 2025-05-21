@@ -1,5 +1,5 @@
-import { describe, test, expect, beforeEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, test, expect, beforeEach, vi, afterEach } from "vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Flashcard from "../components/Flashcard";
 import { useFlashcard } from "../components/FlashcardProvider";
@@ -35,6 +35,11 @@ describe("Flashcard Component", () => {
       result: null,
       nextCard: vi.fn(),
     });
+  });
+  
+  // Clean up after each test
+  afterEach(() => {
+    cleanup();
   });
 
   test("renders loading state", () => {
@@ -95,6 +100,66 @@ describe("Flashcard Component", () => {
     expect(screen.getByRole("button", { name: "Submit" })).toBeDefined();
   });
 
+  test("shows error message when submitting empty answer", async () => {
+    const submitAnswerMock = vi.fn();
+
+    (useFlashcard as any).mockReturnValue({
+      currentKana: {
+        id: "1",
+        character: "あ",
+        romaji: "a",
+        accuracy: 0.7,
+      },
+      loadingKana: false,
+      submitAnswer: submitAnswerMock,
+      result: null,
+      nextCard: vi.fn(),
+    });
+
+    render(<Flashcard />);
+
+    // Find the submit button and click it without entering anything
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+    fireEvent.click(submitButton);
+
+    // Check for error message
+    expect(screen.getByText("Please enter an answer")).toBeDefined();
+    
+    // Verify submitAnswer was NOT called with empty value
+    expect(submitAnswerMock).not.toHaveBeenCalled();
+  });
+
+  test("clears error message when user starts typing", async () => {
+    (useFlashcard as any).mockReturnValue({
+      currentKana: {
+        id: "1",
+        character: "あ",
+        romaji: "a",
+        accuracy: 0.7,
+      },
+      loadingKana: false,
+      submitAnswer: vi.fn(),
+      result: null,
+      nextCard: vi.fn(),
+    });
+
+    render(<Flashcard />);
+
+    // Find the submit button and click it without entering anything
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+    fireEvent.click(submitButton);
+
+    // Check for error message
+    expect(screen.getByText("Please enter an answer")).toBeDefined();
+
+    // Start typing in the input
+    const input = screen.getByPlaceholderText("Type romaji equivalent...");
+    fireEvent.change(input, { target: { value: "a" } });
+
+    // Error message should be gone
+    expect(screen.queryByText("Please enter an answer")).toBeNull();
+  });
+
   test("handles answer submission correctly", async () => {
     // Create mock functions for testing interactions
     const submitAnswerMock = vi.fn();
@@ -115,15 +180,15 @@ describe("Flashcard Component", () => {
     render(<Flashcard />);
 
     // Find the input and submit button
-    const input = screen.getAllByPlaceholderText("Type romaji equivalent...");
-    const submitButton = screen.getAllByRole("button", { name: "Submit" });
+    const input = screen.getByPlaceholderText("Type romaji equivalent...");
+    const submitButton = screen.getByRole("button", { name: "Submit" });
 
     // Type an answer and submit
-    await userEvent.type(input[0], "a");
-    fireEvent.click(submitButton[0]);
+    await userEvent.type(input, "a");
+    fireEvent.click(submitButton);
 
     // Submit button should be in submitting state after click
-    expect(submitButton[0].textContent).toContain("Submitting");
+    expect(submitButton.textContent).toContain("Submitting");
 
     // Verify the submitAnswer function was called with the correct value
     expect(submitAnswerMock).toHaveBeenCalledWith("a");
@@ -190,11 +255,15 @@ describe("Flashcard Component", () => {
       nextCard: nextCardMock,
     });
 
-    render(<Flashcard />);
+    const { container } = render(<Flashcard />);
 
-    // Click the Next Card button
-    const nextButton = screen.getAllByRole("button", { name: "Next Card" });
-    fireEvent.click(nextButton[2]);
+    // Click the Next Card button within the current container
+    const nextButton = container.querySelector('button[type="submit"]');
+    if (!nextButton) {
+      throw new Error("Next button not found");
+    }
+    
+    fireEvent.click(nextButton);
 
     // Verify nextCard was called
     expect(nextCardMock).toHaveBeenCalled();
@@ -218,6 +287,7 @@ describe("Flashcard Component", () => {
       nextCard: nextCardMock,
     });
 
+    // Use cleanup to ensure previous test renders are removed
     render(<Flashcard />);
 
     // Verify the event listener was registered
