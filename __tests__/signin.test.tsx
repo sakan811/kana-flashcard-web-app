@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import SignInPage from "../app/login/signin/page";
+import SignInPage from "../app/login/page";
 import { describe, test, expect, vi } from "vitest";
 import { SessionProvider } from "next-auth/react";
 
