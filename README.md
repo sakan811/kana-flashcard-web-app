@@ -62,7 +62,7 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
    - With Only Postgres Docker:
 
      ```bash
-     docker compose --profile pull up -d 'jp-kana-flashcard-app-db'
+     docker compose up -d 'jp-kana-flashcard-app-db'
      npm install
      npx prisma generate
      npx prisma migrate dev
