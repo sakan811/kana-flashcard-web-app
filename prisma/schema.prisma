@@ -13,7 +13,7 @@ model User {
   id            String         @id @default(uuid())
   name          String
   email         String?        @unique
-  password      String?        @db.VarChar(255)
+  image         String?        // Add image field for Google profile picture
   created_at    DateTime       @default(now())
   userAccuracy  UserAccuracy[]
 }
