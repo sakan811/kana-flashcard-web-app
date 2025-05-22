@@ -48,6 +48,9 @@ generate:
 migrate:
 	npx prisma migrate dev
 
+migrate-prod:
+	npx prisma migrate deploy
+	
 seed:
 	npx prisma db seed
 
