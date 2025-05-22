@@ -29,7 +29,7 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
 2. Setup the environment variables:
 
-   - With Dockererized Web-App:
+   - With Dockerized Web-App:
 
      ```bash
      cp .env.docker.example .env.docker
@@ -43,11 +43,11 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
      2.1. Generate an auth secret: <https://auth-secret-gen.vercel.app/>
 
-     - With Dockererized Web-App:
+     - With Dockerized Web-App:
 
        2.1.1. Copy the generated secret to `.env.docker` file and paste to `AUTH_SECRET`.
 
-     - With Dockererized Web-App:
+     - With Dockerized Web-App:
 
        2.1.1. Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
 
@@ -61,7 +61,7 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
 3. Setup the Web-App:
 
-   - With Dockererized Web-App:
+   - With Dockerized Web-App:
 
      ```bash
      docker compose --profile pull up -d
