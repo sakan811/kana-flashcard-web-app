@@ -59,7 +59,14 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
       2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
 
-3. Setup the Web-App:
+3. Setup Supabase:
+
+   - Create a Supabase project at <https://supabase.com/>.
+   - On your project dashboard, click `Connect`, select `ORMs`, and then select `Prisma`.
+   - Copy `DATABASE_URL` to `POSTGRES_PRISMA_URL` in `.env.docker` or `.env` file.
+   - Copy `DIRECT_URL` to `POSTGRES_URL_NON_POOLING` in `.env.docker` or `.env` file.
+
+4. Setup the Web-App:
 
    - With Dockerized Web-App:
 
@@ -78,4 +85,4 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
      npm run dev
      ```
 
-4. Open your browser and navigate to `http://localhost:3000`.
+5. Open your browser and navigate to `http://localhost:3000`.
