@@ -31,7 +31,8 @@ export default function LoginPage() {
       <div className="p-8 bg-white rounded-lg shadow-md text-center w-96">
         <h1 className="text-2xl font-bold mb-8">Japanese Kana Flashcard App</h1>
         <p className="text-gray-600 mb-6">
-          Sign in with your Google account to start practicing Japanese kana characters.
+          Sign in with your Google account to start practicing Japanese kana
+          characters.
         </p>
         <button
           onClick={handleGoogleSignIn}

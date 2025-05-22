@@ -9,4 +9,8 @@ export default defineConfig({
     setupFiles: ["./__tests__/setup.ts"],
     include: ["__tests__/**/*.test.tsx"],
   },
+  define: {
+    "process.env.NEXTAUTH_URL": '"http://localhost:3000"',
+    "process.env.NEXTAUTH_SECRET": '"test-secret"',
+  },
 });

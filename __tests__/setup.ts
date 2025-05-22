@@ -1,4 +1,3 @@
-// Test setup file
 import { vi } from "vitest";
 
 // Mock ResizeObserver which isn't available in test environment
@@ -25,13 +24,27 @@ Object.defineProperty(window, "matchMedia", {
 
 // Mock next/navigation for useRouter and related hooks
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({
+  useRouter: vi.fn(() => ({
     push: vi.fn(),
     replace: vi.fn(),
     prefetch: vi.fn(),
     refresh: vi.fn(),
     back: vi.fn(),
-  }),
+  })),
   usePathname: () => "/",
   useSearchParams: () => new URLSearchParams(),
 }));
+
+// Mock NextAuth completely to avoid API calls
+vi.mock("next-auth/react", () => ({
+  useSession: vi.fn(() => ({
+    status: "unauthenticated",
+    data: null,
+  })),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+}));
+
+// Mock fetch globally
+global.fetch = vi.fn();

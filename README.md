@@ -51,13 +51,13 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
        2.1.1. Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
 
-     2.2. Setup Google OAuth: <https://support.google.com/googleapi/answer/6158849?hl=en>
+       2.2. Setup Google OAuth: <https://support.google.com/googleapi/answer/6158849?hl=en>
 
-     2.3. Copy the generated `Client ID` and `Client Secret` to `.env.docker` or `.env` file and paste to `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+       2.3. Copy the generated `Client ID` and `Client Secret` to `.env.docker` or `.env` file and paste to `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
 
-     2.4. Paste `http://localhost:3000` to `Authorized JavaScript origins` in the Google OAuth setup.
+       2.4. Paste `http://localhost:3000` to `Authorized JavaScript origins` in the Google OAuth setup.
 
-     2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
+       2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
 
 3. Setup the Web-App:
 
