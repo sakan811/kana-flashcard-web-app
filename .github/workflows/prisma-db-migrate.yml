@@ -22,7 +22,7 @@ jobs:
       - name: Set up Prisma
         run: npx prisma generate
 
-      - name: Run Prisma DB Push
+      - name: Run Prisma DB Migrate
         env:
           POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
           POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
