@@ -45,7 +45,7 @@ describe("Authentication Flow", () => {
 
     render(<Home />);
 
-    // Check for the loading spinner instead of text
+    // Check for the loading spinner
     const spinnerElement = document.querySelector(".animate-spin");
     expect(spinnerElement).toBeTruthy();
   });
@@ -53,7 +53,7 @@ describe("Authentication Flow", () => {
   test("shows content when authenticated", () => {
     (useSession as any).mockReturnValue({
       status: "authenticated",
-      data: { user: { name: "Test User" } },
+      data: { user: { name: "Test User", email: "test@example.com" } },
     });
 
     render(<Home />);
@@ -66,12 +66,11 @@ describe("Authentication Flow", () => {
   test("sign out button calls signOut function", () => {
     (useSession as any).mockReturnValue({
       status: "authenticated",
-      data: { user: { name: "Test User" } },
+      data: { user: { name: "Test User", email: "test@example.com" } },
     });
 
     render(<Home />);
 
-    // Get all matching buttons and use the first one
     const signOutButtons = screen.getAllByTestId("main-sign-out-button");
     signOutButtons[0].click();
 

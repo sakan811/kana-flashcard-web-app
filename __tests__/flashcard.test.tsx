@@ -36,7 +36,7 @@ describe("Flashcard Component", () => {
       nextCard: vi.fn(),
     });
   });
-  
+
   // Clean up after each test
   afterEach(() => {
     cleanup();
@@ -124,7 +124,7 @@ describe("Flashcard Component", () => {
 
     // Check for error message
     expect(screen.getByText("Please enter an answer")).toBeDefined();
-    
+
     // Verify submitAnswer was NOT called with empty value
     expect(submitAnswerMock).not.toHaveBeenCalled();
   });
@@ -262,7 +262,7 @@ describe("Flashcard Component", () => {
     if (!nextButton) {
       throw new Error("Next button not found");
     }
-    
+
     fireEvent.click(nextButton);
 
     // Verify nextCard was called
