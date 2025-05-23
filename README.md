@@ -29,13 +29,13 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
 2. Setup the environment variables:
 
-   - With Dockerized Web-App:
+   - Dockerized Web-App:
 
      ```bash
      cp .env.docker.example .env.docker
      ```
 
-   - With Only Postgres Docker:
+   - Local Development with Only Postgres Docker:
 
      ```bash
      cp .env.local.example .env
@@ -43,18 +43,18 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
      2.1. Generate an auth secret: <https://auth-secret-gen.vercel.app/>
 
-     - With Dockerized Web-App:
+     - **Dockerized Web-App**: Copy the generated secret to `.env.docker` file and paste to `AUTH_SECRET`.
 
-       2.1.1. Copy the generated secret to `.env.docker` file and paste to `AUTH_SECRET`.
-
-     - With Dockerized Web-App:
-
-       2.1.1. Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
+     - **Local Development**: Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
 
       2.2. Setup Google OAuth: <https://support.google.com/googleapi/answer/6158849?hl=en>
 
-      2.3. Copy the generated `Client ID` and `Client Secret` to `.env.docker` or `.env` file and paste to `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+      2.3. Copy the generated `Client ID` and `Client Secret`
 
+        - **Dockerized setup**: Paste to `.env.docker` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+
+        - **Local setup**: Paste to `.env` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+  
       2.4. Paste `http://localhost:3000` to `Authorized JavaScript origins` in the Google OAuth setup.
 
       2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
@@ -63,18 +63,18 @@ Navigate to <https://japanese-kana-flashcard.vercel.app/>
 
    - Create a Supabase project at <https://supabase.com/>.
    - On your project dashboard, click `Connect`, select `ORMs`, and then select `Prisma`.
-   - Copy `DATABASE_URL` to `POSTGRES_PRISMA_URL` in `.env.docker` or `.env` file.
-   - Copy `DIRECT_URL` to `POSTGRES_URL_NON_POOLING` in `.env.docker` or `.env` file.
+   - Copy `DATABASE_URL` to `POSTGRES_PRISMA_URL` in your environment file.
+   - Copy `DIRECT_URL` to `POSTGRES_URL_NON_POOLING` in your environment file.
 
 4. Setup the Web-App:
 
-   - With Dockerized Web-App:
+   - Dockerized Web-App:
 
      ```bash
      docker compose --profile pull up -d
      ```
 
-   - With Only Postgres Docker:
+   - Local Development with Postgres Docker:
 
      ```bash
      docker compose up -d 'jp-kana-flashcard-app-db'
