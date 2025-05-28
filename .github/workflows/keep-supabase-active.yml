@@ -1,0 +1,73 @@
+name: Keep Supabase Active
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC (weekly)
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  keep-active:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: "npm"
+          cache-dependency-path: "./package-lock.json"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Query Database to Keep Active
+        env:
+          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+          POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+        run: |
+          cat << 'EOF' > keep-active.js
+          const { PrismaClient } = require('./prisma/app/generated/prisma/client');
+          
+          async function keepDatabaseActive() {
+            const prisma = new PrismaClient();
+            
+            try {
+              console.log('🔄 Querying database to keep Supabase active...');
+              
+              // Simple query to keep the database active
+              const kanaCount = await prisma.kana.count();
+              console.log(`✅ Database is active! Found ${kanaCount} kana characters.`);
+              
+              // Optional: Get a sample of user accuracy data
+              const userAccuracyCount = await prisma.userAccuracy.count();
+              console.log(`📊 User accuracy records: ${userAccuracyCount}`);
+              
+              console.log('🎉 Keep-alive query completed successfully!');
+              
+            } catch (error) {
+              console.error('❌ Error querying database:', error);
+              process.exit(1);
+            } finally {
+              await prisma.$disconnect();
+            }
+          }
+          
+          keepDatabaseActive();
+          EOF
+          
+          node keep-active.js
+
+      - name: Cleanup
+        run: rm -f keep-active.js
+
+      - name: Report Status
+        run: |
+          echo "✅ Supabase keep-alive completed at $(date)"
+          echo "Next scheduled run: $(date -d 'next monday 9:00' --iso-8601=seconds)"
