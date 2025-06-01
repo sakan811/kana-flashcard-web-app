@@ -21,7 +21,7 @@ pre-ci: lint format test
 up:
 	docker compose --profile pull up -d 
 
-build-up:
+up-build:
 	docker compose --profile build up -d --build
 	
 down:
