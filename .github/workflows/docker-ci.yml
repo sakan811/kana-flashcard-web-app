@@ -35,7 +35,7 @@ jobs:
           load: ${{ github.event_name == 'pull_request' }}
           tags: ${{ vars.DOCKERHUB_USERNAME }}/jp-kana-flashcard-app:latest
           sbom: ${{ github.event_name != 'pull_request' }}
-          provenance: mode=max
+          provenance: ${{ github.event_name != 'pull_request' && 'mode=max' || 'false' }}
 
       - name: Docker Scout
         if: ${{ github.event_name == 'pull_request' }}
