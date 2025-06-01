@@ -1,5 +1,5 @@
 # Use the latest Node.js Alpine image
-FROM node:23.11.1-alpine3.22 AS base
+FROM node:24.1.0-slim AS base
 
 # Create a non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -28,7 +28,7 @@ RUN npm run build
 RUN chown -R nextjs:nodejs /app
 
 # Production image, copy only necessary files
-FROM node:23.11.1-alpine3.22 AS prod
+FROM node:24.1.0-slim AS prod
 
 # Create a non-root user
 RUN addgroup -g 1001 -S nodejs && \
