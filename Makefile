@@ -23,6 +23,9 @@ up:
 
 up-build:
 	docker compose --profile build up -d --build
+
+up-db:
+	docker compose up -d jp-kana-flashcard-app-db
 	
 down:
 	docker compose --profile pull down
@@ -30,11 +33,17 @@ down:
 down-build:
 	docker compose --profile build down
 
+down-db:
+	docker compose down jp-kana-flashcard-app-db
+
 clean:
 	docker compose --profile pull down --volumes --remove-orphans --rmi local
 
 clean-build:
 	docker compose --profile build down --volumes --remove-orphans --rmi local
+
+clean-db:
+	docker compose down jp-kana-flashcard-app-db --volumes --remove-orphans --rmi local
 
 generate:
 	npx prisma generate
