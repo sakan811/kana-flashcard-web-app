@@ -160,7 +160,7 @@ async function seed() {
   console.log("Seeding database...");
 
   // Delete existing data
-  await prisma.userAccuracy.deleteMany();
+  await prisma.kanaProgress.deleteMany();
   await prisma.kana.deleteMany();
 
   // Seed hiragana
@@ -180,6 +180,7 @@ async function seed() {
   }
 
   console.log("Seeding completed!");
+  console.log(`Added ${hiragana.length + katakana.length} kana characters.`);
 }
 
 seed()

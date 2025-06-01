@@ -4,12 +4,9 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     // Single query with joins
-    const kanaWithAccuracy = await prisma.kana.findMany({
+    const kanaWithProgress = await prisma.kana.findMany({
       include: {
-        userAccuracy: {
-          where: {
-            user_email: session.user.email,
-          },
+        progress: {
           select: {
             accuracy: true,
           },
@@ -18,11 +15,11 @@ export async function GET() {
     });
 
     // Transform the data
-    const result = kanaWithAccuracy.map((kana) => ({
+    const result = kanaWithProgress.map((kana) => ({
       id: kana.id,
       character: kana.character,
       romaji: kana.romaji,
-      accuracy: kana.userAccuracy[0]?.accuracy || 0,
+      accuracy: kana.progress[0]?.accuracy || 0,
     }));
 
     return NextResponse.json(result);
