@@ -11,8 +11,8 @@ vi.mock("next/link", () => {
 describe("Header", () => {
   it("renders navigation links", () => {
     render(<Header activeTab="flashcards" setActiveTab={() => {}} />);
-    expect(screen.getByText("Hiragana")).toBeDefined();
-    expect(screen.getByText("Katakana")).toBeDefined();
-    expect(screen.getByText("Dashboard")).toBeDefined();
+    expect(screen.getByText("ひらがな Hiragana")).toBeDefined();
+    expect(screen.getByText("カタカナ Katakana")).toBeDefined();
+    expect(screen.getByText("📊 Dashboard")).toBeDefined();
   });
 });

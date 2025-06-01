@@ -26,23 +26,23 @@ describe("Home Page", () => {
   test("renders all navigation cards", () => {
     render(<Home />);
 
-    expect(screen.getByText("Japanese Kana Flashcard App")).toBeDefined();
-    expect(screen.getByText("Hiragana Practice")).toBeDefined();
-    expect(screen.getByText("Katakana Practice")).toBeDefined();
-    expect(screen.getByText("View Your Progress")).toBeDefined();
+    expect(screen.getByText("🌸 Japanese Kana Flashcard App")).toBeDefined();
+    expect(screen.getByText("ひらがな Hiragana Practice")).toBeDefined();
+    expect(screen.getByText("カタカナ Katakana Practice")).toBeDefined();
+    expect(screen.getByText("📊 View Your Progress")).toBeDefined();
   });
 
   test("contains correct navigation links", () => {
     render(<Home />);
 
     const hiraganaLink = screen
-      .getAllByText("Hiragana Practice")[1]
+      .getAllByText("ひらがな Hiragana Practice")[1]
       .closest("a");
     const katakanaLink = screen
-      .getAllByText("Katakana Practice")[1]
+      .getAllByText("カタカナ Katakana Practice")[1]
       .closest("a");
     const progressLink = screen
-      .getAllByText("View Your Progress")[1]
+      .getAllByText("📊 View Your Progress")[1]
       .closest("a");
 
     expect(hiraganaLink?.getAttribute("href")).toBe("/hiragana");
