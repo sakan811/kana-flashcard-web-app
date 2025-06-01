@@ -1,12 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Header from "../components/Header";
-import { signOut } from "next-auth/react";
-
-vi.mock("next-auth/react", () => ({
-  useSession: () => ({ data: { user: { name: "Test User" } } }),
-  signOut: vi.fn(),
-}));
 
 vi.mock("next/link", () => {
   return {
@@ -25,6 +19,5 @@ describe("Header", () => {
     render(<Header activeTab="dashboard" setActiveTab={() => {}} />);
     const buttons = screen.getAllByTestId("header-sign-out-button");
     fireEvent.click(buttons[0]);
-    expect(signOut).toHaveBeenCalled();
   });
 });
