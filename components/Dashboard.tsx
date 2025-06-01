@@ -133,19 +133,25 @@ export default function Dashboard() {
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-md bg-gradient-to-br from-[#705a39] to-[#403933] p-4 text-center shadow-lg border-2 border-[#403933]">
-            <p className="text-sm text-[#fad182] font-medium">Total Characters Practiced</p>
+            <p className="text-sm text-[#fad182] font-medium">
+              Total Characters Practiced
+            </p>
             <p className="text-2xl font-bold text-white">
               {filteredStats.filter((s) => s.attempts > 0).length}
             </p>
           </div>
           <div className="rounded-md bg-gradient-to-br from-green-600 to-green-700 p-4 text-center shadow-lg border-2 border-green-700">
-            <p className="text-sm text-green-100 font-medium">Average Accuracy</p>
+            <p className="text-sm text-green-100 font-medium">
+              Average Accuracy
+            </p>
             <p className="text-2xl font-bold text-white">
               {(averageAccuracy * 100).toFixed(1)}%
             </p>
           </div>
           <div className="rounded-md bg-gradient-to-br from-[#d1622b] to-[#ae0d13] p-4 text-center shadow-lg border-2 border-[#ae0d13]">
-            <p className="text-sm text-orange-100 font-medium">Total Attempts</p>
+            <p className="text-sm text-orange-100 font-medium">
+              Total Attempts
+            </p>
             <p className="text-2xl font-bold text-white">
               {filteredStats.reduce((sum, kana) => sum + kana.attempts, 0)}
             </p>
@@ -252,10 +258,19 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {filteredStats.map((kana, index) => (
-                <tr key={kana.id} className={`border-b border-[#705a39]/30 ${index % 2 === 0 ? 'bg-white/50' : 'bg-[#fad182]/20'} hover:bg-[#fad182]/40 transition-colors duration-200`}>
-                  <td className="py-3 text-2xl text-[#403933]">{kana.character}</td>
-                  <td className="py-3 text-[#705a39] font-medium">{kana.romaji}</td>
-                  <td className="py-3 text-[#403933] font-medium">{kana.attempts}</td>
+                <tr
+                  key={kana.id}
+                  className={`border-b border-[#705a39]/30 ${index % 2 === 0 ? "bg-white/50" : "bg-[#fad182]/20"} hover:bg-[#fad182]/40 transition-colors duration-200`}
+                >
+                  <td className="py-3 text-2xl text-[#403933]">
+                    {kana.character}
+                  </td>
+                  <td className="py-3 text-[#705a39] font-medium">
+                    {kana.romaji}
+                  </td>
+                  <td className="py-3 text-[#403933] font-medium">
+                    {kana.attempts}
+                  </td>
                   <td className="py-3">
                     <div className="flex items-center">
                       <div className="mr-3 h-3 w-24 rounded-full bg-[#705a39]/30 border border-[#705a39]/50">
