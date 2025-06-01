@@ -16,10 +16,7 @@ test:
 test-run:
 	npm run test:run
 
-pre-ci:
-	npm run lint && \
-	npm run format && \
-	npm run test:run
+pre-ci: lint format test
 
 up:
 	docker compose --profile pull up -d 
@@ -28,19 +25,16 @@ build-up:
 	docker compose --profile build up -d --build
 	
 down:
-	docker compose down
+	docker compose --profile pull down
+
+down-build:
+	docker compose --profile build down
 
 clean:
-	docker compose --profile pull down --volumes --remove-orphans 
+	docker compose --profile pull down --volumes --remove-orphans --rmi local
 
 clean-build:
-	docker compose --profile build down --volumes --remove-orphans 
-
-rm-image:
-	docker rmi sakanbeer88/jp-kana-flashcard-app:latest
-
-auth-secret:
-	npx auth secret
+	docker compose --profile build down --volumes --remove-orphans --rmi local
 
 generate:
 	npx prisma generate
