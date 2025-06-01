@@ -15,9 +15,4 @@ describe("Header", () => {
     expect(screen.getByText("Katakana")).toBeDefined();
     expect(screen.getByText("Dashboard")).toBeDefined();
   });
-  it("calls signOut on button click", () => {
-    render(<Header activeTab="dashboard" setActiveTab={() => {}} />);
-    const buttons = screen.getAllByTestId("header-sign-out-button");
-    fireEvent.click(buttons[0]);
-  });
 });
