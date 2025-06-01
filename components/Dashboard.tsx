@@ -16,7 +16,9 @@ export default function Dashboard() {
   const [stats, setStats] = useState<KanaStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "hiragana" | "katakana">("all");
-  const [sortColumn, setSortColumn] = useState<"character" | "romaji" | "attempts" | "accuracy">("accuracy");
+  const [sortColumn, setSortColumn] = useState<
+    "character" | "romaji" | "attempts" | "accuracy"
+  >("accuracy");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const fetchStats = async () => {
@@ -38,7 +40,9 @@ export default function Dashboard() {
     fetchStats();
   }, []);
 
-  const handleSort = (column: "character" | "romaji" | "attempts" | "accuracy") => {
+  const handleSort = (
+    column: "character" | "romaji" | "attempts" | "accuracy",
+  ) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -47,15 +51,17 @@ export default function Dashboard() {
     }
   };
 
-  const sortedStats = [...(filter === "all"
-    ? stats
-    : stats.filter((kana) => {
-        // Simple heuristic: hiragana characters typically have Unicode values between 0x3040 and 0x309F
-        const isHiragana =
-          kana.character.charCodeAt(0) >= 0x3040 &&
-          kana.character.charCodeAt(0) <= 0x309f;
-        return filter === "hiragana" ? isHiragana : !isHiragana;
-      }))].sort((a, b) => {
+  const sortedStats = [
+    ...(filter === "all"
+      ? stats
+      : stats.filter((kana) => {
+          // Simple heuristic: hiragana characters typically have Unicode values between 0x3040 and 0x309F
+          const isHiragana =
+            kana.character.charCodeAt(0) >= 0x3040 &&
+            kana.character.charCodeAt(0) <= 0x309f;
+          return filter === "hiragana" ? isHiragana : !isHiragana;
+        })),
+  ].sort((a, b) => {
     let aValue: string | number;
     let bValue: string | number;
 
@@ -190,7 +196,7 @@ export default function Dashboard() {
           <table className="w-full table-auto">
             <thead>
               <tr className="border-b text-left">
-                <th 
+                <th
                   className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
                   onClick={() => handleSort("character")}
                 >
@@ -203,7 +209,7 @@ export default function Dashboard() {
                     )}
                   </div>
                 </th>
-                <th 
+                <th
                   className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
                   onClick={() => handleSort("romaji")}
                 >
@@ -216,7 +222,7 @@ export default function Dashboard() {
                     )}
                   </div>
                 </th>
-                <th 
+                <th
                   className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
                   onClick={() => handleSort("attempts")}
                 >
@@ -229,7 +235,7 @@ export default function Dashboard() {
                     )}
                   </div>
                 </th>
-                <th 
+                <th
                   className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
                   onClick={() => handleSort("accuracy")}
                 >
@@ -246,25 +252,25 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {filteredStats.map((kana) => (
-                  <tr key={kana.id} className="border-b">
-                    <td className="py-3 text-2xl">{kana.character}</td>
-                    <td className="py-3">{kana.romaji}</td>
-                    <td className="py-3">{kana.attempts}</td>
-                    <td className="py-3">
-                      <div className="flex items-center">
-                        <div className="mr-2 h-2 w-20 rounded-full bg-gray-200">
-                          <div
-                            className="h-2 rounded-full bg-blue-600"
-                            style={{ width: `${kana.accuracy * 100}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-sm">
-                          {(kana.accuracy * 100).toFixed(0)}%
-                        </span>
+                <tr key={kana.id} className="border-b">
+                  <td className="py-3 text-2xl">{kana.character}</td>
+                  <td className="py-3">{kana.romaji}</td>
+                  <td className="py-3">{kana.attempts}</td>
+                  <td className="py-3">
+                    <div className="flex items-center">
+                      <div className="mr-2 h-2 w-20 rounded-full bg-gray-200">
+                        <div
+                          className="h-2 rounded-full bg-blue-600"
+                          style={{ width: `${kana.accuracy * 100}%` }}
+                        ></div>
                       </div>
-                    </td>
-                  </tr>
-                ))}
+                      <span className="text-sm">
+                        {(kana.accuracy * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

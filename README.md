@@ -43,17 +43,17 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
      - **Local Development**: Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
 
-      2.2. Setup Google OAuth: <https://support.google.com/googleapi/answer/6158849?hl=en>
+       2.2. Setup Google OAuth: <https://support.google.com/googleapi/answer/6158849?hl=en>
 
-      2.3. Copy the generated `Client ID` and `Client Secret`
+       2.3. Copy the generated `Client ID` and `Client Secret`
 
-        - **Dockerized setup**: Paste to `.env.docker` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+       - **Dockerized setup**: Paste to `.env.docker` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 
-        - **Local setup**: Paste to `.env` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
-  
-      2.4. Paste `http://localhost:3000` to `Authorized JavaScript origins` in the Google OAuth setup.
+       - **Local setup**: Paste to `.env` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 
-      2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
+       2.4. Paste `http://localhost:3000` to `Authorized JavaScript origins` in the Google OAuth setup.
+
+       2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
 
 3. Setup Supabase:
 
