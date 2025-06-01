@@ -3,13 +3,13 @@ name: Keep Supabase Active
 on:
   schedule:
     # Run every Monday at 9:00 AM UTC (weekly)
-    - cron: '0 9 * * 1'
+    - cron: "0 9 * * 1"
   workflow_dispatch: # Allow manual trigger
 
 jobs:
   keep-active:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
         run: |
           cat << 'EOF' > keep-active.js
           const { PrismaClient } = require('./prisma/app/generated/prisma/client');
-          
+
           async function keepDatabaseActive() {
             const prisma = new PrismaClient();
             
@@ -58,10 +58,10 @@ jobs:
               await prisma.$disconnect();
             }
           }
-          
+
           keepDatabaseActive();
           EOF
-          
+
           node keep-active.js
 
       - name: Cleanup
