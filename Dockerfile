@@ -1,6 +1,10 @@
 # Use the latest Node.js Alpine image
 FROM node:23.11.1-alpine3.22 AS base
 
+# Create a non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
 # Set working directory
 WORKDIR /app
 
@@ -20,17 +24,27 @@ RUN npx prisma generate
 # Build the Next.js app
 RUN npm run build
 
+# Change ownership of the app directory to the nextjs user
+RUN chown -R nextjs:nodejs /app
+
 # Production image, copy only necessary files
 FROM node:23.11.1-alpine3.22 AS prod
+
+# Create a non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
 
 WORKDIR /app
 
 # Copy node_modules and built app from previous stage
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/.next ./.next
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/prisma ./prisma
-COPY --from=base /app/prisma/app/generated /app/prisma/app/generated
+COPY --from=base --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=base --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=base --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=base --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=base --chown=nextjs:nodejs /app/prisma/app/generated /app/prisma/app/generated
+
+# Switch to the non-root user
+USER nextjs
 
 # Expose port (Next.js default)
 EXPOSE 3000
