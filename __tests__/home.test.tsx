@@ -1,7 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Home from "../app/page";
 
 // Mock the next/navigation module
@@ -9,13 +7,6 @@ vi.mock("next/navigation", () => ({
   useRouter: vi.fn(() => ({
     replace: vi.fn(),
   })),
-}));
-
-// Mock the next-auth/react module
-vi.mock("next-auth/react", () => ({
-  useSession: vi.fn(),
-  SessionProvider: ({ children }) => children,
-  signOut: vi.fn(),
 }));
 
 // Mock Next.js Link component
@@ -30,10 +21,6 @@ vi.mock("next/link", () => {
 describe("Home Page", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    (useSession as any).mockReturnValue({
-      status: "authenticated",
-      data: { user: { name: "Test User" } },
-    });
   });
 
   test("renders all navigation cards", () => {

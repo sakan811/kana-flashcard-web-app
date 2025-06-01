@@ -6,13 +6,7 @@ import {
   fireEvent,
   cleanup,
 } from "@testing-library/react";
-import { useSession } from "next-auth/react";
 import Dashboard from "../components/Dashboard";
-
-// Mock next-auth
-vi.mock("next-auth/react", () => ({
-  useSession: vi.fn(),
-}));
 
 // Mock fetch API
 const mockFetch = vi.fn();
@@ -48,11 +42,6 @@ describe("Dashboard", () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    // Mock authenticated session
-    (useSession as any).mockReturnValue({
-      data: { user: { id: "user123", name: "Test User" } },
-      status: "authenticated",
-    });
 
     // Mock successful fetch response
     mockFetch.mockResolvedValue({

@@ -4,14 +4,6 @@ import userEvent from "@testing-library/user-event";
 import Flashcard from "../components/Flashcard";
 import { useFlashcard } from "../components/FlashcardProvider";
 
-// Keep mocks for dependencies, not for the component under test
-vi.mock("next-auth/react", () => ({
-  useSession: vi.fn(() => ({
-    status: "authenticated",
-    data: { user: { name: "Test User" } },
-  })),
-}));
-
 // Mock the FlashcardProvider hook
 vi.mock("../components/FlashcardProvider", () => ({
   useFlashcard: vi.fn(() => ({

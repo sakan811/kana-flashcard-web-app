@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, cleanup } from "@testing-library/react";
-import { useSession } from "next-auth/react";
 import {
   FlashcardProvider,
   useFlashcard,
@@ -26,14 +25,6 @@ describe("FlashcardProvider", () => {
         },
       ],
     });
-
-    // Mock authenticated session
-    vi.mocked(useSession).mockReturnValue({
-      status: "authenticated",
-      data: {
-        user: { id: "user123", name: "Test User", email: "test@example.com" },
-      },
-    });
   });
 
   afterEach(() => {
@@ -41,12 +32,6 @@ describe("FlashcardProvider", () => {
   });
 
   it("throws if useFlashcard is used outside provider", () => {
-    // Create a test component that calls the hook outside provider
-    const TestComponent = () => {
-      useFlashcard();
-      return null;
-    };
-
     // This should throw an error
     expect(() => renderHook(() => useFlashcard())).toThrow(
       "useFlashcard must be used within a FlashcardProvider",
