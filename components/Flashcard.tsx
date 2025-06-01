@@ -131,7 +131,9 @@ export default function Flashcard() {
                 autoFocus
               />
               {error && (
-                <div className="mb-2 text-[#ae0d13] text-sm font-medium">{error}</div>
+                <div className="mb-2 text-[#ae0d13] text-sm font-medium">
+                  {error}
+                </div>
               )}
             </>
           ) : (
