@@ -22,8 +22,10 @@ services:
       context: .
       dockerfile: Dockerfile
     image: sakanbeer88/jp-kana-flashcard-app:latest
+    user: "1001:1001"  # Run as non-root user (nextjs:nodejs)
     depends_on:
-      - jp-kana-flashcard-app-db
+      jp-kana-flashcard-app-db:
+        condition: service_healthy
     env_file:
       - ./.env.docker
     ports:
@@ -32,12 +34,22 @@ services:
       - build
     networks:
       - kana-app-network
-    command: sh -c "npx prisma migrate dev --name init && npx prisma db seed && npm start"
+    # Run migrations and start the app
+    command: >
+      sh -c "
+      echo 'Waiting for database to be ready...' &&
+      npx prisma migrate deploy &&
+      npx prisma db seed &&
+      npm start
+      "
+    restart: unless-stopped
 
   jp-kana-flashcard-app:
     image: sakanbeer88/jp-kana-flashcard-app:latest
+    user: "1001:1001"  # Run as non-root user (nextjs:nodejs)
     depends_on:
-      - jp-kana-flashcard-app-db
+      jp-kana-flashcard-app-db:
+        condition: service_healthy
     env_file:
       - ./.env.docker
     ports:
@@ -46,7 +58,15 @@ services:
       - pull
     networks:
       - kana-app-network
-    command: sh -c "npx prisma migrate dev --name init && npx prisma db seed && npm start"
+    # Run migrations and start the app
+    command: >
+      sh -c "
+      echo 'Waiting for database to be ready...' &&
+      npx prisma migrate deploy &&
+      npx prisma db seed &&
+      npm start
+      "
+    restart: unless-stopped
 
 volumes:
   postgres_data:
