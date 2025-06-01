@@ -8,11 +8,7 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
 [![Docker CI](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-ci.yml)
 
-## How to Use the Web App on Vercel
-
-Navigate to <https://japanese-kana-flashcard.vercel.app/>
-
-## How to Use the Web App Locally
+## How to Use the Web App
 
 ### Prerequisites
 
