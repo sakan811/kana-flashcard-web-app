@@ -1,84 +1,80 @@
-# Japanese Kana Flashcard Web App
+# Japanese Kana Flashcard App
 
-A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specifically Hiragana and Katakana.
-
-## Status
+A web application for practicing Japanese Hiragana and Katakana characters with interactive flashcards and progress tracking.
 
 [![Web-App Test](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-app.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/test-app.yml)
 
 [![Docker CI](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/sakan811/kana-flashcard-web-app/actions/workflows/docker-ci.yml)
 
-## How to Use the Web App
+## Features
 
-### Prerequisites
+- **Interactive Flashcards**: Practice Hiragana and Katakana with randomized character selection
+- **Progress Tracking**: View accuracy statistics and practice history
+- **Adaptive Learning**: Characters with lower accuracy appear more frequently
 
-- **Docker**: Required for the web-app and database setup
+## Quick Start
 
-### Setup the Web App
+### Option 1: Docker (Recommended)
 
-1. Clone the repository:
+1. **Clone the repository**
 
    ```bash
    git clone https://github.com/sakan811/kana-flashcard-web-app.git
    cd kana-flashcard-web-app
    ```
 
-2. Setup the environment variables:
+2. **Set up environment variables**
 
-   - Dockerized Web-App:
+   ```bash
+   cp .env.docker.example .env.docker
+   ```
 
-     ```bash
-     cp .env.docker.example .env.docker
-     ```
+3. **Run with Docker**
 
-   - Local Development with Only Postgres Docker:
+   ```bash
+   docker compose --profile pull up -d
+   ```
 
-     ```bash
-     cp .env.local.example .env
-     ```
+4. **Access the app**
+   Open <http://localhost:3000> in your browser
 
-     2.1. Generate an auth secret: <https://auth-secret-gen.vercel.app/>
+### Option 2: Local Development
 
-     - **Dockerized Web-App**: Copy the generated secret to `.env.docker` file and paste to `AUTH_SECRET`.
+1. **Clone and setup**
 
-     - **Local Development**: Copy the generated secret to `.env` file and paste to `AUTH_SECRET`.
+   ```bash
+   git clone https://github.com/sakan811/kana-flashcard-web-app.git
+   cd kana-flashcard-web-app
+   cp .env.local.example .env
+   ```
 
-       2.2. Setup Google OAuth: <https://support.google.com/googleapi/answer/6158849?hl=en>
+2. **Start PostgreSQL database**
 
-       2.3. Copy the generated `Client ID` and `Client Secret`
+   ```bash
+   docker compose up -d jp-kana-flashcard-app-db
+   ```
 
-       - **Dockerized setup**: Paste to `.env.docker` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+3. **Install dependencies and setup database**
 
-       - **Local setup**: Paste to `.env` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+   ```bash
+   npm install
+   npx prisma generate
+   npx prisma migrate dev
+   npx prisma db seed
+   ```
 
-         2.4. Paste `http://localhost:3000` to `Authorized JavaScript origins` in the Google OAuth setup.
+4. **Start development server**
 
-         2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
+   ```bash
+   npm run dev
+   ```
 
-3. Setup Supabase:
+5. **Access the app**
+   Open <http://localhost:3000> in your browser
 
-   - Create a Supabase project at <https://supabase.com/>.
-   - On your project dashboard, click `Connect`, select `ORMs`, and then select `Prisma`.
-   - Copy `DATABASE_URL` to `POSTGRES_PRISMA_URL` in your environment file.
-   - Copy `DIRECT_URL` to `POSTGRES_URL_NON_POOLING` in your environment file.
+## Usage
 
-4. Setup the Web-App:
-
-   - Dockerized Web-App:
-
-     ```bash
-     docker compose --profile pull up -d
-     ```
-
-   - Local Development with Postgres Docker:
-
-     ```bash
-     docker compose up -d 'jp-kana-flashcard-app-db'
-     npm install
-     npx prisma generate
-     npx prisma migrate dev
-     npx prisma db seed
-     npm run dev
-     ```
-
-5. Open your browser and navigate to `http://localhost:3000`.
+1. **Home Page**: Choose between Hiragana or Katakana practice
+2. **Flashcard Practice**: Type the romaji equivalent of the displayed character
+3. **Dashboard**: View your practice statistics and character-specific accuracy
+4. **Progress Tracking**: The app automatically tracks your performance and shows difficult characters more often
