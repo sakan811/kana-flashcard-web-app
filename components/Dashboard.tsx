@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [stats, setStats] = useState<KanaStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "hiragana" | "katakana">("all");
+  const [sortColumn, setSortColumn] = useState<"character" | "romaji" | "attempts" | "accuracy">("accuracy");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const fetchStats = async () => {
     try {
@@ -32,16 +34,62 @@ export default function Dashboard() {
     }
   };
 
-  const filteredStats =
-    filter === "all"
-      ? stats
-      : stats.filter((kana) => {
-          // Simple heuristic: hiragana characters typically have Unicode values between 0x3040 and 0x309F
-          const isHiragana =
-            kana.character.charCodeAt(0) >= 0x3040 &&
-            kana.character.charCodeAt(0) <= 0x309f;
-          return filter === "hiragana" ? isHiragana : !isHiragana;
-        });
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const handleSort = (column: "character" | "romaji" | "attempts" | "accuracy") => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedStats = [...(filter === "all"
+    ? stats
+    : stats.filter((kana) => {
+        // Simple heuristic: hiragana characters typically have Unicode values between 0x3040 and 0x309F
+        const isHiragana =
+          kana.character.charCodeAt(0) >= 0x3040 &&
+          kana.character.charCodeAt(0) <= 0x309f;
+        return filter === "hiragana" ? isHiragana : !isHiragana;
+      }))].sort((a, b) => {
+    let aValue: string | number;
+    let bValue: string | number;
+
+    switch (sortColumn) {
+      case "character":
+        aValue = a.character;
+        bValue = b.character;
+        break;
+      case "romaji":
+        aValue = a.romaji;
+        bValue = b.romaji;
+        break;
+      case "attempts":
+        aValue = a.attempts;
+        bValue = b.attempts;
+        break;
+      case "accuracy":
+        aValue = a.accuracy;
+        bValue = b.accuracy;
+        break;
+      default:
+        return 0;
+    }
+
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      const comparison = aValue.localeCompare(bValue);
+      return sortDirection === "asc" ? comparison : -comparison;
+    } else {
+      const comparison = (aValue as number) - (bValue as number);
+      return sortDirection === "asc" ? comparison : -comparison;
+    }
+  });
+
+  const filteredStats = sortedStats;
 
   const averageAccuracy =
     filteredStats.length > 0
@@ -142,24 +190,62 @@ export default function Dashboard() {
           <table className="w-full table-auto">
             <thead>
               <tr className="border-b text-left">
-                <th className="pb-2 pt-2 text-sm font-semibold text-gray-600">
-                  Character
+                <th 
+                  className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
+                  onClick={() => handleSort("character")}
+                >
+                  <div className="flex items-center gap-1">
+                    Character
+                    {sortColumn === "character" && (
+                      <span className="text-blue-600">
+                        {sortDirection === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </div>
                 </th>
-                <th className="pb-2 pt-2 text-sm font-semibold text-gray-600">
-                  Romaji
+                <th 
+                  className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
+                  onClick={() => handleSort("romaji")}
+                >
+                  <div className="flex items-center gap-1">
+                    Romaji
+                    {sortColumn === "romaji" && (
+                      <span className="text-blue-600">
+                        {sortDirection === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </div>
                 </th>
-                <th className="pb-2 pt-2 text-sm font-semibold text-gray-600">
-                  Attempts
+                <th 
+                  className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
+                  onClick={() => handleSort("attempts")}
+                >
+                  <div className="flex items-center gap-1">
+                    Attempts
+                    {sortColumn === "attempts" && (
+                      <span className="text-blue-600">
+                        {sortDirection === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </div>
                 </th>
-                <th className="pb-2 pt-2 text-sm font-semibold text-gray-600">
-                  Accuracy
+                <th 
+                  className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
+                  onClick={() => handleSort("accuracy")}
+                >
+                  <div className="flex items-center gap-1">
+                    Accuracy
+                    {sortColumn === "accuracy" && (
+                      <span className="text-blue-600">
+                        {sortDirection === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </div>
                 </th>
               </tr>
             </thead>
             <tbody>
-              {filteredStats
-                .sort((a, b) => a.accuracy - b.accuracy)
-                .map((kana) => (
+              {filteredStats.map((kana) => (
                   <tr key={kana.id} className="border-b">
                     <td className="py-3 text-2xl">{kana.character}</td>
                     <td className="py-3">{kana.romaji}</td>
