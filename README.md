@@ -51,9 +51,9 @@ A **Japanese Kana Flashcard** Web App for **practicing** Japanese Kana, specific
 
        - **Local setup**: Paste to `.env` file as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 
-       2.4. Paste `http://localhost:3000` to `Authorized JavaScript origins` in the Google OAuth setup.
+         2.4. Paste `http://localhost:3000` to `Authorized JavaScript origins` in the Google OAuth setup.
 
-       2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
+         2.5. Paste `http://localhost:3000/api/auth/callback/google` to `Authorized redirect URIs` in the Google OAuth setup.
 
 3. Setup Supabase:
 
