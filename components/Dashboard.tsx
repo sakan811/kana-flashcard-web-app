@@ -108,83 +108,83 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#d1622b] border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="bg-gradient-to-br from-[#fad182] to-[#f5c55a] min-h-screen">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800 pl-4 pt-4">
+        <h1 className="text-3xl font-bold text-[#403933] pl-4 pt-4 drop-shadow-sm">
           Dashboard
         </h1>
         <Link
           href="/"
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors mt-4 mr-4"
+          className="rounded-lg bg-[#d1622b] px-6 py-3 text-white hover:bg-[#ae0d13] transition-all duration-200 mt-4 mr-4 shadow-lg hover:shadow-xl transform hover:scale-105 border-2 border-[#d1622b] hover:border-[#ae0d13] font-medium"
         >
           Back to Home
         </Link>
       </div>
 
-      <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-xl font-semibold text-gray-800">
+      <div className="mb-6 rounded-lg bg-white/90 backdrop-blur-sm p-6 shadow-xl border-2 border-[#705a39] mx-4">
+        <h2 className="mb-4 text-xl font-semibold text-[#403933]">
           Your Progress
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-md bg-blue-50 p-4 text-center">
-            <p className="text-sm text-gray-600">Total Characters Practiced</p>
-            <p className="text-2xl font-bold text-blue-700">
+          <div className="rounded-md bg-gradient-to-br from-[#705a39] to-[#403933] p-4 text-center shadow-lg border-2 border-[#403933]">
+            <p className="text-sm text-[#fad182] font-medium">Total Characters Practiced</p>
+            <p className="text-2xl font-bold text-white">
               {filteredStats.filter((s) => s.attempts > 0).length}
             </p>
           </div>
-          <div className="rounded-md bg-green-50 p-4 text-center">
-            <p className="text-sm text-gray-600">Average Accuracy</p>
-            <p className="text-2xl font-bold text-green-700">
+          <div className="rounded-md bg-gradient-to-br from-green-600 to-green-700 p-4 text-center shadow-lg border-2 border-green-700">
+            <p className="text-sm text-green-100 font-medium">Average Accuracy</p>
+            <p className="text-2xl font-bold text-white">
               {(averageAccuracy * 100).toFixed(1)}%
             </p>
           </div>
-          <div className="rounded-md bg-purple-50 p-4 text-center">
-            <p className="text-sm text-gray-600">Total Attempts</p>
-            <p className="text-2xl font-bold text-purple-700">
+          <div className="rounded-md bg-gradient-to-br from-[#d1622b] to-[#ae0d13] p-4 text-center shadow-lg border-2 border-[#ae0d13]">
+            <p className="text-sm text-orange-100 font-medium">Total Attempts</p>
+            <p className="text-2xl font-bold text-white">
               {filteredStats.reduce((sum, kana) => sum + kana.attempts, 0)}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="rounded-lg bg-white p-6 shadow-md">
+      <div className="rounded-lg bg-white/90 backdrop-blur-sm p-6 shadow-xl border-2 border-[#705a39] mx-4">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold text-[#403933]">
             Character Accuracy
           </h2>
           <div className="flex gap-2">
             <button
               onClick={() => setFilter("all")}
-              className={`rounded px-3 py-1 text-sm ${
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border-2 ${
                 filter === "all"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  ? "bg-[#d1622b] text-white border-[#d1622b] shadow-lg"
+                  : "bg-white text-[#705a39] border-[#705a39] hover:bg-[#fad182] hover:border-[#d1622b]"
               }`}
             >
               All
             </button>
             <button
               onClick={() => setFilter("hiragana")}
-              className={`rounded px-3 py-1 text-sm ${
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border-2 ${
                 filter === "hiragana"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  ? "bg-[#d1622b] text-white border-[#d1622b] shadow-lg"
+                  : "bg-white text-[#705a39] border-[#705a39] hover:bg-[#fad182] hover:border-[#d1622b]"
               }`}
             >
               Hiragana
             </button>
             <button
               onClick={() => setFilter("katakana")}
-              className={`rounded px-3 py-1 text-sm ${
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border-2 ${
                 filter === "katakana"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  ? "bg-[#d1622b] text-white border-[#d1622b] shadow-lg"
+                  : "bg-white text-[#705a39] border-[#705a39] hover:bg-[#fad182] hover:border-[#d1622b]"
               }`}
             >
               Katakana
@@ -195,54 +195,54 @@ export default function Dashboard() {
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
-              <tr className="border-b text-left">
+              <tr className="border-b-2 border-[#705a39] text-left">
                 <th
-                  className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
+                  className="pb-3 pt-2 text-sm font-semibold text-[#403933] cursor-pointer hover:text-[#d1622b] select-none transition-colors duration-200"
                   onClick={() => handleSort("character")}
                 >
                   <div className="flex items-center gap-1">
                     Character
                     {sortColumn === "character" && (
-                      <span className="text-blue-600">
+                      <span className="text-[#d1622b] text-lg">
                         {sortDirection === "asc" ? "↑" : "↓"}
                       </span>
                     )}
                   </div>
                 </th>
                 <th
-                  className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
+                  className="pb-3 pt-2 text-sm font-semibold text-[#403933] cursor-pointer hover:text-[#d1622b] select-none transition-colors duration-200"
                   onClick={() => handleSort("romaji")}
                 >
                   <div className="flex items-center gap-1">
                     Romaji
                     {sortColumn === "romaji" && (
-                      <span className="text-blue-600">
+                      <span className="text-[#d1622b] text-lg">
                         {sortDirection === "asc" ? "↑" : "↓"}
                       </span>
                     )}
                   </div>
                 </th>
                 <th
-                  className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
+                  className="pb-3 pt-2 text-sm font-semibold text-[#403933] cursor-pointer hover:text-[#d1622b] select-none transition-colors duration-200"
                   onClick={() => handleSort("attempts")}
                 >
                   <div className="flex items-center gap-1">
                     Attempts
                     {sortColumn === "attempts" && (
-                      <span className="text-blue-600">
+                      <span className="text-[#d1622b] text-lg">
                         {sortDirection === "asc" ? "↑" : "↓"}
                       </span>
                     )}
                   </div>
                 </th>
                 <th
-                  className="pb-2 pt-2 text-sm font-semibold text-gray-600 cursor-pointer hover:text-blue-600 select-none"
+                  className="pb-3 pt-2 text-sm font-semibold text-[#403933] cursor-pointer hover:text-[#d1622b] select-none transition-colors duration-200"
                   onClick={() => handleSort("accuracy")}
                 >
                   <div className="flex items-center gap-1">
                     Accuracy
                     {sortColumn === "accuracy" && (
-                      <span className="text-blue-600">
+                      <span className="text-[#d1622b] text-lg">
                         {sortDirection === "asc" ? "↑" : "↓"}
                       </span>
                     )}
@@ -251,20 +251,20 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {filteredStats.map((kana) => (
-                <tr key={kana.id} className="border-b">
-                  <td className="py-3 text-2xl">{kana.character}</td>
-                  <td className="py-3">{kana.romaji}</td>
-                  <td className="py-3">{kana.attempts}</td>
+              {filteredStats.map((kana, index) => (
+                <tr key={kana.id} className={`border-b border-[#705a39]/30 ${index % 2 === 0 ? 'bg-white/50' : 'bg-[#fad182]/20'} hover:bg-[#fad182]/40 transition-colors duration-200`}>
+                  <td className="py-3 text-2xl text-[#403933]">{kana.character}</td>
+                  <td className="py-3 text-[#705a39] font-medium">{kana.romaji}</td>
+                  <td className="py-3 text-[#403933] font-medium">{kana.attempts}</td>
                   <td className="py-3">
                     <div className="flex items-center">
-                      <div className="mr-2 h-2 w-20 rounded-full bg-gray-200">
+                      <div className="mr-3 h-3 w-24 rounded-full bg-[#705a39]/30 border border-[#705a39]/50">
                         <div
-                          className="h-2 rounded-full bg-blue-600"
+                          className="h-full rounded-full bg-gradient-to-r from-[#d1622b] to-[#ae0d13] transition-all duration-300"
                           style={{ width: `${kana.accuracy * 100}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm">
+                      <span className="text-sm font-medium text-[#403933]">
                         {(kana.accuracy * 100).toFixed(0)}%
                       </span>
                     </div>

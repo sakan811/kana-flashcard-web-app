@@ -4,42 +4,67 @@ import Link from "next/link";
 
 function HomePage() {
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        Japanese Kana Flashcard App
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#fad182] via-[#f5c55a] to-[#fad182]">
+      <div className="max-w-4xl mx-auto p-8">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold mb-4 text-[#403933] drop-shadow-lg">
+            🌸 Japanese Kana Flashcard App
+          </h1>
+          <p className="text-xl text-[#705a39] font-medium">
+            Master Hiragana and Katakana with interactive practice
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Link
-          href="/hiragana"
-          className="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
-        >
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-2">Hiragana Practice</h2>
-            <p className="text-5xl mb-4">あいう</p>
-            <p className="text-gray-600">Practice the Hiragana characters</p>
-          </div>
-        </Link>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <Link
+            href="/hiragana"
+            className="group block p-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-3 border-[#705a39] hover:border-[#d1622b] transform hover:scale-105"
+          >
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4 text-[#403933] group-hover:text-[#d1622b] transition-colors duration-300">
+                ひらがな Hiragana Practice
+              </h2>
+              <p className="text-6xl mb-6 text-[#705a39] group-hover:text-[#d1622b] transition-colors duration-300">
+                あいう
+              </p>
+              <p className="text-[#705a39] font-medium group-hover:text-[#403933] transition-colors duration-300">
+                Practice the flowing Hiragana characters
+              </p>
+              <div className="mt-4 inline-block px-4 py-2 bg-[#d1622b] text-white rounded-lg group-hover:bg-[#ae0d13] transition-colors duration-300 font-medium">
+                Start Learning →
+              </div>
+            </div>
+          </Link>
 
-        <Link
-          href="/katakana"
-          className="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
-        >
-          <div className="text-center">
-            <h2 className="text-xl font-bold mb-2">Katakana Practice</h2>
-            <p className="text-5xl mb-4">アイウ</p>
-            <p className="text-gray-600">Practice the Katakana characters</p>
-          </div>
-        </Link>
-      </div>
+          <Link
+            href="/katakana"
+            className="group block p-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 border-3 border-[#705a39] hover:border-[#d1622b] transform hover:scale-105"
+          >
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4 text-[#403933] group-hover:text-[#d1622b] transition-colors duration-300">
+                カタカナ Katakana Practice
+              </h2>
+              <p className="text-6xl mb-6 text-[#705a39] group-hover:text-[#d1622b] transition-colors duration-300">
+                アイウ
+              </p>
+              <p className="text-[#705a39] font-medium group-hover:text-[#403933] transition-colors duration-300">
+                Practice the angular Katakana characters
+              </p>
+              <div className="mt-4 inline-block px-4 py-2 bg-[#d1622b] text-white rounded-lg group-hover:bg-[#ae0d13] transition-colors duration-300 font-medium">
+                Start Learning →
+              </div>
+            </div>
+          </Link>
+        </div>
 
-      <div className="mt-8 text-center">
-        <Link
-          href="/dashboard"
-          className="inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-        >
-          View Your Progress
-        </Link>
+        <div className="text-center">
+          <Link
+            href="/dashboard"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-[#d1622b] to-[#ae0d13] text-white rounded-xl hover:from-[#ae0d13] hover:to-[#950a1e] transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-[#d1622b] hover:border-[#ae0d13] font-bold text-lg"
+          >
+            📊 View Your Progress
+          </Link>
+        </div>
       </div>
     </div>
   );
