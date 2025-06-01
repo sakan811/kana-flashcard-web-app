@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { FC } from "react";
 import { FlashcardProvider } from "./FlashcardProvider";
 import Flashcard from "./Flashcard";
@@ -13,20 +12,14 @@ interface FlashcardAppProps {
 }
 
 const FlashcardApp: FC<FlashcardAppProps> = ({ kanaType }) => {
-  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<"flashcards" | "dashboard">(
     "flashcards",
   );
-
-  if (!session) {
-    return null;
-  }
 
   return (
     <FlashcardProvider kanaType={kanaType}>
       <div className="min-h-screen bg-gray-50">
         <Header activeTab={activeTab} setActiveTab={setActiveTab} />
-
         <main className="container mx-auto max-w-4xl px-4 py-8">
           {activeTab === "flashcards" ? <Flashcard /> : <Dashboard />}
         </main>
