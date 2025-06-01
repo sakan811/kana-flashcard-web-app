@@ -7,7 +7,6 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { useSession } from "next-auth/react";
 
 type KanaWithAccuracy = {
   id: string;
@@ -43,7 +42,6 @@ export function FlashcardProvider({
   children: React.ReactNode;
   kanaType?: "hiragana" | "katakana";
 }) {
-  const { data: session } = useSession();
   const [kanaList, setKanaList] = useState<KanaWithAccuracy[]>([]);
   const [currentKana, setCurrentKana] = useState<KanaWithAccuracy | null>(null);
   const [loadingKana, setLoadingKana] = useState(true);
@@ -52,11 +50,11 @@ export function FlashcardProvider({
 
   // Prevent double fetch in React strict mode
   useEffect(() => {
-    if (session?.user && !hasFetched.current) {
+    if (!hasFetched.current) {
       hasFetched.current = true;
       fetchKanaData();
     }
-  }, [session, kanaType]);
+  }, [kanaType]);
 
   const fetchKanaData = async () => {
     setLoadingKana(true);
@@ -111,7 +109,7 @@ export function FlashcardProvider({
 
   // Submit answer and update accuracy
   const submitAnswer = async (answer: string) => {
-    if (!currentKana || !session?.user) return;
+    if (!currentKana) return;
 
     const isCorrect =
       answer.trim().toLowerCase() === currentKana.romaji.toLowerCase();

@@ -1,22 +1,10 @@
 "use client";
 
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 
 function HomePage() {
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md transition-colors"
-          data-testid="main-sign-out-button"
-        >
-          Sign Out
-        </button>
-      </div>
-
       <h1 className="text-3xl font-bold mb-8 text-center">
         Japanese Kana Flashcard App
       </h1>
@@ -59,8 +47,6 @@ function HomePage() {
 
 export default function Home() {
   return (
-    <ProtectedRoute>
-      <HomePage />
-    </ProtectedRoute>
+    <HomePage />
   );
 }

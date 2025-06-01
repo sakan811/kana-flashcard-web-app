@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 type KanaStats = {
@@ -14,16 +13,9 @@ type KanaStats = {
 };
 
 export default function Dashboard() {
-  const { data: session } = useSession();
   const [stats, setStats] = useState<KanaStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "hiragana" | "katakana">("all");
-
-  useEffect(() => {
-    if (session?.user) {
-      fetchStats();
-    }
-  }, [session]);
 
   const fetchStats = async () => {
     try {

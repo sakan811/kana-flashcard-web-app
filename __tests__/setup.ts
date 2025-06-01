@@ -35,16 +35,5 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-// Mock NextAuth completely to avoid API calls
-vi.mock("next-auth/react", () => ({
-  useSession: vi.fn(() => ({
-    status: "unauthenticated",
-    data: null,
-  })),
-  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-  signIn: vi.fn(),
-  signOut: vi.fn(),
-}));
-
 // Mock fetch globally
 global.fetch = vi.fn();
