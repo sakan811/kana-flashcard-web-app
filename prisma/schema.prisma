@@ -9,32 +9,19 @@ datasource db {
   directUrl  = env("POSTGRES_URL_NON_POOLING")
 }
 
-model User {
-  id            String         @id @default(uuid())
-  name          String
-  email         String?        @unique
-  image         String?        // Add image field for Google profile picture
-  created_at    DateTime       @default(now())
-  userAccuracy  UserAccuracy[]
-}
-
 model Kana {
   id           String         @id @default(uuid())
   character    String         @unique
   romaji       String
-  userAccuracy UserAccuracy[]
+  progress     KanaProgress[]
 }
 
-model UserAccuracy {
+model KanaProgress {
   id              String   @id @default(uuid())
-  user_email      String
-  kana_id         String
+  kana_id         String   @unique  // One record per kana character
   attempts        Int      @default(0)
   correct_attempts Int      @default(0)
   accuracy        Float    @default(0)
   
-  user            User     @relation(fields: [user_email], references: [email])
   kana            Kana     @relation(fields: [kana_id], references: [id])
-
-  @@unique([user_email, kana_id])
 }
