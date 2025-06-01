@@ -69,7 +69,7 @@ export default function Flashcard() {
     return (
       <div className="flex h-64 items-center justify-center">
         <div
-          className="h-12 w-12 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"
+          className="h-12 w-12 animate-spin rounded-full border-4 border-[#d1622b] border-t-transparent"
           role="status"
         ></div>
       </div>
@@ -79,26 +79,26 @@ export default function Flashcard() {
   if (!currentKana) {
     return (
       <div className="text-center">
-        <p className="text-lg text-gray-700">No flashcards available.</p>
+        <p className="text-lg text-[#705a39]">No flashcards available.</p>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-md">
-      <div className="mb-8 rounded-lg bg-white shadow-lg border border-gray-200 aspect-[2.5/3.5] flex flex-col justify-between p-6">
+      <div className="mb-8 rounded-lg bg-gradient-to-br from-[#fad182] via-[#fad182] to-[#f5c55a] shadow-xl border-2 border-[#705a39] aspect-[2.5/3.5] flex flex-col justify-between p-6">
         <div className="flex-grow flex items-center justify-center">
-          <h2 className="text-[10rem] sm:text-[14rem] leading-none font-bold text-gray-800">
+          <h2 className="text-[10rem] sm:text-[14rem] leading-none font-bold text-[#403933] drop-shadow-sm">
             {currentKana.character}
           </h2>
         </div>
 
         {result && (
           <div
-            className={`mb-4 rounded-md p-3 text-center ${
+            className={`mb-4 rounded-md p-3 text-center border-2 ${
               result === "correct"
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
+                ? "bg-green-50 text-green-800 border-green-300"
+                : "bg-[#ae0d13] text-white border-[#950a1e]"
             }`}
           >
             <p className="text-lg font-semibold">
@@ -124,14 +124,14 @@ export default function Flashcard() {
                   }
                 }}
                 placeholder="Type romaji equivalent..."
-                className={`mb-2 rounded-md border ${
-                  error ? "border-red-500" : "border-gray-300"
-                } px-4 py-2 focus:border-blue-500 focus:outline-none`}
+                className={`mb-2 rounded-md border-2 ${
+                  error ? "border-[#ae0d13]" : "border-[#705a39]"
+                } px-4 py-2 focus:border-[#d1622b] focus:outline-none bg-white text-[#403933] placeholder-[#705a39]`}
                 disabled={isProcessing}
                 autoFocus
               />
               {error && (
-                <div className="mb-2 text-red-600 text-sm">{error}</div>
+                <div className="mb-2 text-[#ae0d13] text-sm font-medium">{error}</div>
               )}
             </>
           ) : (
@@ -141,10 +141,10 @@ export default function Flashcard() {
             type="submit"
             role="button"
             disabled={isProcessing}
-            className={`rounded-md px-4 py-2 font-medium text-white transition ${
+            className={`rounded-md px-4 py-2 font-medium text-white transition-all duration-200 border-2 ${
               isProcessing
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+                ? "bg-[#705a39] cursor-not-allowed border-[#705a39]"
+                : "bg-[#d1622b] hover:bg-[#ae0d13] border-[#d1622b] hover:border-[#ae0d13] shadow-lg hover:shadow-xl transform hover:scale-105"
             }`}
           >
             {result
