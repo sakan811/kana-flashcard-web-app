@@ -2,7 +2,8 @@
 FROM node:24.1.0-alpine3.22 AS base
 
 # Create a non-root user
-RUN addgroup -g 1001 -S nodejs && \
+RUN apk del --no-cache go || true && \ 
+    addgroup -g 1001 -S nodejs && \
     adduser -S nextjs -u 1001
 
 # Set working directory
@@ -31,7 +32,8 @@ RUN chown -R nextjs:nodejs /app
 FROM node:24.1.0-alpine3.22 AS prod
 
 # Create a non-root user
-RUN addgroup -g 1001 -S nodejs && \
+RUN apk del --no-cache go || true && \ 
+    addgroup -g 1001 -S nodejs && \
     adduser -S nextjs -u 1001
 
 WORKDIR /app
