@@ -49,6 +49,8 @@ const EXTENSIONS = [".ts", ".tsx", ".js", ".jsx"];
 // Directories to skip
 const SKIP_DIRS = [
   "node_modules",
+  "__tests__",
+  "prisma/app",
   ".next",
   "dist",
   "build",
@@ -75,7 +77,6 @@ function hasLicenseHeader(content) {
   return (
     content.includes("SPDX-License-Identifier") ||
     content.includes("Copyright (C)") ||
-    content.includes("Japanese Kana Flashcard App") ||
     content.includes("GNU Affero General Public License")
   );
 }
