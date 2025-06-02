@@ -45,7 +45,7 @@ function HomePage() {
                 あいう
               </p>
               <p className="text-[#705a39] font-medium group-hover:text-[#403933] transition-colors duration-300">
-                Practice the flowing Hiragana characters
+                Practice the Hiragana characters
               </p>
               <div className="mt-4 inline-block px-4 py-2 bg-[#d1622b] text-white rounded-lg group-hover:bg-[#ae0d13] transition-colors duration-300 font-medium">
                 Start Learning →
@@ -65,7 +65,7 @@ function HomePage() {
                 アイウ
               </p>
               <p className="text-[#705a39] font-medium group-hover:text-[#403933] transition-colors duration-300">
-                Practice the angular Katakana characters
+                Practice the Katakana characters
               </p>
               <div className="mt-4 inline-block px-4 py-2 bg-[#d1622b] text-white rounded-lg group-hover:bg-[#ae0d13] transition-colors duration-300 font-medium">
                 Start Learning →

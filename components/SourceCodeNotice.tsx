@@ -33,34 +33,34 @@ export default function SourceCodeNotice() {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-12 right-0 bg-white border-2 border-[#705a39] rounded-lg p-4 shadow-xl max-w-sm">
+        <div className="absolute bottom-12 right-0 bg-white border-2 border-[#705a39] rounded-lg p-6 shadow-xl w-80 sm:w-96">
           <div className="text-sm text-[#403933]">
-            <h3 className="font-bold mb-2">Open Source Software</h3>
-            <p className="mb-3">
+            <h3 className="font-bold mb-3 text-lg">Open Source Software</h3>
+            <p className="mb-4 leading-relaxed">
               This application is free software licensed under the GNU Affero
               General Public License v3.
             </p>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <a
-                href="https://github.com/yourusername/kana-flashcard-web-app"
+                href="https://github.com/sakan811/kana-flashcard-web-app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-[#d1622b] text-white px-3 py-2 rounded text-center hover:bg-[#ae0d13] transition-colors"
+                className="block bg-[#d1622b] text-white px-4 py-3 rounded text-center hover:bg-[#ae0d13] transition-colors font-medium"
               >
                 📁 View Source Code
               </a>
               <a
-                href="/LICENSE"
+                href="https://www.gnu.org/licenses/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-[#705a39] text-white px-3 py-2 rounded text-center hover:bg-[#403933] transition-colors"
+                className="block bg-[#705a39] text-white px-4 py-3 rounded text-center hover:bg-[#403933] transition-colors font-medium"
               >
                 📋 View License
               </a>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="mt-3 text-xs text-[#705a39] hover:text-[#403933] underline"
+              className="mt-4 text-sm text-[#705a39] hover:text-[#403933] underline w-full text-center"
             >
               Close
             </button>
