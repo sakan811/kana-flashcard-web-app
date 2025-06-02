@@ -2,7 +2,7 @@
 
 /**
  * Script to manage license headers in source files
- * Run with: node app/scripts/manage-license-headers.js [add|remove|check]
+ * Run with: node scripts/manage-license-headers.js [add|remove|check]
  *
  * Japanese Kana Flashcard App
  * Copyright (C) 2025  Sakan Nirattisaykul
