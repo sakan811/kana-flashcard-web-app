@@ -20,8 +20,8 @@
     "seed": "node prisma/seed.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Sakan Nirattisaykul",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@prisma/client": "^6.8.2",
     "next": "^15.3.2",
