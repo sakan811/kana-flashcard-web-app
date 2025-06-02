@@ -1,55 +1,76 @@
-# Use the latest Node.js Alpine image
-FROM node:24.1.0-alpine3.22 AS base
+FROM node:24.1.0-alpine AS base
 
-# Create a non-root user
-RUN apk del --no-cache go || true && \ 
-    addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
-
-# Set working directory
+# Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package.json, package-lock.json, and prisma directory for dependency installation
-COPY package.json package-lock.json* ./
+# Install dependencies based on the preferred package manager
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+# Copy prisma schema for dependency installation
 COPY prisma ./prisma
 
-# Install dependencies
-RUN npm install
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Copy the rest of the application code
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
 
-# Build the Next.js app
-RUN npm run build
+# Next.js collects completely anonymous telemetry data about general usage.
+# Learn more here: https://nextjs.org/telemetry
+# Uncomment the following line in case you want to disable telemetry during the build.
+# ENV NEXT_TELEMETRY_DISABLED=1
 
-# Change ownership of the app directory to the nextjs user
-RUN chown -R nextjs:nodejs /app
+RUN \
+  if [ -f yarn.lock ]; then yarn run build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Production image, copy only necessary files
-FROM node:24.1.0-alpine3.22 AS prod
-
-# Create a non-root user
-RUN apk del --no-cache go || true && \ 
-    addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
-
+# Production image, copy all the files and run next
+FROM base AS runner
 WORKDIR /app
 
-# Copy node_modules and built app from previous stage
-COPY --from=base --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=base --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=base --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=base --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=base --chown=nextjs:nodejs /app/prisma/app/generated /app/prisma/app/generated
+ENV NODE_ENV=production
+# Uncomment the following line in case you want to disable telemetry during runtime.
+# ENV NEXT_TELEMETRY_DISABLED=1
 
-# Switch to the non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy prisma files for migrations and seeding
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma/app/generated ./prisma/app/generated
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy package.json for npm scripts (needed for prisma commands)
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+
 USER nextjs
 
-# Expose port (Next.js default)
 EXPOSE 3000
 
-# Start the app
-CMD ["npm", "start"]
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
+CMD ["node", "server.js"]
