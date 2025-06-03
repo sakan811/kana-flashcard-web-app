@@ -19,8 +19,8 @@ A web application for practicing Japanese Hiragana and Katakana characters with 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/sakan811/kana-flashcard-web-app.git
-   cd kana-flashcard-web-app
+   git clone https://github.com/sakan811/SakuMari.git
+   cd SakuMari
    ```
 
 2. **Set up environment variables**
@@ -43,8 +43,8 @@ A web application for practicing Japanese Hiragana and Katakana characters with 
 1. **Clone and setup**
 
    ```bash
-   git clone https://github.com/sakan811/kana-flashcard-web-app.git
-   cd kana-flashcard-web-app
+   git clone https://github.com/sakan811/SakuMari.git
+   cd SakuMari
    cp .env.local.example .env
    ```
 
