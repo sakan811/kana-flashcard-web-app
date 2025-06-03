@@ -1,4 +1,4 @@
-# Japanese Kana Flashcard App
+# SakuMari - Japanese Kana Flashcard App
 
 A web application for practicing Japanese Hiragana and Katakana characters with interactive flashcards and progress tracking.
 
