@@ -1,5 +1,5 @@
 services:
-  jp-kana-flashcard-app-db:
+  saku-mari-db:
     image: postgres:latest
     ports:
       - "7777:5432"
@@ -15,15 +15,15 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - kana-app-network
+      - saku-mari-network
 
-  jp-kana-flashcard-app-build:
+  saku-mari-build:
     build:
       context: .
       dockerfile: Dockerfile
-    image: sakanbeer88/jp-kana-flashcard-app:latest
+    image: sakanbeer88/saku-mari:latest
     depends_on:
-      jp-kana-flashcard-app-db:
+      saku-mari-db:
         condition: service_healthy
     env_file:
       - ./.env.docker
@@ -32,7 +32,7 @@ services:
     profiles:
       - build
     networks:
-      - kana-app-network
+      - saku-mari-network
     command: >
       sh -c "
       echo 'Waiting for database to be ready...' &&
@@ -42,10 +42,10 @@ services:
       "
     restart: unless-stopped
 
-  jp-kana-flashcard-app:
-    image: sakanbeer88/jp-kana-flashcard-app:latest
+  saku-mari:
+    image: sakanbeer88/saku-mari:latest
     depends_on:
-      jp-kana-flashcard-app-db:
+      saku-mari-db:
         condition: service_healthy
     env_file:
       - ./.env.docker
@@ -54,7 +54,7 @@ services:
     profiles:
       - pull
     networks:
-      - kana-app-network
+      - saku-mari-network
     command: >
       sh -c "
       echo 'Waiting for database to be ready...' &&
@@ -68,5 +68,5 @@ volumes:
   postgres_data:
 
 networks:
-  kana-app-network:
+  saku-mari-network:
     driver: bridge

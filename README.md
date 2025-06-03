@@ -51,7 +51,7 @@ A web application for practicing Japanese Hiragana and Katakana characters with 
 2. **Start PostgreSQL database**
 
    ```bash
-   docker compose up -d jp-kana-flashcard-app-db
+   docker compose up -d saku-mari-db
    ```
 
 3. **Install dependencies and setup database**
