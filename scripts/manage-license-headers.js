@@ -4,7 +4,7 @@
  * Script to manage license headers in source files
  * Run with: node scripts/manage-license-headers.js [add|remove|check]
  *
- * Japanese Kana Flashcard App
+ * SakuMari - Japanese Kana Flashcard App
  * Copyright (C) 2025  Sakan Nirattisaykul
  * 
  * This program is free software: you can redistribute it and/or modify
