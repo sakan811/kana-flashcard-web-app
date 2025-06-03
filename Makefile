@@ -37,13 +37,13 @@ down-db:
 	docker compose down saku-mari-db
 
 clean:
-	docker compose --profile pull down --volumes --remove-orphans --rmi local
+	docker compose --profile pull down --volumes --remove-orphans --rmi all
 
 clean-build:
-	docker compose --profile build down --volumes --remove-orphans --rmi local
+	docker compose --profile build down --volumes --remove-orphans --rmi all
 
 clean-db:
-	docker compose down saku-mari-db --volumes --remove-orphans --rmi local
+	docker compose down saku-mari-db --volumes --remove-orphans --rmi all
 
 generate:
 	npx prisma generate
