@@ -33,7 +33,7 @@ jobs:
         with:
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/jp-kana-flashcard-app:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/saku-mari:latest
           sbom: ${{ github.event_name != 'pull_request' }}
           provenance: ${{ github.event_name != 'pull_request' && 'mode=max' || 'false' }}
 
@@ -42,7 +42,7 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: cves,recommendations
-          image: ${{ vars.DOCKERHUB_USERNAME }}/jp-kana-flashcard-app:latest
+          image: ${{ vars.DOCKERHUB_USERNAME }}/saku-mari:latest
           ignore-unchanged: true
           only-severities: critical,high
           github-token: ${{ secrets.GITHUB_TOKEN }}
