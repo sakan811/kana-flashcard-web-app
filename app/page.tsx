@@ -118,7 +118,7 @@ function HomePage() {
               </p>
               <div className="text-center">
                 <p className="text-sm text-[#705a39] mb-4">
-                  Click "Sign In with Google" in the top navigation to get
+                  Click &quot;Sign In with Google&quot; in the top navigation to get
                   started.
                 </p>
               </div>
