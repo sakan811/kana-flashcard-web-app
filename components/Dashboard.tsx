@@ -80,7 +80,7 @@ export default function Dashboard() {
     ...(filter === "all"
       ? stats
       : stats.filter((kana) => {
-          const charCode =             kana.character.charCodeAt(0);
+          const charCode = kana.character.charCodeAt(0);
           const isHiragana = charCode >= 0x3040 && charCode <= 0x309f;
           const isKatakana = charCode >= 0x30a0 && charCode <= 0x30ff;
           
