@@ -18,6 +18,16 @@ vi.mock("next/link", () => {
   };
 });
 
+// Mock next-auth/react
+vi.mock("next-auth/react", () => ({
+  useSession: () => ({
+    data: { user: { id: "user123", name: "Test User" } },
+    status: "authenticated"
+  }),
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+}));
+
 describe("Home Page", () => {
   beforeEach(() => {
     vi.resetAllMocks();
