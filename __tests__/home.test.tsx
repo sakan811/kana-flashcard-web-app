@@ -18,6 +18,16 @@ vi.mock("next/link", () => {
   };
 });
 
+// Mock next-auth/react
+vi.mock("next-auth/react", () => ({
+  useSession: () => ({
+    data: { user: { id: "user123", name: "Test User" } },
+    status: "authenticated",
+  }),
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+}));
+
 describe("Home Page", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -26,7 +36,7 @@ describe("Home Page", () => {
   test("renders all navigation cards", () => {
     render(<Home />);
 
-    expect(screen.getByText("🌸 Japanese Kana Flashcard App")).toBeDefined();
+    expect(screen.getByText("🌸 SakuMari")).toBeDefined();
     expect(screen.getByText("ひらがな Hiragana Practice")).toBeDefined();
     expect(screen.getByText("カタカナ Katakana Practice")).toBeDefined();
     expect(screen.getByText("📊 View Your Progress")).toBeDefined();
