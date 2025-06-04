@@ -212,6 +212,7 @@ export default function Dashboard() {
               </h2>
               <div className="flex gap-2">
                 <button
+                  data-testid="filter-all"
                   onClick={() => setFilter("all")}
                   className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border-2 ${
                     filter === "all"
@@ -222,6 +223,7 @@ export default function Dashboard() {
                   All
                 </button>
                 <button
+                  data-testid="filter-hiragana"
                   onClick={() => setFilter("hiragana")}
                   className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border-2 ${
                     filter === "hiragana"
@@ -232,6 +234,7 @@ export default function Dashboard() {
                   Hiragana
                 </button>
                 <button
+                  data-testid="filter-katakana"
                   onClick={() => setFilter("katakana")}
                   className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border-2 ${
                     filter === "katakana"
@@ -273,6 +276,7 @@ export default function Dashboard() {
                   <thead>
                     <tr className="border-b-2 border-[#705a39] text-left">
                       <th
+                        data-testid="sort-character"
                         className="pb-3 pt-2 text-sm font-semibold text-[#403933] cursor-pointer hover:text-[#d1622b] select-none transition-colors duration-200"
                         onClick={() => handleSort("character")}
                       >
@@ -286,6 +290,7 @@ export default function Dashboard() {
                         </div>
                       </th>
                       <th
+                        data-testid="sort-romaji"
                         className="pb-3 pt-2 text-sm font-semibold text-[#403933] cursor-pointer hover:text-[#d1622b] select-none transition-colors duration-200"
                         onClick={() => handleSort("romaji")}
                       >
@@ -299,6 +304,7 @@ export default function Dashboard() {
                         </div>
                       </th>
                       <th
+                        data-testid="sort-attempts"
                         className="pb-3 pt-2 text-sm font-semibold text-[#403933] cursor-pointer hover:text-[#d1622b] select-none transition-colors duration-200"
                         onClick={() => handleSort("attempts")}
                       >
@@ -312,6 +318,7 @@ export default function Dashboard() {
                         </div>
                       </th>
                       <th
+                        data-testid="sort-accuracy"
                         className="pb-3 pt-2 text-sm font-semibold text-[#403933] cursor-pointer hover:text-[#d1622b] select-none transition-colors duration-200"
                         onClick={() => handleSort("accuracy")}
                       >
