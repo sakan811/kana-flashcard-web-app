@@ -3,8 +3,8 @@ on:
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
   schedule:
-    - cron: '0 10 * * 1'  # Weekly on Mondays at 10:00 UTC
-  workflow_dispatch:      # Manual trigger
+    - cron: "0 10 * * 1" # Weekly on Mondays at 10:00 UTC
+  workflow_dispatch: # Manual trigger
 
 permissions:
   contents: write
