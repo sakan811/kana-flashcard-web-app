@@ -1,19 +1,36 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent, act, cleanup } from "@testing-library/react";
 import Dashboard from "../components/Dashboard";
-import { mockApiResponse, mockKana } from "./utils/test-helpers";
+import { mockApiResponse } from "./utils/test-helpers";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 describe("Dashboard Component", () => {
+  // Create distinct mock data with different characters
   const mockStats = [
-    { ...mockKana.withStats },
-    { ...mockKana.withStats, id: "2", character: "ア", romaji: "a" }
+    {
+      id: "1",
+      character: "あ", // Hiragana
+      romaji: "a",
+      attempts: 10,
+      correct_attempts: 8,
+      accuracy: 0.8
+    },
+    {
+      id: "2", 
+      character: "ア", // Katakana
+      romaji: "a",
+      attempts: 10,
+      correct_attempts: 8,
+      accuracy: 0.8
+    }
   ];
 
   beforeEach(() => {
+    vi.clearAllMocks();
     mockFetch.mockResolvedValue(mockApiResponse(mockStats));
+    cleanup();
   });
 
   test("renders dashboard with stats", async () => {
@@ -31,12 +48,20 @@ describe("Dashboard Component", () => {
     
     await waitFor(() => screen.getByText("Your Progress"));
     
-    fireEvent.click(screen.getByRole("button", { name: "Hiragana" }));
+    // Verify both characters are initially visible
+    expect(screen.getByText("あ")).toBeTruthy();
+    expect(screen.getByText("ア")).toBeTruthy();
     
-    await waitFor(() => {
-      expect(screen.getByText("あ")).toBeTruthy();
-      expect(screen.queryByText("ア")).toBeNull();
+    // Click Hiragana filter using test-id
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("filter-hiragana"));
     });
+    
+    // Katakana character should no longer be visible
+    expect(screen.queryByText("ア")).toBeNull();
+    
+    // Hiragana character should still be visible
+    expect(screen.getByText("あ")).toBeTruthy();
   });
 
   test("sorts data by columns", async () => {
@@ -44,7 +69,9 @@ describe("Dashboard Component", () => {
     
     await waitFor(() => screen.getByText("Your Progress"));
     
-    fireEvent.click(screen.getByText("Character"));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("sort-character"));
+    });
     
     await waitFor(() => {
       const cells = screen.getAllByRole("cell");
