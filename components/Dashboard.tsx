@@ -80,10 +80,16 @@ export default function Dashboard() {
     ...(filter === "all"
       ? stats
       : stats.filter((kana) => {
-          const isHiragana =
-            kana.character.charCodeAt(0) >= 0x3040 &&
-            kana.character.charCodeAt(0) <= 0x309f;
-          return filter === "hiragana" ? isHiragana : !isHiragana;
+          const charCode =             kana.character.charCodeAt(0);
+          const isHiragana = charCode >= 0x3040 && charCode <= 0x309f;
+          const isKatakana = charCode >= 0x30a0 && charCode <= 0x30ff;
+          
+          if (filter === "hiragana") {
+            return isHiragana;
+          } else if (filter === "katakana") {
+            return isKatakana;
+          }
+          return false;
         })),
   ].sort((a, b) => {
     let aValue: string | number;
