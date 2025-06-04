@@ -13,7 +13,11 @@ vi.mock("next-auth/react", () => ({
 
 describe("Integration Tests", () => {
   test("complete practice workflow", async () => {
-    mockFetch.mockResolvedValue(mockApiResponse([mockKana.basic]));
+    // Mock the initial flashcards fetch
+    mockFetch
+      .mockResolvedValueOnce(mockApiResponse([mockKana.basic]))
+      // Mock the submit endpoint
+      .mockResolvedValueOnce(mockApiResponse({ success: true }));
     
     render(<FlashcardApp kanaType="hiragana" />);
     
@@ -24,9 +28,13 @@ describe("Integration Tests", () => {
     fireEvent.change(input, { target: { value: "a" } });
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
     
+    // Wait for the result to appear
     await waitFor(() => screen.getByText("Correct!"));
     
-    // Next card
+    // Wait for the Next Card button to appear
+    await waitFor(() => screen.getByRole("button", { name: "Next Card" }));
+    
+    // Click next card
     fireEvent.click(screen.getByRole("button", { name: "Next Card" }));
     
     await waitFor(() => expect(screen.queryByText("Correct!")).toBeNull());
