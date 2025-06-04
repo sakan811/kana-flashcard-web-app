@@ -9,6 +9,60 @@ datasource db {
   directUrl  = env("POSTGRES_URL_NON_POOLING")
 }
 
+// Auth.js tables
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  kanaProgress  KanaProgress[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+// Application tables
 model Kana {
   id           String         @id @default(uuid())
   character    String         @unique
@@ -18,10 +72,14 @@ model Kana {
 
 model KanaProgress {
   id              String   @id @default(uuid())
-  kana_id         String   @unique  // One record per kana character
+  kana_id         String   
+  user_id         String   
   attempts        Int      @default(0)
   correct_attempts Int      @default(0)
   accuracy        Float    @default(0)
   
   kana            Kana     @relation(fields: [kana_id], references: [id])
+  user            User     @relation(fields: [user_id], references: [id])
+
+  @@unique([kana_id, user_id])
 }
