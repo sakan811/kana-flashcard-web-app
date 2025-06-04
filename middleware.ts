@@ -15,7 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { auth as middleware } from "@/lib/auth"
+import { NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
+
+export default auth((req) => {
+  // If user is not authenticated and trying to access protected routes
+  if (!req.auth && req.nextUrl.pathname !== "/") {
+    return NextResponse.redirect(new URL("/", req.url))
+  }
+  
+  return NextResponse.next()
+})
 
 export const config = {
   matcher: [
