@@ -17,13 +17,26 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 export async function GET() {
   try {
-    // Single query with joins to get all data at once
+    const session = await auth();
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    // Single query with joins to get all data at once for the authenticated user
     const kanaWithProgress = await prisma.kana.findMany({
       include: {
         progress: {
+          where: {
+            user_id: session.user.id,
+          },
           select: {
             attempts: true,
             correct_attempts: true,
@@ -35,7 +48,7 @@ export async function GET() {
 
     // Transform the data
     const result = kanaWithProgress.map((kana) => {
-      const progress = kana.progress[0]; // Should be 0 or 1 record
+      const progress = kana.progress[0]; // Should be 0 or 1 record for this user
       return {
         id: kana.id,
         character: kana.character,

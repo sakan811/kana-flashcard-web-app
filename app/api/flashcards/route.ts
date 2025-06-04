@@ -17,13 +17,26 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 export async function GET() {
   try {
+    const session = await auth();
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     // Single query with joins
     const kanaWithProgress = await prisma.kana.findMany({
       include: {
         progress: {
+          where: {
+            user_id: session.user.id,
+          },
           select: {
             accuracy: true,
           },

@@ -17,15 +17,28 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { kanaId, isCorrect } = await request.json();
 
-    // Find or create KanaProgress record
+    // Find or create KanaProgress record for this user
     const kanaProgress = await prisma.kanaProgress.upsert({
       where: {
-        kana_id: kanaId,
+        kana_id_user_id: {
+          kana_id: kanaId,
+          user_id: session.user.id,
+        },
       },
       update: {
         attempts: { increment: 1 },
@@ -33,6 +46,7 @@ export async function POST(request: NextRequest) {
       },
       create: {
         kana_id: kanaId,
+        user_id: session.user.id,
         attempts: 1,
         correct_attempts: isCorrect ? 1 : 0,
       },
