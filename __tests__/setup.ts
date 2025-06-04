@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { afterAll, afterEach, beforeAll, vi } from "vitest";
 
 // Mock ResizeObserver which isn't available in test environment
 global.ResizeObserver = class ResizeObserver {
@@ -37,3 +37,35 @@ vi.mock("next/navigation", () => ({
 
 // Mock fetch globally
 global.fetch = vi.fn();
+
+// Mock performance.now for performance tests
+global.performance = {
+  ...global.performance,
+  now: vi.fn(() => Date.now()),
+};
+
+// Add console.error suppression for expected errors in tests
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+    if (
+      typeof args[0] === "string" &&
+      (args[0].includes("Warning") ||
+        args[0].includes("Error fetching") ||
+        args[0].includes("Network error"))
+    ) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+
+// Cleanup after each test
+afterEach(() => {
+  vi.clearAllTimers();
+  vi.useRealTimers();
+});
