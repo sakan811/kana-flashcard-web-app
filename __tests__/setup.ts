@@ -49,10 +49,10 @@ const originalError = console.error;
 beforeAll(() => {
   console.error = (...args) => {
     if (
-      typeof args[0] === 'string' &&
-      (args[0].includes('Warning') || 
-       args[0].includes('Error fetching') ||
-       args[0].includes('Network error'))
+      typeof args[0] === "string" &&
+      (args[0].includes("Warning") ||
+        args[0].includes("Error fetching") ||
+        args[0].includes("Network error"))
     ) {
       return;
     }

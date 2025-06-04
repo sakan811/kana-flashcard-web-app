@@ -1,17 +1,17 @@
 /*
  * SakuMari - Japanese Kana Flashcard App
  * Copyright (C) 2025  Sakan Nirattisaykul
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -83,7 +83,7 @@ export default function Dashboard() {
           const charCode = kana.character.charCodeAt(0);
           const isHiragana = charCode >= 0x3040 && charCode <= 0x309f;
           const isKatakana = charCode >= 0x30a0 && charCode <= 0x30ff;
-          
+
           if (filter === "hiragana") {
             return isHiragana;
           } else if (filter === "katakana") {
@@ -130,10 +130,14 @@ export default function Dashboard() {
 
   const averageAccuracy =
     practicedStats.length > 0
-      ? practicedStats.reduce((sum, kana) => sum + kana.accuracy, 0) / practicedStats.length
+      ? practicedStats.reduce((sum, kana) => sum + kana.accuracy, 0) /
+        practicedStats.length
       : 0;
 
-  const totalAttempts = filteredStats.reduce((sum, kana) => sum + kana.attempts, 0);
+  const totalAttempts = filteredStats.reduce(
+    (sum, kana) => sum + kana.attempts,
+    0,
+  );
 
   if (loading) {
     return (
@@ -191,16 +195,17 @@ export default function Dashboard() {
                   Average Accuracy
                 </p>
                 <p className="text-2xl font-bold text-white">
-                  {practicedStats.length > 0 ? (averageAccuracy * 100).toFixed(1) : 0}%
+                  {practicedStats.length > 0
+                    ? (averageAccuracy * 100).toFixed(1)
+                    : 0}
+                  %
                 </p>
               </div>
               <div className="rounded-md bg-gradient-to-br from-[#d1622b] to-[#ae0d13] p-4 text-center shadow-lg border-2 border-[#ae0d13]">
                 <p className="text-sm text-orange-100 font-medium">
                   Total Attempts
                 </p>
-                <p className="text-2xl font-bold text-white">
-                  {totalAttempts}
-                </p>
+                <p className="text-2xl font-bold text-white">{totalAttempts}</p>
               </div>
             </div>
           </div>

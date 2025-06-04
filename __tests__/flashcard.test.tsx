@@ -5,7 +5,7 @@ import { useFlashcard } from "../components/FlashcardProvider";
 import { mockFlashcardProvider, mockKana } from "./utils/test-helpers";
 
 vi.mock("../components/FlashcardProvider", () => ({
-  useFlashcard: vi.fn()
+  useFlashcard: vi.fn(),
 }));
 
 describe("Flashcard Component", () => {
@@ -14,7 +14,9 @@ describe("Flashcard Component", () => {
   });
 
   test("shows loading state", () => {
-    (useFlashcard as any).mockReturnValue(mockFlashcardProvider({ loadingKana: true }));
+    (useFlashcard as any).mockReturnValue(
+      mockFlashcardProvider({ loadingKana: true }),
+    );
     render(<Flashcard />);
     expect(screen.getByRole("status")).toBeDefined();
   });
@@ -27,13 +29,13 @@ describe("Flashcard Component", () => {
   test("renders flashcard and handles submission", async () => {
     const submitAnswer = vi.fn();
     (useFlashcard as any).mockReturnValue(
-      mockFlashcardProvider({ currentKana: mockKana.basic, submitAnswer })
+      mockFlashcardProvider({ currentKana: mockKana.basic, submitAnswer }),
     );
 
     render(<Flashcard />);
-    
+
     expect(screen.getByText("あ")).toBeDefined();
-    
+
     const input = screen.getByPlaceholderText("Type romaji equivalent...");
     const submitButton = screen.getByRole("button", { name: "Submit" });
 
@@ -46,28 +48,28 @@ describe("Flashcard Component", () => {
   test("shows results and handles next card", () => {
     const nextCard = vi.fn();
     (useFlashcard as any).mockReturnValue(
-      mockFlashcardProvider({ 
-        currentKana: mockKana.basic, 
+      mockFlashcardProvider({
+        currentKana: mockKana.basic,
         result: "correct",
-        nextCard 
-      })
+        nextCard,
+      }),
     );
 
     render(<Flashcard />);
-    
+
     expect(screen.getByText("Correct!")).toBeDefined();
-    
+
     fireEvent.click(screen.getByRole("button", { name: "Next Card" }));
     expect(nextCard).toHaveBeenCalled();
   });
 
   test("validates empty input", () => {
     (useFlashcard as any).mockReturnValue(
-      mockFlashcardProvider({ currentKana: mockKana.basic })
+      mockFlashcardProvider({ currentKana: mockKana.basic }),
     );
 
     render(<Flashcard />);
-    
+
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
     expect(screen.getByText("Please enter an answer")).toBeDefined();
   });

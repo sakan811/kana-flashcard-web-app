@@ -127,7 +127,9 @@ describe("Stats API Route", () => {
 
     test("handles database connection errors", async () => {
       mockAuth.mockResolvedValue({ user: { id: "user123" } });
-      mockPrisma.kana.findMany.mockRejectedValue(new Error("Database connection lost"));
+      mockPrisma.kana.findMany.mockRejectedValue(
+        new Error("Database connection lost"),
+      );
 
       const response = await GET();
       const data = await response.json();

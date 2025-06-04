@@ -1,17 +1,17 @@
 /*
  * SakuMari - Japanese Kana Flashcard App
  * Copyright (C) 2025  Sakan Nirattisaykul
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
@@ -24,7 +24,9 @@ import { useState } from "react";
 
 function HomePage() {
   const { data: session, status } = useSession();
-  const [activeTab, setActiveTab] = useState<"flashcards" | "dashboard">("flashcards");
+  const [activeTab, setActiveTab] = useState<"flashcards" | "dashboard">(
+    "flashcards",
+  );
 
   if (status === "loading") {
     return (
@@ -110,12 +112,14 @@ function HomePage() {
                 Welcome to SakuMari!
               </h2>
               <p className="text-[#705a39] mb-6 leading-relaxed">
-                Sign in with your Google account to start practicing Japanese Kana characters. 
-                Your progress will be saved and you can track your improvement over time.
+                Sign in with your Google account to start practicing Japanese
+                Kana characters. Your progress will be saved and you can track
+                your improvement over time.
               </p>
               <div className="text-center">
                 <p className="text-sm text-[#705a39] mb-4">
-                  Click "Sign In with Google" in the top navigation to get started.
+                  Click "Sign In with Google" in the top navigation to get
+                  started.
                 </p>
               </div>
             </div>

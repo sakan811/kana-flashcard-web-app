@@ -11,7 +11,7 @@ vi.mock("next/link", () => {
 vi.mock("next-auth/react", () => ({
   useSession: () => ({
     data: { user: { id: "user123", name: "Test User" } },
-    status: "authenticated"
+    status: "authenticated",
   }),
   signIn: vi.fn(),
   signOut: vi.fn(),
