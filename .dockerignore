@@ -25,9 +25,6 @@ __tests__/
 *.spec.*
 *.sql
 
-# Prisma generated client (if you want to generate inside container, otherwise remove this)
-prisma/app/generated/
-
 # Misc
 npm-debug.log*
 yarn-debug.log*

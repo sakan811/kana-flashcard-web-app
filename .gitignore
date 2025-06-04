@@ -21,6 +21,5 @@
 /db-push.sh
 /.github/prompts
 /.vscode
-/prisma/app
 /.env.docker
 /logo.jpg
