@@ -1,5 +1,4 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
-import '@testing-library/jest-dom';
 
 // Mock ResizeObserver which isn't available in test environment
 global.ResizeObserver = class ResizeObserver {
