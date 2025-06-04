@@ -1,28 +1,26 @@
-#!/usr/bin/env node
-
 /**
  * Script to manage license headers in source files
  * Run with: node scripts/manage-license-headers.js [add|remove|check]
  *
  * SakuMari - Japanese Kana Flashcard App
  * Copyright (C) 2025  Sakan Nirattisaykul
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 const fs = require("fs");
 const path = require("path");
-const readline = require('readline');
+const readline = require("readline");
 
 const LICENSE_HEADER = `/*
  * SakuMari - Japanese Kana Flashcard App
@@ -46,11 +44,12 @@ const LICENSE_HEADER = `/*
 // File extensions to process
 const EXTENSIONS = [".ts", ".tsx", ".js", ".jsx"];
 
-// Directories to skip
+// Directories to skip - use relative paths from project root
 const SKIP_DIRS = [
   "node_modules",
   "__tests__",
-  "prisma/app",
+  "src",
+  "prisma/migrations",
   ".next",
   "dist",
   "build",
@@ -61,7 +60,7 @@ const SKIP_DIRS = [
 ];
 
 // Files to skip
-const SKIP_FILES = ["next-env.d.ts"];
+const SKIP_FILES = ["next-env.d.ts", "next.config.js"];
 
 function shouldProcessFile(filePath) {
   const ext = path.extname(filePath);
@@ -69,8 +68,31 @@ function shouldProcessFile(filePath) {
   return EXTENSIONS.includes(ext) && !SKIP_FILES.includes(fileName);
 }
 
-function shouldSkipDirectory(dirName) {
-  return SKIP_DIRS.includes(dirName) || dirName.startsWith(".");
+function shouldSkipDirectory(dirName, fullPath, rootPath = process.cwd()) {
+  // Check if directory name starts with dot
+  if (dirName.startsWith(".")) {
+    return true;
+  }
+
+  // Get relative path from project root
+  const relativePath = path.relative(rootPath, fullPath).replace(/\\/g, "/");
+
+  // Check against skip directories (exact path matching)
+  return SKIP_DIRS.some((skipDir) => {
+    const normalizedSkipDir = skipDir.replace(/\\/g, "/");
+
+    // Exact match for the relative path
+    if (relativePath === normalizedSkipDir) {
+      return true;
+    }
+
+    // Check if the current path is within a skip directory
+    if (relativePath.startsWith(normalizedSkipDir + "/")) {
+      return true;
+    }
+
+    return false;
+  });
 }
 
 function hasLicenseHeader(content) {
@@ -110,24 +132,25 @@ function removeLicenseHeader(filePath) {
     }
 
     let newContent = content;
-    
+
     // Remove /* ... */ block at the beginning
     const blockCommentRegex = /^\/\*[\s\S]*?\*\/\s*/;
     if (blockCommentRegex.test(content)) {
       const match = content.match(blockCommentRegex);
-      if (match && (
-        match[0].includes("Copyright (C)") || 
-        match[0].includes("SPDX-License-Identifier") ||
-        match[0].includes("Japanese Kana Flashcard App") ||
-        match[0].includes("GNU Affero General Public License")
-      )) {
+      if (
+        match &&
+        (match[0].includes("Copyright (C)") ||
+          match[0].includes("SPDX-License-Identifier") ||
+          match[0].includes("Japanese Kana Flashcard App") ||
+          match[0].includes("GNU Affero General Public License"))
+      ) {
         newContent = content.replace(blockCommentRegex, "");
       }
     }
 
     // Only write if content actually changed
     if (newContent !== content) {
-      newContent = newContent.replace(/^\s*\n+/, '');
+      newContent = newContent.replace(/^\s*\n+/, "");
       fs.writeFileSync(filePath, newContent, "utf8");
       console.log(`- ${filePath}`);
       return { skipped: false, modified: true };
@@ -144,13 +167,13 @@ function checkLicenseHeaders(filePath) {
   try {
     const content = fs.readFileSync(filePath, "utf8");
     const hasHeader = hasLicenseHeader(content);
-    
+
     if (hasHeader) {
       console.log(`✓ ${filePath}`);
     } else {
       console.log(`✗ ${filePath}`);
     }
-    
+
     return { hasHeader };
   } catch (error) {
     console.error(`✗ Error reading ${filePath}:`, error.message);
@@ -158,7 +181,7 @@ function checkLicenseHeaders(filePath) {
   }
 }
 
-function processDirectory(dirPath, operation) {
+function processDirectory(dirPath, operation, rootPath = process.cwd()) {
   const items = fs.readdirSync(dirPath);
   const stats = {
     processed: 0,
@@ -166,40 +189,50 @@ function processDirectory(dirPath, operation) {
     skipped: 0,
     errors: 0,
     withHeaders: 0,
-    withoutHeaders: 0
+    withoutHeaders: 0,
   };
 
   for (const item of items) {
     const itemPath = path.join(dirPath, item);
-    const stat = fs.statSync(itemPath);
 
-    if (stat.isDirectory()) {
-      if (!shouldSkipDirectory(item)) {
-        const subStats = processDirectory(itemPath, operation);
-        stats.processed += subStats.processed;
-        stats.modified += subStats.modified;
-        stats.skipped += subStats.skipped;
-        stats.errors += subStats.errors;
-        stats.withHeaders += subStats.withHeaders;
-        stats.withoutHeaders += subStats.withoutHeaders;
+    try {
+      const stat = fs.statSync(itemPath);
+
+      if (stat.isDirectory()) {
+        if (!shouldSkipDirectory(item, itemPath, rootPath)) {
+          const subStats = processDirectory(itemPath, operation, rootPath);
+          stats.processed += subStats.processed;
+          stats.modified += subStats.modified;
+          stats.skipped += subStats.skipped;
+          stats.errors += subStats.errors;
+          stats.withHeaders += subStats.withHeaders;
+          stats.withoutHeaders += subStats.withoutHeaders;
+        } else {
+          // Optional: log skipped directories for debugging
+          const relativePath = path.relative(rootPath, itemPath);
+          console.log(`⏭️ Skipping directory: ${relativePath}`);
+        }
+      } else if (stat.isFile() && shouldProcessFile(itemPath)) {
+        stats.processed++;
+
+        let result;
+        if (operation === "add") {
+          result = addLicenseHeader(itemPath);
+        } else if (operation === "remove") {
+          result = removeLicenseHeader(itemPath);
+        } else if (operation === "check") {
+          result = checkLicenseHeaders(itemPath);
+          if (result.hasHeader) stats.withHeaders++;
+          else stats.withoutHeaders++;
+        }
+
+        if (result.modified) stats.modified++;
+        if (result.skipped) stats.skipped++;
+        if (result.error) stats.errors++;
       }
-    } else if (stat.isFile() && shouldProcessFile(itemPath)) {
-      stats.processed++;
-      
-      let result;
-      if (operation === 'add') {
-        result = addLicenseHeader(itemPath);
-      } else if (operation === 'remove') {
-        result = removeLicenseHeader(itemPath);
-      } else if (operation === 'check') {
-        result = checkLicenseHeaders(itemPath);
-        if (result.hasHeader) stats.withHeaders++;
-        else stats.withoutHeaders++;
-      }
-      
-      if (result.modified) stats.modified++;
-      if (result.skipped) stats.skipped++;
-      if (result.error) stats.errors++;
+    } catch (error) {
+      console.error(`✗ Error accessing ${itemPath}:`, error.message);
+      stats.errors++;
     }
   }
 
@@ -221,26 +254,28 @@ function printUsage() {
 }
 
 function confirmAction(operation, callback) {
-  if (operation === 'check') {
+  if (operation === "check") {
     callback(true);
     return;
   }
 
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   });
 
   const messages = {
     add: "This will add license headers to files that don't have them.",
-    remove: "⚠️  WARNING: This will remove license headers from ALL source files!\nThis action cannot be undone unless you have a backup."
+    remove:
+      "⚠️  WARNING: This will remove license headers from ALL source files!\nThis action cannot be undone unless you have a backup.",
   };
 
   console.log(messages[operation]);
   console.log("");
 
-  rl.question('Are you sure you want to continue? (yes/no): ', (answer) => {
-    const confirmed = answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y';
+  rl.question("Are you sure you want to continue? (yes/no): ", (answer) => {
+    const confirmed =
+      answer.toLowerCase() === "yes" || answer.toLowerCase() === "y";
     rl.close();
     callback(confirmed);
   });
@@ -249,7 +284,7 @@ function confirmAction(operation, callback) {
 // Main execution
 const operation = process.argv[2];
 
-if (!operation || !['add', 'remove', 'check'].includes(operation)) {
+if (!operation || !["add", "remove", "check"].includes(operation)) {
   printUsage();
   process.exit(1);
 }
@@ -260,7 +295,9 @@ confirmAction(operation, (confirmed) => {
     process.exit(0);
   }
 
-  console.log(`${operation === 'add' ? 'Adding' : operation === 'remove' ? 'Removing' : 'Checking'} license headers...`);
+  console.log(
+    `${operation === "add" ? "Adding" : operation === "remove" ? "Removing" : "Checking"} license headers...`,
+  );
   console.log("");
 
   const stats = processDirectory(".", operation);
@@ -268,18 +305,18 @@ confirmAction(operation, (confirmed) => {
   console.log("");
   console.log("Summary:");
   console.log(`Files processed: ${stats.processed}`);
-  
-  if (operation === 'check') {
+
+  if (operation === "check") {
     console.log(`With headers: ${stats.withHeaders}`);
     console.log(`Without headers: ${stats.withoutHeaders}`);
   } else {
     console.log(`Modified: ${stats.modified}`);
     console.log(`Skipped: ${stats.skipped}`);
   }
-  
+
   if (stats.errors > 0) {
     console.log(`Errors: ${stats.errors}`);
   }
-  
+
   console.log("Done!");
 });
