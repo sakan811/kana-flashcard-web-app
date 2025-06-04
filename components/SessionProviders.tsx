@@ -15,29 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "next";
-import "./globals.css";
-import SourceCodeNotice from "@/components/SourceCodeNotice";
-import Providers from "@/components/SessionProviders";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Japanese Kana Flashcard App",
-  description: "Practice Japanese Hiragana and Katakana with flashcards",
-};
+import { SessionProvider } from "next-auth/react";
+import { ReactNode } from "react";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body className="min-h-screen bg-gradient-to-br from-[#fad182] via-[#f5c55a] to-[#fad182] font-sans antialiased">
-        <Providers>
-          {children}
-        </Providers>
-        <SourceCodeNotice />
-      </body>
-    </html>
-  );
+interface ProvidersProps {
+  children: ReactNode;
+}
+
+export default function Providers({ children }: ProvidersProps) {
+  return <SessionProvider>{children}</SessionProvider>;
 }
