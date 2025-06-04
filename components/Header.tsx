@@ -36,7 +36,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
           href="/"
           className="text-2xl font-bold text-[#fad182] hover:text-white transition-colors duration-200 drop-shadow-sm"
         >
-          🌸 Kana Flashcards
+          🌸 SakuMari
         </Link>
 
         <nav className="flex items-center space-x-6">
