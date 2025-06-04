@@ -48,7 +48,7 @@ const EXTENSIONS = [".ts", ".tsx", ".js", ".jsx"];
 const SKIP_DIRS = [
   "node_modules",
   "__tests__",
-  "prisma/app",
+  "src",
   "prisma/migrations",
   ".next",
   "dist",

@@ -23,7 +23,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client with custom output path
+# Generate Prisma client during build
 RUN npx prisma generate
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -51,6 +51,7 @@ RUN adduser --system --uid 1001 nextjs
 
 # Copy prisma files and generated client
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./src/generated
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Automatically leverage output traces to reduce image size

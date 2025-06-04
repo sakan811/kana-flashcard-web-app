@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PrismaClient } from "../prisma/app/generated/prisma/client";
+import { PrismaClient } from "../src/generated/client";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
