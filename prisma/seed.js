@@ -176,28 +176,35 @@ const katakana = [
 async function seed() {
   console.log("Seeding database...");
 
-  // Delete existing data
-  await prisma.kanaProgress.deleteMany();
-  await prisma.kana.deleteMany();
+  try {
+    // Clear existing data without transaction (Supabase fix)
+    console.log("Clearing existing data...");
+    await prisma.kanaProgress.deleteMany({});
+    await prisma.kana.deleteMany({});
 
-  // Seed hiragana
-  console.log("Seeding hiragana...");
-  for (const kana of hiragana) {
-    await prisma.kana.create({
-      data: kana,
+    // Add a small delay to ensure cleanup
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Seed hiragana
+    console.log("Seeding hiragana...");
+    await prisma.kana.createMany({
+      data: hiragana,
+      skipDuplicates: true,
     });
-  }
 
-  // Seed katakana
-  console.log("Seeding katakana...");
-  for (const kana of katakana) {
-    await prisma.kana.create({
-      data: kana,
+    // Seed katakana
+    console.log("Seeding katakana...");
+    await prisma.kana.createMany({
+      data: katakana,
+      skipDuplicates: true,
     });
-  }
 
-  console.log("Seeding completed!");
-  console.log(`Added ${hiragana.length + katakana.length} kana characters.`);
+    console.log("Seeding completed!");
+    console.log(`Added ${hiragana.length + katakana.length} kana characters.`);
+  } catch (error) {
+    console.error("Seeding failed:", error);
+    throw error;
+  }
 }
 
 seed()
