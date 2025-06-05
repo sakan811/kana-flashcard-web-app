@@ -38,8 +38,8 @@ services:
     command: >
       sh -c "
       echo 'Waiting for database to be ready...' &&
-      npx prisma migrate deploy &&
-      npx prisma db seed &&
+      pnpm exec prisma migrate deploy &&
+      pnpm exec prisma db seed &&
       node server.js
       "
     restart: unless-stopped
@@ -62,8 +62,8 @@ services:
     command: >
       sh -c "
       echo 'Waiting for database to be ready...' &&
-      npx prisma migrate deploy &&
-      npx prisma db seed &&
+      pnpm exec prisma migrate deploy &&
+      pnpm exec prisma db seed &&
       node server.js
       "
     restart: unless-stopped
