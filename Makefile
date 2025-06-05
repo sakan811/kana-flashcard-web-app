@@ -1,20 +1,20 @@
 dev:
-	npm run dev
+	pnpm run dev
 
 build:
-	npm run build
+	pnpm run build
 
 lint:
-	npm run lint
+	pnpm run lint
 
 format:
-	npm run format
+	pnpm run format
 
 test:
-	npm run test
+	pnpm run test
 
 test-run:
-	npm run test:run
+	pnpm run test:run
 
 pre-ci: lint format test
 
