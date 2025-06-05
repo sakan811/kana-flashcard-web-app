@@ -46,19 +46,19 @@ clean-db:
 	docker compose down saku-mari-db --volumes --remove-orphans --rmi all
 
 generate:
-	npx prisma generate
+	pnpm exec prisma generate
 
 migrate:
-	npx prisma migrate dev
+	pnpm exec prisma migrate dev
 
 migrate-prod:
-	npx prisma migrate deploy
+	pnpm exec prisma migrate deploy
 	
 seed:
-	npx prisma db seed
+	pnpm exec prisma db seed
 
 studio:
-	npx prisma studio
+	pnpm exec prisma studio
 
 reset:
-	npx prisma migrate reset
+	pnpm exec prisma migrate reset
