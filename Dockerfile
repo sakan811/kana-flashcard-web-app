@@ -50,16 +50,22 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./src/generated
 
-# Install only production dependencies
-COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
+# Copy package files for production install
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
+
+# Install production dependencies and prisma CLI (as root)
 RUN pnpm fetch --prod
-COPY . .
-RUN pnpm install --prod --frozen-lockfile --offline
+RUN pnpm install --prod --frozen-lockfile --offline --ignore-scripts
+RUN pnpm add prisma --ignore-scripts
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Change ownership of all files to nextjs user
+RUN chown -R nextjs:nodejs /app
 
 USER nextjs
 
