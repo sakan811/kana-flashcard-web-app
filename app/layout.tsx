@@ -21,7 +21,7 @@ import SourceCodeNotice from "@/components/SourceCodeNotice";
 import Providers from "@/components/SessionProviders";
 
 export const metadata: Metadata = {
-  title: "Japanese Kana Flashcard App",
+  title: "SakuMari - Japanese Kana Flashcard App",
   description: "Practice Japanese Hiragana and Katakana with flashcards",
 };
 
