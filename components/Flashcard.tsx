@@ -96,7 +96,9 @@ export default function Flashcard() {
   if (!currentKana) {
     return (
       <div className="text-center p-4">
-        <p className="text-base sm:text-lg text-[#705a39]">No flashcards available.</p>
+        <p className="text-base sm:text-lg text-[#705a39]">
+          No flashcards available.
+        </p>
       </div>
     );
   }
@@ -127,7 +129,10 @@ export default function Flashcard() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-auto flex flex-col space-y-2 sm:space-y-0">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-auto flex flex-col space-y-2 sm:space-y-0"
+        >
           {!result ? (
             <>
               <input

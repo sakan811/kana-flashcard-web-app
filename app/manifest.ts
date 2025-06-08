@@ -15,27 +15,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { MetadataRoute } from 'next'
+import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'SakuMari - Japanese Kana Flashcard App',
-    short_name: 'SakuMari',
-    description: 'Master Japanese Hiragana and Katakana with interactive flashcards and progress tracking',
-    start_url: '/',
-    display: 'standalone',
-    background_color: '#fad182',
-    theme_color: '#d1622b',
-    orientation: 'portrait',
-    scope: '/',
-    lang: 'en',
-    categories: ['education', 'productivity'],
+    name: "SakuMari - Japanese Kana Flashcard App",
+    short_name: "SakuMari",
+    description:
+      "Master Japanese Hiragana and Katakana with interactive flashcards and progress tracking",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#fad182",
+    theme_color: "#d1622b",
+    orientation: "portrait",
+    scope: "/",
+    lang: "en",
+    categories: ["education", "productivity"],
     icons: [
       {
-        src: '/favicon.ico',
-        sizes: 'any',
-        type: 'image/x-icon',
+        src: "/favicon.ico",
+        sizes: "any",
+        type: "image/x-icon",
       },
     ],
-  }
+  };
 }
