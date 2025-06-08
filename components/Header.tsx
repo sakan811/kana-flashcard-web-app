@@ -74,10 +74,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                       height={32}
                       className="w-6 h-6 xl:w-8 xl:h-8 rounded-full border-2 border-[#fad182]"
                       unoptimized
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
+                      referrerPolicy="no-referrer"
                     />
                   ) : (
                     <div className="w-6 h-6 xl:w-8 xl:h-8 rounded-full border-2 border-[#fad182] bg-[#fad182] flex items-center justify-center">
@@ -172,10 +169,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                         height={32}
                         className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-[#fad182]"
                         unoptimized
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                        }}
+                        referrerPolicy="no-referrer"
                       />
                     ) : (
                       <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-[#fad182] bg-[#fad182] flex items-center justify-center">
