@@ -37,7 +37,7 @@ const FlashcardApp: FC<FlashcardAppProps> = ({ kanaType }) => {
     <FlashcardProvider kanaType={kanaType}>
       <div className="min-h-screen bg-gradient-to-br from-[#fad182] via-[#f5c55a] to-[#fad182]">
         <Header activeTab={activeTab} setActiveTab={setActiveTab} />
-        <main className="container mx-auto max-w-4xl px-4 py-8">
+        <main className="container mx-auto max-w-4xl px-4 py-4 sm:py-6 lg:py-8">
           {activeTab === "flashcards" ? <Flashcard /> : <Dashboard />}
         </main>
       </div>

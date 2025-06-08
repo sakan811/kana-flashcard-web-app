@@ -84,9 +84,9 @@ export default function Flashcard() {
 
   if (loadingKana) {
     return (
-      <div className="flex h-64 items-center justify-center">
+      <div className="flex h-32 sm:h-64 items-center justify-center">
         <div
-          className="h-12 w-12 animate-spin rounded-full border-4 border-[#d1622b] border-t-transparent"
+          className="h-8 w-8 sm:h-12 sm:w-12 animate-spin rounded-full border-2 sm:border-4 border-[#d1622b] border-t-transparent"
           role="status"
         ></div>
       </div>
@@ -95,39 +95,39 @@ export default function Flashcard() {
 
   if (!currentKana) {
     return (
-      <div className="text-center">
-        <p className="text-lg text-[#705a39]">No flashcards available.</p>
+      <div className="text-center p-4">
+        <p className="text-base sm:text-lg text-[#705a39]">No flashcards available.</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-md">
-      <div className="mb-8 rounded-lg bg-gradient-to-br from-[#fad182] via-[#fad182] to-[#f5c55a] shadow-xl border-2 border-[#705a39] aspect-[2.5/3.5] flex flex-col justify-between p-6">
+    <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 sm:px-0">
+      <div className="mb-6 sm:mb-8 rounded-lg bg-gradient-to-br from-[#fad182] via-[#fad182] to-[#f5c55a] shadow-xl border-2 border-[#705a39] aspect-[3/4] sm:aspect-[2.5/3.5] flex flex-col justify-between p-4 sm:p-6">
         <div className="flex-grow flex items-center justify-center">
-          <h2 className="text-[10rem] sm:text-[14rem] leading-none font-bold text-[#403933] drop-shadow-sm">
+          <h2 className="text-6xl xs:text-7xl sm:text-8xl md:text-[10rem] lg:text-[14rem] leading-none font-bold text-[#403933] drop-shadow-sm">
             {currentKana.character}
           </h2>
         </div>
 
         {result && (
           <div
-            className={`mb-4 rounded-md p-3 text-center border-2 ${
+            className={`mb-3 sm:mb-4 rounded-md p-2 sm:p-3 text-center border-2 ${
               result === "correct"
                 ? "bg-green-50 text-green-800 border-green-300"
                 : "bg-[#ae0d13] text-white border-[#950a1e]"
             }`}
           >
-            <p className="text-lg font-semibold">
+            <p className="text-sm sm:text-lg font-semibold">
               {result === "correct" ? "Correct!" : "Incorrect!"}
             </p>
-            <p>
+            <p className="text-xs sm:text-base">
               The correct answer is: <strong>{currentKana.romaji}</strong>
             </p>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-auto flex flex-col">
+        <form onSubmit={handleSubmit} className="mt-auto flex flex-col space-y-2 sm:space-y-0">
           {!result ? (
             <>
               <input
@@ -141,14 +141,14 @@ export default function Flashcard() {
                   }
                 }}
                 placeholder="Type romaji equivalent..."
-                className={`mb-2 rounded-md border-2 ${
+                className={`mb-1 sm:mb-2 rounded-md border-2 ${
                   error ? "border-[#ae0d13]" : "border-[#705a39]"
-                } px-4 py-2 focus:border-[#d1622b] focus:outline-none bg-white text-[#403933] placeholder-[#705a39]`}
+                } px-3 sm:px-4 py-2 text-sm sm:text-base focus:border-[#d1622b] focus:outline-none bg-white text-[#403933] placeholder-[#705a39]`}
                 disabled={isProcessing}
                 autoFocus
               />
               {error && (
-                <div className="mb-2 text-[#ae0d13] text-sm font-medium">
+                <div className="mb-1 sm:mb-2 text-[#ae0d13] text-xs sm:text-sm font-medium">
                   {error}
                 </div>
               )}
@@ -160,7 +160,7 @@ export default function Flashcard() {
             type="submit"
             role="button"
             disabled={isProcessing}
-            className={`rounded-md px-4 py-2 font-medium text-white transition-all duration-200 border-2 ${
+            className={`rounded-md px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-white transition-all duration-200 border-2 ${
               isProcessing
                 ? "bg-[#705a39] cursor-not-allowed border-[#705a39]"
                 : "bg-[#d1622b] hover:bg-[#ae0d13] border-[#d1622b] hover:border-[#ae0d13] shadow-lg hover:shadow-xl transform hover:scale-105"
