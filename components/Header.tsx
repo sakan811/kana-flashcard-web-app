@@ -18,6 +18,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
@@ -65,12 +66,25 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                   📊 Dashboard
                 </Link>
                 <div className="flex items-center space-x-2 xl:space-x-3">
-                  {session.user?.image && (
-                    <img
+                  {session.user?.image ? (
+                    <Image
                       src={session.user.image}
                       alt="Profile"
+                      width={32}
+                      height={32}
                       className="w-6 h-6 xl:w-8 xl:h-8 rounded-full border-2 border-[#fad182]"
+                      unoptimized
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
                     />
+                  ) : (
+                    <div className="w-6 h-6 xl:w-8 xl:h-8 rounded-full border-2 border-[#fad182] bg-[#fad182] flex items-center justify-center">
+                      <span className="text-[#403933] text-xs xl:text-sm font-bold">
+                        {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </span>
+                    </div>
                   )}
                   <button
                     onClick={() => signOut()}
@@ -150,12 +164,25 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                     📊 Dashboard
                   </Link>
                   <div className="flex items-center space-x-3 px-3 py-2">
-                    {session.user?.image && (
-                      <img
+                    {session.user?.image ? (
+                      <Image
                         src={session.user.image}
                         alt="Profile"
+                        width={32}
+                        height={32}
                         className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-[#fad182]"
+                        unoptimized
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
                       />
+                    ) : (
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-[#fad182] bg-[#fad182] flex items-center justify-center">
+                        <span className="text-[#403933] text-xs sm:text-sm font-bold">
+                          {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                        </span>
+                      </div>
                     )}
                     <span className="text-[#fad182] text-sm sm:text-base font-medium">
                       {session.user?.name}
