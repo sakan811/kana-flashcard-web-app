@@ -79,7 +79,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                   ) : (
                     <div className="w-6 h-6 xl:w-8 xl:h-8 rounded-full border-2 border-[#fad182] bg-[#fad182] flex items-center justify-center">
                       <span className="text-[#403933] text-xs xl:text-sm font-bold">
-                        {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                        {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
                       </span>
                     </div>
                   )}
@@ -174,7 +174,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                     ) : (
                       <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-[#fad182] bg-[#fad182] flex items-center justify-center">
                         <span className="text-[#403933] text-xs sm:text-sm font-bold">
-                          {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                          {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
                         </span>
                       </div>
                     )}

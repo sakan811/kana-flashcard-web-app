@@ -165,7 +165,9 @@ export default function Dashboard() {
 
       {error ? (
         <div className="mb-4 sm:mb-6 rounded-lg bg-red-100 border-2 border-red-300 p-4 sm:p-6 mx-4">
-          <p className="text-red-800 text-center font-medium text-sm sm:text-base">{error}</p>
+          <p className="text-red-800 text-center font-medium text-sm sm:text-base">
+            {error}
+          </p>
           <div className="text-center mt-3 sm:mt-4">
             <button
               onClick={fetchStats}
@@ -206,7 +208,9 @@ export default function Dashboard() {
                 <p className="text-xs sm:text-sm text-orange-100 font-medium">
                   Total Attempts
                 </p>
-                <p className="text-xl sm:text-2xl font-bold text-white">{totalAttempts}</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">
+                  {totalAttempts}
+                </p>
               </div>
             </div>
           </div>
