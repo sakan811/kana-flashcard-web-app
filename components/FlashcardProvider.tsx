@@ -32,12 +32,17 @@ type KanaWithAccuracy = {
   accuracy: number;
 };
 
+type InteractionMode = "typing" | "multiple-choice";
+
 type FlashcardContextType = {
   currentKana: KanaWithAccuracy | null;
   loadingKana: boolean;
   submitAnswer: (answer: string) => void;
   result: "correct" | "incorrect" | null;
   nextCard: () => void;
+  interactionMode: InteractionMode;
+  setInteractionMode: (mode: InteractionMode) => void;
+  choices: string[];
 };
 
 const FlashcardContext = createContext<FlashcardContextType | undefined>(
@@ -63,6 +68,9 @@ export function FlashcardProvider({
   const [currentKana, setCurrentKana] = useState<KanaWithAccuracy | null>(null);
   const [loadingKana, setLoadingKana] = useState(true);
   const [result, setResult] = useState<"correct" | "incorrect" | null>(null);
+  const [interactionMode, setInteractionMode] =
+    useState<InteractionMode>("typing");
+  const [choices, setChoices] = useState<string[]>([]);
   const hasFetched = useRef(false);
 
   // Prevent double fetch in React strict mode
@@ -101,6 +109,54 @@ export function FlashcardProvider({
     }
   };
 
+  // Generate choices for multiple choice mode
+  const generateChoices = (
+    correctKana: KanaWithAccuracy,
+    kanaData: KanaWithAccuracy[],
+  ) => {
+    if (!kanaData.length) {
+      setChoices([]);
+      return;
+    }
+
+    const correctAnswer = correctKana.romaji;
+
+    // Get all possible wrong answers
+    const wrongAnswers = kanaData
+      .filter((kana) => kana.romaji !== correctAnswer)
+      .map((kana) => kana.romaji);
+
+    // Remove duplicates
+    const uniqueWrongAnswers = [...new Set(wrongAnswers)];
+
+    // Shuffle and take 3 wrong answers
+    const selectedWrongAnswers = uniqueWrongAnswers
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+
+    // If we don't have enough wrong answers, fill with what we have
+    while (
+      selectedWrongAnswers.length < 3 &&
+      selectedWrongAnswers.length < uniqueWrongAnswers.length
+    ) {
+      const remaining = uniqueWrongAnswers.filter(
+        (answer) => !selectedWrongAnswers.includes(answer),
+      );
+      if (remaining.length > 0) {
+        selectedWrongAnswers.push(remaining[0]);
+      } else {
+        break;
+      }
+    }
+
+    // Combine correct answer with wrong answers and shuffle
+    const allChoices = [correctAnswer, ...selectedWrongAnswers].sort(
+      () => Math.random() - 0.5,
+    );
+
+    setChoices(allChoices);
+  };
+
   // Select a random kana based on weighted probability
   const selectRandomKana = (data: KanaWithAccuracy[]) => {
     if (!data.length) return;
@@ -119,6 +175,7 @@ export function FlashcardProvider({
 
       if (randomVal <= 0) {
         setCurrentKana(kana);
+        generateChoices(kana, data);
         break;
       }
     }
@@ -141,6 +198,7 @@ export function FlashcardProvider({
         body: JSON.stringify({
           kanaId: currentKana.id,
           isCorrect,
+          interactionMode, // Track which mode was used
         }),
       });
     } catch (error) {
@@ -160,6 +218,9 @@ export function FlashcardProvider({
     submitAnswer,
     result,
     nextCard,
+    interactionMode,
+    setInteractionMode,
+    choices,
   };
 
   return (
