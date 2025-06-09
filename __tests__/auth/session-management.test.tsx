@@ -1,16 +1,15 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { SessionProvider } from 'next-auth/react';
 import FlashcardApp from '@/components/FlashcardApp';
 
-// Mock the fetch for API calls
+// Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Mock next-auth/react
 const mockUseSession = vi.fn();
 vi.mock('next-auth/react', () => ({
-  SessionProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
   useSession: () => mockUseSession(),
   signIn: vi.fn(),
   signOut: vi.fn(),
