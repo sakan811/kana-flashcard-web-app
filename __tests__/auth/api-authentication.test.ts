@@ -3,13 +3,16 @@ import { GET } from '@/app/api/flashcards/route';
 import { POST } from '@/app/api/flashcards/submit/route';
 import { NextRequest } from 'next/server';
 
-// Mock auth and prisma at top level
-const mockAuth = vi.fn();
-const mockPrisma = {
-  kana: { findMany: vi.fn() },
-  kanaProgress: { upsert: vi.fn(), update: vi.fn() },
-};
+// Use vi.hoisted to declare mocks that can be used in vi.mock
+const { mockAuth, mockPrisma } = vi.hoisted(() => ({
+  mockAuth: vi.fn(),
+  mockPrisma: {
+    kana: { findMany: vi.fn() },
+    kanaProgress: { upsert: vi.fn(), update: vi.fn() },
+  },
+}));
 
+// Mock auth and prisma at top level
 vi.mock('@/lib/auth', () => ({ auth: mockAuth }));
 vi.mock('@/lib/prisma', () => ({ prisma: mockPrisma }));
 

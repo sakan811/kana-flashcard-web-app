@@ -3,14 +3,17 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Header from '@/components/Header';
 import Home from '@/app/page';
 
-// Mock next-auth/react at the top level
-const mockUseSession = vi.fn();
-const mockSignIn = vi.fn();
-const mockSignOut = vi.fn();
+// Use vi.hoisted to declare mock functions that can be used in vi.mock
+const { mockUseSession, mockSignIn, mockSignOut } = vi.hoisted(() => ({
+  mockUseSession: vi.fn(),
+  mockSignIn: vi.fn(),
+  mockSignOut: vi.fn(),
+}));
 
+// Mock next-auth/react
 vi.mock('next-auth/react', () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
-  useSession: () => mockUseSession(),
+  useSession: mockUseSession,
   signIn: mockSignIn,
   signOut: mockSignOut,
 }));
