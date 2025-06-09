@@ -1,24 +1,24 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { GET } from "../../app/api/stats/route";
 
-// Mock the auth function
-const mockAuth = vi.fn();
+// Use direct function declaration pattern that works reliably with vitest
 vi.mock("@/lib/auth", () => ({
-  auth: mockAuth,
+  auth: vi.fn(),
 }));
-
-// Mock prisma
-const mockPrisma = {
-  kana: {
-    findMany: vi.fn(),
-  },
-};
 
 vi.mock("@/lib/prisma", () => ({
-  prisma: mockPrisma,
+  prisma: {
+    kana: {
+      findMany: vi.fn(),
+    },
+  },
 }));
 
-describe("Stats API Route", () => {
+describe("Stats API Route", async () => {
+  // Import the mocked functions after mocking
+  const { auth } = await import("@/lib/auth");
+  const { prisma } = await import("@/lib/prisma");
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -29,7 +29,7 @@ describe("Stats API Route", () => {
 
   describe("GET /api/stats", () => {
     test("returns 401 when user is not authenticated", async () => {
-      mockAuth.mockResolvedValue(null);
+      vi.mocked(auth).mockResolvedValue(null);
 
       const response = await GET();
       const data = await response.json();
@@ -39,7 +39,7 @@ describe("Stats API Route", () => {
     });
 
     test("returns 401 when user session has no ID", async () => {
-      mockAuth.mockResolvedValue({ user: {} });
+      vi.mocked(auth).mockResolvedValue({ user: {} });
 
       const response = await GET();
       const data = await response.json();
@@ -70,8 +70,8 @@ describe("Stats API Route", () => {
         },
       ];
 
-      mockAuth.mockResolvedValue({ user: { id: "user123" } });
-      mockPrisma.kana.findMany.mockResolvedValue(mockStatsData);
+      vi.mocked(auth).mockResolvedValue({ user: { id: "user123" } });
+      vi.mocked(prisma.kana.findMany).mockResolvedValue(mockStatsData);
 
       const response = await GET();
       const data = await response.json();
@@ -113,8 +113,8 @@ describe("Stats API Route", () => {
         },
       ];
 
-      mockAuth.mockResolvedValue({ user: { id: "user123" } });
-      mockPrisma.kana.findMany.mockResolvedValue(mockStatsData);
+      vi.mocked(auth).mockResolvedValue({ user: { id: "user123" } });
+      vi.mocked(prisma.kana.findMany).mockResolvedValue(mockStatsData);
 
       const response = await GET();
       const data = await response.json();
@@ -126,8 +126,8 @@ describe("Stats API Route", () => {
     });
 
     test("handles database connection errors", async () => {
-      mockAuth.mockResolvedValue({ user: { id: "user123" } });
-      mockPrisma.kana.findMany.mockRejectedValue(
+      vi.mocked(auth).mockResolvedValue({ user: { id: "user123" } });
+      vi.mocked(prisma.kana.findMany).mockRejectedValue(
         new Error("Database connection lost"),
       );
 
@@ -139,12 +139,12 @@ describe("Stats API Route", () => {
     });
 
     test("correctly filters user-specific progress", async () => {
-      mockAuth.mockResolvedValue({ user: { id: "user123" } });
-      mockPrisma.kana.findMany.mockResolvedValue([]);
+      vi.mocked(auth).mockResolvedValue({ user: { id: "user123" } });
+      vi.mocked(prisma.kana.findMany).mockResolvedValue([]);
 
       await GET();
 
-      expect(mockPrisma.kana.findMany).toHaveBeenCalledWith({
+      expect(prisma.kana.findMany).toHaveBeenCalledWith({
         include: {
           progress: {
             where: {
@@ -177,8 +177,8 @@ describe("Stats API Route", () => {
         },
       ];
 
-      mockAuth.mockResolvedValue({ user: { id: "user123" } });
-      mockPrisma.kana.findMany.mockResolvedValue(mockStatsData);
+      vi.mocked(auth).mockResolvedValue({ user: { id: "user123" } });
+      vi.mocked(prisma.kana.findMany).mockResolvedValue(mockStatsData);
 
       const response = await GET();
       const data = await response.json();
