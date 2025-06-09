@@ -1,6 +1,6 @@
-import { afterEach } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom/vitest';
+import { afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
 
 // Mock ResizeObserver which isn't available in test environment
 global.ResizeObserver = class ResizeObserver {
@@ -10,7 +10,7 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: (query: string) => ({
     matches: false,

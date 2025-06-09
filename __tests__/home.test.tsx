@@ -52,9 +52,7 @@ describe("Home Page", () => {
     const katakanaLink = screen
       .getByText("カタカナ Katakana Practice")
       .closest("a");
-    const progressLink = screen
-      .getByText("📊 View Your Progress")
-      .closest("a");
+    const progressLink = screen.getByText("📊 View Your Progress").closest("a");
 
     expect(hiraganaLink?.getAttribute("href")).toBe("/hiragana");
     expect(katakanaLink?.getAttribute("href")).toBe("/katakana");
