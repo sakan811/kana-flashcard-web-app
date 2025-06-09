@@ -17,7 +17,6 @@
 
 import { Metadata } from "next";
 import "./globals.css";
-import SourceCodeNotice from "@/components/SourceCodeNotice";
 import Providers from "@/components/SessionProviders";
 
 export const metadata: Metadata = {
@@ -34,7 +33,6 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-gradient-to-br from-[#fad182] via-[#f5c55a] to-[#fad182] font-sans antialiased">
         <Providers>{children}</Providers>
-        <SourceCodeNotice />
       </body>
     </html>
   );
