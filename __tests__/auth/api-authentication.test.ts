@@ -3,7 +3,7 @@ import { GET } from '@/app/api/flashcards/route';
 import { POST } from '@/app/api/flashcards/submit/route';
 import { NextRequest } from 'next/server';
 
-// Mock auth and prisma
+// Mock auth and prisma at top level
 const mockAuth = vi.fn();
 const mockPrisma = {
   kana: { findMany: vi.fn() },

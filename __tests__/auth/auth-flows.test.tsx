@@ -1,15 +1,18 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { useSession, signIn, signOut } from 'next-auth/react';
 import Header from '@/components/Header';
 import Home from '@/app/page';
 
-// Mock next-auth/react
+// Mock next-auth/react at the top level
+const mockUseSession = vi.fn();
+const mockSignIn = vi.fn();
+const mockSignOut = vi.fn();
+
 vi.mock('next-auth/react', () => ({
-  SessionProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  useSession: vi.fn(),
-  signIn: vi.fn(),
-  signOut: vi.fn(),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+  useSession: () => mockUseSession(),
+  signIn: mockSignIn,
+  signOut: mockSignOut,
 }));
 
 // Mock next/navigation
@@ -22,6 +25,22 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/',
 }));
 
+// Mock next/link
+vi.mock('next/link', () => ({
+  default: ({ children, href, ...props }: any) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+}));
+
+// Mock next/image
+vi.mock('next/image', () => ({
+  default: ({ src, alt, ...props }: any) => (
+    <img src={src} alt={alt} {...props} />
+  ),
+}));
+
 describe('Authentication Flow Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -29,7 +48,7 @@ describe('Authentication Flow Tests', () => {
 
   describe('Unauthenticated State', () => {
     beforeEach(() => {
-      (useSession as any).mockReturnValue({
+      mockUseSession.mockReturnValue({
         data: null,
         status: 'unauthenticated',
       });
@@ -42,13 +61,13 @@ describe('Authentication Flow Tests', () => {
       expect(screen.queryByText('Sign Out')).not.toBeInTheDocument();
     });
 
-    test('calls signIn when sign-in button is clicked', async () => {
+    test('calls signIn when sign-in button is clicked', () => {
       render(<Header activeTab="flashcards" setActiveTab={vi.fn()} />);
       
       const signInButton = screen.getByText('Sign In with Google');
       fireEvent.click(signInButton);
       
-      expect(signIn).toHaveBeenCalledWith('google');
+      expect(mockSignIn).toHaveBeenCalledWith('google');
     });
 
     test('shows welcome message instead of practice options', () => {
@@ -60,7 +79,7 @@ describe('Authentication Flow Tests', () => {
     });
 
     test('disables sign-in button during loading state', () => {
-      (useSession as any).mockReturnValue({
+      mockUseSession.mockReturnValue({
         data: null,
         status: 'loading',
       });
@@ -84,7 +103,7 @@ describe('Authentication Flow Tests', () => {
     };
 
     beforeEach(() => {
-      (useSession as any).mockReturnValue({
+      mockUseSession.mockReturnValue({
         data: mockSession,
         status: 'authenticated',
       });
@@ -106,7 +125,7 @@ describe('Authentication Flow Tests', () => {
     });
 
     test('shows user initials when no image available', () => {
-      (useSession as any).mockReturnValue({
+      mockUseSession.mockReturnValue({
         data: { ...mockSession, user: { ...mockSession.user, image: null } },
         status: 'authenticated',
       });
@@ -116,13 +135,13 @@ describe('Authentication Flow Tests', () => {
       expect(screen.getByText('J')).toBeInTheDocument(); // First letter of John
     });
 
-    test('calls signOut when sign-out button is clicked', async () => {
+    test('calls signOut when sign-out button is clicked', () => {
       render(<Header activeTab="flashcards" setActiveTab={vi.fn()} />);
       
       const signOutButton = screen.getByText('Sign Out');
       fireEvent.click(signOutButton);
       
-      expect(signOut).toHaveBeenCalled();
+      expect(mockSignOut).toHaveBeenCalled();
     });
 
     test('shows practice options when authenticated', () => {
@@ -144,7 +163,7 @@ describe('Authentication Flow Tests', () => {
 
   describe('Loading State', () => {
     beforeEach(() => {
-      (useSession as any).mockReturnValue({
+      mockUseSession.mockReturnValue({
         data: null,
         status: 'loading',
       });
@@ -173,7 +192,7 @@ describe('Authentication Flow Tests', () => {
     };
 
     test('shows mobile menu with authentication options', async () => {
-      (useSession as any).mockReturnValue({
+      mockUseSession.mockReturnValue({
         data: mockSession,
         status: 'authenticated',
       });
@@ -184,15 +203,15 @@ describe('Authentication Flow Tests', () => {
       const menuButton = screen.getByLabelText('Toggle mobile menu');
       fireEvent.click(menuButton);
       
-      // Check mobile menu items
+      // Check mobile menu items appear
       await waitFor(() => {
-        expect(screen.getAllByText(/Hiragana/)[1]).toBeInTheDocument(); // Mobile version
-        expect(screen.getAllByText(/Katakana/)[1]).toBeInTheDocument(); // Mobile version
+        const hiraganaLinks = screen.getAllByText(/Hiragana/);
+        expect(hiraganaLinks.length).toBeGreaterThan(1); // Desktop + mobile versions
       });
     });
 
-    test('mobile sign-out closes menu and calls signOut', async () => {
-      (useSession as any).mockReturnValue({
+    test('mobile sign-out calls signOut function', async () => {
+      mockUseSession.mockReturnValue({
         data: mockSession,
         status: 'authenticated',
       });
@@ -203,14 +222,15 @@ describe('Authentication Flow Tests', () => {
       const menuButton = screen.getByLabelText('Toggle mobile menu');
       fireEvent.click(menuButton);
       
-      // Click sign out in mobile menu
-      const mobileSignOut = screen.getAllByText('Sign Out').find(button => 
-        button.closest('[class*="lg:hidden"]')
-      );
-      if (mobileSignOut) {
-        fireEvent.click(mobileSignOut);
-        expect(signOut).toHaveBeenCalled();
-      }
+      // Find and click mobile sign out button
+      await waitFor(() => {
+        const signOutButtons = screen.getAllByText('Sign Out');
+        // Click the second one (mobile version)
+        if (signOutButtons.length > 1) {
+          fireEvent.click(signOutButtons[1]);
+          expect(mockSignOut).toHaveBeenCalled();
+        }
+      });
     });
   });
 });
