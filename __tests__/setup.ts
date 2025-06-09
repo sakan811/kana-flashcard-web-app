@@ -58,6 +58,10 @@ beforeAll(() => {
     }
     originalError.call(console, ...args);
   };
+  process.env.NEXTAUTH_URL = 'http://localhost:3000';
+  process.env.NEXTAUTH_SECRET = 'test-secret';
+  process.env.AUTH_GOOGLE_ID = 'test-google-id';
+  process.env.AUTH_GOOGLE_SECRET = 'test-google-secret';
 });
 
 afterAll(() => {
@@ -68,4 +72,26 @@ afterAll(() => {
 afterEach(() => {
   vi.clearAllTimers();
   vi.useRealTimers();
+  vi.clearAllMocks();
+});
+
+export const createMockSession = (overrides = {}) => ({
+  user: {
+    id: 'test-user-123',
+    name: 'Test User',
+    email: 'test@example.com',
+    image: 'https://example.com/avatar.jpg',
+    ...overrides,
+  },
+  expires: '2025-12-31T23:59:59.999Z',
+});
+
+export const createMockUnauthenticatedSession = () => ({
+  data: null,
+  status: 'unauthenticated' as const,
+});
+
+export const createMockLoadingSession = () => ({
+  data: null,
+  status: 'loading' as const,
 });
