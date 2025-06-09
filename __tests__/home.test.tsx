@@ -45,14 +45,15 @@ describe("Home Page", () => {
   test("contains correct navigation links", () => {
     render(<Home />);
 
+    // Fix: Use getByText instead of getAllByText with index
     const hiraganaLink = screen
-      .getAllByText("ひらがな Hiragana Practice")[1]
+      .getByText("ひらがな Hiragana Practice")
       .closest("a");
     const katakanaLink = screen
-      .getAllByText("カタカナ Katakana Practice")[1]
+      .getByText("カタカナ Katakana Practice")
       .closest("a");
     const progressLink = screen
-      .getAllByText("📊 View Your Progress")[1]
+      .getByText("📊 View Your Progress")
       .closest("a");
 
     expect(hiraganaLink?.getAttribute("href")).toBe("/hiragana");

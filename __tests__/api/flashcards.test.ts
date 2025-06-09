@@ -3,11 +3,14 @@ import { GET } from "../../app/api/flashcards/route";
 import { POST } from "../../app/api/flashcards/submit/route";
 import { NextRequest } from "next/server";
 
-const mockAuth = vi.fn();
-const mockPrisma = {
-  kana: { findMany: vi.fn() },
-  kanaProgress: { upsert: vi.fn(), update: vi.fn() },
-};
+// Use vi.hoisted to declare mocks that can be used in vi.mock
+const { mockAuth, mockPrisma } = vi.hoisted(() => ({
+  mockAuth: vi.fn(),
+  mockPrisma: {
+    kana: { findMany: vi.fn() },
+    kanaProgress: { upsert: vi.fn(), update: vi.fn() },
+  },
+}));
 
 vi.mock("@/lib/auth", () => ({ auth: mockAuth }));
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }));
