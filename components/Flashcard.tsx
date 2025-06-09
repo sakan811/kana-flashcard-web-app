@@ -19,11 +19,29 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useFlashcard } from "./FlashcardProvider";
+import ModeSelector from "./ModeSelector";
+import MultipleChoice from "./MultipleChoice";
+
+type InteractionMode = "typing" | "multiple-choice";
 
 export default function Flashcard() {
-  const { currentKana, loadingKana, submitAnswer, result, nextCard } =
-    useFlashcard();
+  const {
+    currentKana,
+    loadingKana,
+    submitAnswer,
+    result,
+    nextCard,
+    interactionMode,
+    setInteractionMode,
+    choices,
+  } = useFlashcard();
+
+  // Typing mode state
   const [answer, setAnswer] = useState("");
+
+  // Multiple choice mode state
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -35,11 +53,12 @@ export default function Flashcard() {
       !loadingKana &&
       currentKana &&
       !result &&
-      !isProcessing
+      !isProcessing &&
+      interactionMode === "typing"
     ) {
       inputRef.current.focus();
     }
-  }, [currentKana, loadingKana, result, isProcessing]);
+  }, [currentKana, loadingKana, result, isProcessing, interactionMode]);
 
   // Handle Enter key when result is shown
   useEffect(() => {
@@ -48,6 +67,7 @@ export default function Flashcard() {
         setIsProcessing(true);
         nextCard();
         setAnswer("");
+        setSelectedChoice(null);
         setError("");
         // Allow a brief delay before enabling the next action
         setTimeout(() => setIsProcessing(false), 500);
@@ -58,28 +78,64 @@ export default function Flashcard() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [result, nextCard, isProcessing]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Clear state when switching modes
+  useEffect(() => {
+    setAnswer("");
+    setSelectedChoice(null);
+    setError("");
+  }, [interactionMode]);
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (isProcessing) return;
 
-    // Validate the answer isn't empty
-    if (!result && !answer.trim()) {
-      setError("Please enter an answer");
-      return;
+    let userAnswer: string;
+
+    if (interactionMode === "typing") {
+      // Validate the answer isn't empty
+      if (!answer.trim()) {
+        setError("Please enter an answer");
+        return;
+      }
+      userAnswer = answer.trim();
+    } else {
+      // Multiple choice validation
+      if (selectedChoice === null) {
+        setError("Please select an answer");
+        return;
+      }
+      userAnswer = choices[selectedChoice];
     }
 
     setIsProcessing(true);
     setError(""); // Clear any previous errors
 
-    if (!result) {
-      submitAnswer(answer);
-    } else {
-      nextCard();
-      setAnswer("");
-    }
+    submitAnswer(userAnswer);
 
     // Allow a brief delay before enabling the next action
     setTimeout(() => setIsProcessing(false), 500);
+  };
+
+  const handleNextCard = () => {
+    setIsProcessing(true);
+    nextCard();
+    setAnswer("");
+    setSelectedChoice(null);
+    setError("");
+    // Allow a brief delay before enabling the next action
+    setTimeout(() => setIsProcessing(false), 500);
+  };
+
+  const handleModeChange = (mode: InteractionMode) => {
+    if (isProcessing || result) return;
+    setInteractionMode(mode);
+    // State will be cleared by useEffect
+  };
+
+  const handleChoiceSelect = (index: number) => {
+    if (isProcessing || result) return;
+    setSelectedChoice(index);
+    setError("");
   };
 
   if (loadingKana) {
@@ -88,6 +144,7 @@ export default function Flashcard() {
         <div
           className="h-8 w-8 sm:h-12 sm:w-12 animate-spin rounded-full border-2 sm:border-4 border-[#d1622b] border-t-transparent"
           role="status"
+          aria-label="Loading flashcards"
         ></div>
       </div>
     );
@@ -105,6 +162,13 @@ export default function Flashcard() {
 
   return (
     <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 sm:px-0">
+      {/* Mode Selector */}
+      <ModeSelector
+        currentMode={interactionMode}
+        onModeChange={handleModeChange}
+        disabled={isProcessing || !!result}
+      />
+
       <div className="mb-6 sm:mb-8 rounded-lg bg-gradient-to-br from-[#fad182] via-[#fad182] to-[#f5c55a] shadow-xl border-2 border-[#705a39] aspect-[3/4] sm:aspect-[2.5/3.5] flex flex-col justify-between p-4 sm:p-6">
         <div className="flex-grow flex items-center justify-center">
           <h2 className="text-6xl xs:text-7xl sm:text-8xl md:text-[10rem] lg:text-[14rem] leading-none font-bold text-[#403933] drop-shadow-sm">
@@ -129,41 +193,67 @@ export default function Flashcard() {
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-auto flex flex-col space-y-2 sm:space-y-0"
-        >
-          {!result ? (
-            <>
-              <input
-                ref={inputRef}
-                type="text"
-                value={answer}
-                onChange={(e) => {
-                  setAnswer(e.target.value);
-                  if (error && e.target.value.trim()) {
-                    setError("");
-                  }
-                }}
-                placeholder="Type romaji equivalent..."
-                className={`mb-1 sm:mb-2 rounded-md border-2 ${
-                  error ? "border-[#ae0d13]" : "border-[#705a39]"
-                } px-3 sm:px-4 py-2 text-sm sm:text-base focus:border-[#d1622b] focus:outline-none bg-white text-[#403933] placeholder-[#705a39]`}
-                disabled={isProcessing}
-                autoFocus
-              />
-              {error && (
-                <div className="mb-1 sm:mb-2 text-[#ae0d13] text-xs sm:text-sm font-medium">
-                  {error}
-                </div>
-              )}
-            </>
-          ) : (
-            <div></div>
-          )}
+        {!result ? (
+          <div className="mt-auto flex flex-col space-y-2 sm:space-y-0">
+            {interactionMode === "typing" ? (
+              /* Typing Mode - Existing functionality */
+              <>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={answer}
+                  onChange={(e) => {
+                    setAnswer(e.target.value);
+                    if (error && e.target.value.trim()) {
+                      setError("");
+                    }
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleSubmit();
+                    }
+                  }}
+                  placeholder="Type romaji equivalent..."
+                  className={`mb-1 sm:mb-2 rounded-md border-2 ${
+                    error ? "border-[#ae0d13]" : "border-[#705a39]"
+                  } px-3 sm:px-4 py-2 text-sm sm:text-base focus:border-[#d1622b] focus:outline-none bg-white text-[#403933] placeholder-[#705a39]`}
+                  disabled={isProcessing}
+                  autoFocus
+                />
+                {error && (
+                  <div className="mb-1 sm:mb-2 text-[#ae0d13] text-xs sm:text-sm font-medium">
+                    {error}
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Multiple Choice Mode - New functionality */
+              <div className="mb-4">
+                <MultipleChoice
+                  choices={choices}
+                  selectedChoice={selectedChoice}
+                  onChoiceSelect={handleChoiceSelect}
+                  disabled={isProcessing}
+                  error={error}
+                />
+              </div>
+            )}
+
+            <button
+              onClick={handleSubmit}
+              disabled={isProcessing}
+              className={`rounded-md px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-white transition-all duration-200 border-2 ${
+                isProcessing
+                  ? "bg-[#705a39] cursor-not-allowed border-[#705a39]"
+                  : "bg-[#d1622b] hover:bg-[#ae0d13] border-[#d1622b] hover:border-[#ae0d13] shadow-lg hover:shadow-xl transform hover:scale-105"
+              }`}
+            >
+              {isProcessing ? "Submitting..." : "Submit"}
+            </button>
+          </div>
+        ) : (
           <button
-            type="submit"
-            role="button"
+            onClick={handleNextCard}
             disabled={isProcessing}
             className={`rounded-md px-3 sm:px-4 py-2 text-sm sm:text-base font-medium text-white transition-all duration-200 border-2 ${
               isProcessing
@@ -171,15 +261,9 @@ export default function Flashcard() {
                 : "bg-[#d1622b] hover:bg-[#ae0d13] border-[#d1622b] hover:border-[#ae0d13] shadow-lg hover:shadow-xl transform hover:scale-105"
             }`}
           >
-            {result
-              ? isProcessing
-                ? "Loading..."
-                : "Next Card"
-              : isProcessing
-                ? "Submitting..."
-                : "Submit"}
+            {isProcessing ? "Loading..." : "Next Card"}
           </button>
-        </form>
+        )}
       </div>
     </div>
   );
