@@ -12,7 +12,12 @@ describe("Edge Cases", () => {
   test("handles whitespace-only input", () => {
     const submitAnswer = vi.fn();
     (useFlashcard as any).mockReturnValue(
-      mockFlashcardProvider({ currentKana: mockKana.basic, submitAnswer }),
+      mockFlashcardProvider({ 
+        currentKana: mockKana.basic, 
+        submitAnswer,
+        interactionMode: "typing",
+        choices: ["a", "ka", "sa", "ta"]
+      }),
     );
 
     render(<Flashcard />);
@@ -30,6 +35,8 @@ describe("Edge Cases", () => {
     (useFlashcard as any).mockReturnValue(
       mockFlashcardProvider({
         currentKana: { ...mockKana.basic, character: null },
+        interactionMode: "typing",
+        choices: ["a", "ka", "sa", "ta"]
       }),
     );
 
@@ -43,6 +50,8 @@ describe("Edge Cases", () => {
       mockFlashcardProvider({
         currentKana: mockKana.basic,
         result: "correct",
+        interactionMode: "typing",
+        choices: ["a", "ka", "sa", "ta"]
       }),
     );
 
