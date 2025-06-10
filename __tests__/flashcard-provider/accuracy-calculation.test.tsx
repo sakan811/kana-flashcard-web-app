@@ -1,15 +1,16 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, act, waitFor } from "@testing-library/react";
+import { render, act, waitFor, screen } from "@testing-library/react";
 import { FlashcardProvider, useFlashcard } from "@/components/FlashcardProvider";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 function AccuracyTestComponent() {
-  const { currentKana, submitAnswer, result } = useFlashcard();
+  const { currentKana, submitAnswer, result, loadingKana } = useFlashcard();
   
   return (
     <div>
+      <div data-testid="loading-state">{loadingKana ? "loading" : "loaded"}</div>
       {currentKana && (
         <>
           <span data-testid="current-kana">{currentKana.character}</span>
@@ -26,9 +27,9 @@ function AccuracyTestComponent() {
           >
             Submit Incorrect
           </button>
-          {result && <span data-testid="result">{result}</span>}
         </>
       )}
+      {result && <span data-testid="result">{result}</span>}
     </div>
   );
 }
@@ -40,34 +41,44 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockKanaData,
-      })
-      // Mock the submit endpoint responses
-      .mockResolvedValue({
-        ok: true,
-        json: async () => ({ success: true }),
-      });
+    // Reset all mocks to ensure clean state
+    mockFetch.mockReset();
   });
 
   test("submits correct answer with proper payload", async () => {
+    // Mock the flashcards fetch
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockKanaData,
+    });
+
     const { getByTestId } = render(
       <FlashcardProvider>
         <AccuracyTestComponent />
       </FlashcardProvider>
     );
 
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(getByTestId("loading-state")).toHaveTextContent("loaded");
+    });
+
+    // Wait for kana to appear
     await waitFor(() => {
       expect(getByTestId("current-kana")).toBeInTheDocument();
+    });
+
+    // Mock the submit endpoint
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
     });
 
     await act(async () => {
       getByTestId("submit-correct").click();
     });
 
-    // Verify the submit API was called with correct data
+    // Check the submit call was made correctly
     expect(mockFetch).toHaveBeenCalledWith("/api/flashcards/submit", {
       method: "POST",
       headers: {
@@ -76,7 +87,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
       body: JSON.stringify({
         kanaId: "1",
         isCorrect: true,
-        interactionMode: "typing", // Default mode
+        interactionMode: "typing",
       }),
     });
 
@@ -86,6 +97,11 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
   });
 
   test("submits incorrect answer with proper payload", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockKanaData,
+    });
+
     const { getByTestId } = render(
       <FlashcardProvider>
         <AccuracyTestComponent />
@@ -94,6 +110,11 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
 
     await waitFor(() => {
       expect(getByTestId("current-kana")).toBeInTheDocument();
+    });
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
     });
 
     await act(async () => {
@@ -134,17 +155,12 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
         <div>
           {currentKana && (
             <>
+              <span data-testid="current-kana">{currentKana.character}</span>
               <button 
                 data-testid="submit-lowercase" 
                 onClick={() => submitAnswer("a")}
               >
                 Submit Lowercase
-              </button>
-              <button 
-                data-testid="submit-uppercase" 
-                onClick={() => submitAnswer("A")}
-              >
-                Submit Uppercase
               </button>
               {result && <span data-testid="result">{result}</span>}
             </>
@@ -160,10 +176,14 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("submit-lowercase")).toBeInTheDocument();
+      expect(getByTestId("current-kana")).toBeInTheDocument();
     });
 
-    // Test lowercase input against uppercase romaji
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
     await act(async () => {
       getByTestId("submit-lowercase").click();
     });
@@ -174,6 +194,11 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
   });
 
   test("trims whitespace from user input", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockKanaData,
+    });
+
     function WhitespaceTestComponent() {
       const { currentKana, submitAnswer, result } = useFlashcard();
       
@@ -181,6 +206,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
         <div>
           {currentKana && (
             <>
+              <span data-testid="current-kana">{currentKana.character}</span>
               <button 
                 data-testid="submit-whitespace" 
                 onClick={() => submitAnswer("  a  ")}
@@ -201,7 +227,12 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("submit-whitespace")).toBeInTheDocument();
+      expect(getByTestId("current-kana")).toBeInTheDocument();
+    });
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
     });
 
     await act(async () => {
@@ -216,12 +247,11 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
   test("handles API submission errors gracefully", async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockKanaData,
-      })
-      .mockRejectedValueOnce(new Error("Network error"));
+    // First call for loading kana data - succeeds
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockKanaData,
+    });
 
     const { getByTestId } = render(
       <FlashcardProvider>
@@ -233,6 +263,9 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
       expect(getByTestId("current-kana")).toBeInTheDocument();
     });
 
+    // Second call for submitting answer - fails
+    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+
     await act(async () => {
       getByTestId("submit-correct").click();
     });
@@ -242,12 +275,23 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
       expect(getByTestId("result")).toHaveTextContent("correct");
     });
 
+    // Give some time for the error to be logged
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    });
+
     expect(consoleSpy).toHaveBeenCalledWith("Error submitting answer:", expect.any(Error));
     
     consoleSpy.mockRestore();
   });
 
   test("includes interaction mode in submission payload", async () => {
+    // Mock the initial kana data fetch
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockKanaData,
+    });
+
     function ModeTestComponent() {
       const { currentKana, submitAnswer, setInteractionMode } = useFlashcard();
       
@@ -255,6 +299,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
         <div>
           {currentKana && (
             <>
+              <span data-testid="current-kana">{currentKana.character}</span>
               <button 
                 data-testid="set-multiple-choice" 
                 onClick={() => setInteractionMode("multiple-choice")}
@@ -280,7 +325,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("set-multiple-choice")).toBeInTheDocument();
+      expect(getByTestId("current-kana")).toBeInTheDocument();
     });
 
     // Change to multiple choice mode
@@ -288,11 +333,18 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
       getByTestId("set-multiple-choice").click();
     });
 
+    // Mock the submit endpoint
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
     await act(async () => {
       getByTestId("submit-answer").click();
     });
 
-    expect(mockFetch).toHaveBeenCalledWith("/api/flashcards/submit", {
+    // Check that the submit was called with multiple-choice mode
+    expect(mockFetch).toHaveBeenLastCalledWith("/api/flashcards/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
