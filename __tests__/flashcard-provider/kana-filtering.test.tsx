@@ -1,26 +1,33 @@
 import React from "react";
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, act, waitFor } from "@testing-library/react";
-import { FlashcardProvider, useFlashcard } from "@/components/FlashcardProvider";
+import {
+  FlashcardProvider,
+  useFlashcard,
+} from "@/components/FlashcardProvider";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 function ChoicesTestComponent() {
   const { currentKana, choices, setInteractionMode } = useFlashcard();
-  
+
   return (
     <div>
-      <button 
-        data-testid="set-multiple-choice" 
+      <button
+        data-testid="set-multiple-choice"
         onClick={() => setInteractionMode("multiple-choice")}
       >
         Set Multiple Choice
       </button>
-      {currentKana && <span data-testid="current-kana">{currentKana.character}</span>}
+      {currentKana && (
+        <span data-testid="current-kana">{currentKana.character}</span>
+      )}
       <div data-testid="choices">
         {choices.map((choice, index) => (
-          <span key={index} data-testid={`choice-${index}`}>{choice}</span>
+          <span key={index} data-testid={`choice-${index}`}>
+            {choice}
+          </span>
         ))}
       </div>
       <span data-testid="choices-count">{choices.length}</span>
@@ -50,7 +57,7 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <ChoicesTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -68,7 +75,7 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <ChoicesTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -76,14 +83,17 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     });
 
     const currentKana = getByTestId("current-kana").textContent;
-    const correctAnswer = mockKanaData.find(k => k.character === currentKana)?.romaji;
+    const correctAnswer = mockKanaData.find(
+      (k) => k.character === currentKana,
+    )?.romaji;
 
     await act(async () => {
       getByTestId("set-multiple-choice").click();
     });
 
-    const choices = Array.from({ length: 4 }, (_, i) => 
-      getByTestId(`choice-${i}`).textContent
+    const choices = Array.from(
+      { length: 4 },
+      (_, i) => getByTestId(`choice-${i}`).textContent,
     );
 
     expect(choices).toContain(correctAnswer);
@@ -93,7 +103,7 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <ChoicesTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -104,8 +114,9 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
       getByTestId("set-multiple-choice").click();
     });
 
-    const choices = Array.from({ length: 4 }, (_, i) => 
-      getByTestId(`choice-${i}`).textContent
+    const choices = Array.from(
+      { length: 4 },
+      (_, i) => getByTestId(`choice-${i}`).textContent,
     );
 
     // All choices should be unique
@@ -121,7 +132,7 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
       const { getByTestId, unmount } = render(
         <FlashcardProvider>
           <ChoicesTestComponent />
-        </FlashcardProvider>
+        </FlashcardProvider>,
       );
 
       await waitFor(() => {
@@ -129,14 +140,17 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
       });
 
       const currentKana = getByTestId("current-kana").textContent;
-      const correctAnswer = mockKanaData.find(k => k.character === currentKana)?.romaji;
+      const correctAnswer = mockKanaData.find(
+        (k) => k.character === currentKana,
+      )?.romaji;
 
       await act(async () => {
         getByTestId("set-multiple-choice").click();
       });
 
-      const choices = Array.from({ length: 4 }, (_, i) => 
-        getByTestId(`choice-${i}`).textContent
+      const choices = Array.from(
+        { length: 4 },
+        (_, i) => getByTestId(`choice-${i}`).textContent,
       );
 
       const correctPosition = choices.indexOf(correctAnswer!);
@@ -146,9 +160,9 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     }
 
     // The correct answer should appear in different positions
-    const positions = positionMaps.map(map => map[0]);
+    const positions = positionMaps.map((map) => map[0]);
     const uniquePositions = new Set(positions);
-    
+
     // Should have some variation in positions (not always in the same spot)
     expect(uniquePositions.size).toBeGreaterThan(1);
   });
@@ -167,7 +181,7 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <ChoicesTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -179,7 +193,9 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     });
 
     // Should still generate choices, even if less than 4
-    const choicesCount = parseInt(getByTestId("choices-count").textContent || "0");
+    const choicesCount = parseInt(
+      getByTestId("choices-count").textContent || "0",
+    );
     expect(choicesCount).toBeGreaterThan(0);
     expect(choicesCount).toBeLessThanOrEqual(4);
   });
@@ -202,7 +218,7 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <ChoicesTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -232,7 +248,7 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <ChoicesTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -243,21 +259,28 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
 
   test("regenerates choices when switching to new kana", async () => {
     function NextCardTestComponent() {
-      const { currentKana, choices, setInteractionMode, nextCard } = useFlashcard();
-      
+      const { currentKana, choices, setInteractionMode, nextCard } =
+        useFlashcard();
+
       return (
         <div>
-          <button 
-            data-testid="set-multiple-choice" 
+          <button
+            data-testid="set-multiple-choice"
             onClick={() => setInteractionMode("multiple-choice")}
           >
             Set Multiple Choice
           </button>
-          <button data-testid="next-card" onClick={nextCard}>Next Card</button>
-          {currentKana && <span data-testid="current-kana">{currentKana.character}</span>}
+          <button data-testid="next-card" onClick={nextCard}>
+            Next Card
+          </button>
+          {currentKana && (
+            <span data-testid="current-kana">{currentKana.character}</span>
+          )}
           <div data-testid="choices">
             {choices.map((choice, index) => (
-              <span key={index} data-testid={`choice-${index}`}>{choice}</span>
+              <span key={index} data-testid={`choice-${index}`}>
+                {choice}
+              </span>
             ))}
           </div>
         </div>
@@ -267,7 +290,7 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <NextCardTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -279,8 +302,9 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     });
 
     const firstKana = getByTestId("current-kana").textContent;
-    const firstChoices = Array.from({ length: 4 }, (_, i) => 
-      getByTestId(`choice-${i}`).textContent
+    const firstChoices = Array.from(
+      { length: 4 },
+      (_, i) => getByTestId(`choice-${i}`).textContent,
     );
 
     // Go to next card
@@ -291,13 +315,16 @@ describe("FlashcardProvider - Multiple Choice Generation", () => {
     await waitFor(() => {
       const secondKana = getByTestId("current-kana").textContent;
       // Should be different kana (though could theoretically be same due to randomness)
-      const secondChoices = Array.from({ length: 4 }, (_, i) => 
-        getByTestId(`choice-${i}`).textContent
+      const secondChoices = Array.from(
+        { length: 4 },
+        (_, i) => getByTestId(`choice-${i}`).textContent,
       );
 
       // If different kana, choices should include the new correct answer
       if (secondKana !== firstKana) {
-        const correctAnswer = mockKanaData.find(k => k.character === secondKana)?.romaji;
+        const correctAnswer = mockKanaData.find(
+          (k) => k.character === secondKana,
+        )?.romaji;
         expect(secondChoices).toContain(correctAnswer);
       }
     });
