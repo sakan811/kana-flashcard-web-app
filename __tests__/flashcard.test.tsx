@@ -13,17 +13,17 @@ describe("Flashcard Component", () => {
     (useFlashcard as any).mockReturnValue(
       mockFlashcardProvider({
         interactionMode: "typing",
-        choices: ["a", "ka", "sa", "ta"]
-      })
+        choices: ["a", "ka", "sa", "ta"],
+      }),
     );
   });
 
   test("shows loading state", () => {
     (useFlashcard as any).mockReturnValue(
-      mockFlashcardProvider({ 
+      mockFlashcardProvider({
         loadingKana: true,
         interactionMode: "typing",
-        choices: ["a", "ka", "sa", "ta"]
+        choices: ["a", "ka", "sa", "ta"],
       }),
     );
     render(<Flashcard />);
@@ -34,8 +34,8 @@ describe("Flashcard Component", () => {
     (useFlashcard as any).mockReturnValue(
       mockFlashcardProvider({
         interactionMode: "typing",
-        choices: ["a", "ka", "sa", "ta"]
-      })
+        choices: ["a", "ka", "sa", "ta"],
+      }),
     );
     render(<Flashcard />);
     expect(screen.getByText("No flashcards available.")).toBeDefined();
@@ -44,11 +44,11 @@ describe("Flashcard Component", () => {
   test("renders flashcard and handles submission", async () => {
     const submitAnswer = vi.fn();
     (useFlashcard as any).mockReturnValue(
-      mockFlashcardProvider({ 
-        currentKana: mockKana.basic, 
+      mockFlashcardProvider({
+        currentKana: mockKana.basic,
         submitAnswer,
         interactionMode: "typing",
-        choices: ["a", "ka", "sa", "ta"]
+        choices: ["a", "ka", "sa", "ta"],
       }),
     );
 
@@ -73,7 +73,7 @@ describe("Flashcard Component", () => {
         result: "correct",
         nextCard,
         interactionMode: "typing",
-        choices: ["a", "ka", "sa", "ta"]
+        choices: ["a", "ka", "sa", "ta"],
       }),
     );
 
@@ -87,10 +87,10 @@ describe("Flashcard Component", () => {
 
   test("validates empty input", () => {
     (useFlashcard as any).mockReturnValue(
-      mockFlashcardProvider({ 
+      mockFlashcardProvider({
         currentKana: mockKana.basic,
         interactionMode: "typing",
-        choices: ["a", "ka", "sa", "ta"]
+        choices: ["a", "ka", "sa", "ta"],
       }),
     );
 
