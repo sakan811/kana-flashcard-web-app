@@ -1,28 +1,33 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, act, waitFor, screen } from "@testing-library/react";
-import { FlashcardProvider, useFlashcard } from "@/components/FlashcardProvider";
+import {
+  FlashcardProvider,
+  useFlashcard,
+} from "@/components/FlashcardProvider";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 function AccuracyTestComponent() {
   const { currentKana, submitAnswer, result, loadingKana } = useFlashcard();
-  
+
   return (
     <div>
-      <div data-testid="loading-state">{loadingKana ? "loading" : "loaded"}</div>
+      <div data-testid="loading-state">
+        {loadingKana ? "loading" : "loaded"}
+      </div>
       {currentKana && (
         <>
           <span data-testid="current-kana">{currentKana.character}</span>
           <span data-testid="current-accuracy">{currentKana.accuracy}</span>
-          <button 
-            data-testid="submit-correct" 
+          <button
+            data-testid="submit-correct"
             onClick={() => submitAnswer(currentKana.romaji)}
           >
             Submit Correct
           </button>
-          <button 
-            data-testid="submit-incorrect" 
+          <button
+            data-testid="submit-incorrect"
             onClick={() => submitAnswer("wrong")}
           >
             Submit Incorrect
@@ -55,7 +60,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <AccuracyTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     // Wait for loading to complete
@@ -105,7 +110,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <AccuracyTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -150,14 +155,14 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
 
     function CaseTestComponent() {
       const { currentKana, submitAnswer, result } = useFlashcard();
-      
+
       return (
         <div>
           {currentKana && (
             <>
               <span data-testid="current-kana">{currentKana.character}</span>
-              <button 
-                data-testid="submit-lowercase" 
+              <button
+                data-testid="submit-lowercase"
                 onClick={() => submitAnswer("a")}
               >
                 Submit Lowercase
@@ -172,7 +177,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <CaseTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -201,14 +206,14 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
 
     function WhitespaceTestComponent() {
       const { currentKana, submitAnswer, result } = useFlashcard();
-      
+
       return (
         <div>
           {currentKana && (
             <>
               <span data-testid="current-kana">{currentKana.character}</span>
-              <button 
-                data-testid="submit-whitespace" 
+              <button
+                data-testid="submit-whitespace"
                 onClick={() => submitAnswer("  a  ")}
               >
                 Submit With Whitespace
@@ -223,7 +228,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <WhitespaceTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -245,8 +250,8 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
   });
 
   test("handles API submission errors gracefully", async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
     // First call for loading kana data - succeeds
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -256,7 +261,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <AccuracyTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
@@ -277,11 +282,14 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
 
     // Give some time for the error to be logged
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
-    expect(consoleSpy).toHaveBeenCalledWith("Error submitting answer:", expect.any(Error));
-    
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error submitting answer:",
+      expect.any(Error),
+    );
+
     consoleSpy.mockRestore();
   });
 
@@ -294,20 +302,20 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
 
     function ModeTestComponent() {
       const { currentKana, submitAnswer, setInteractionMode } = useFlashcard();
-      
+
       return (
         <div>
           {currentKana && (
             <>
               <span data-testid="current-kana">{currentKana.character}</span>
-              <button 
-                data-testid="set-multiple-choice" 
+              <button
+                data-testid="set-multiple-choice"
                 onClick={() => setInteractionMode("multiple-choice")}
               >
                 Set Multiple Choice
               </button>
-              <button 
-                data-testid="submit-answer" 
+              <button
+                data-testid="submit-answer"
                 onClick={() => submitAnswer(currentKana.romaji)}
               >
                 Submit
@@ -321,7 +329,7 @@ describe("FlashcardProvider - Accuracy Calculation", () => {
     const { getByTestId } = render(
       <FlashcardProvider>
         <ModeTestComponent />
-      </FlashcardProvider>
+      </FlashcardProvider>,
     );
 
     await waitFor(() => {
