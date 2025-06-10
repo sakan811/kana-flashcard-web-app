@@ -14,7 +14,7 @@ vi.mock("@/components/FlashcardApp", () => ({
 describe("Hiragana Page", () => {
   test("renders FlashcardApp with hiragana kanaType", () => {
     render(<HiraganaPage />);
-    
+
     const flashcardApp = screen.getByTestId("flashcard-app");
     expect(flashcardApp).toBeInTheDocument();
     expect(flashcardApp).toHaveAttribute("data-kana-type", "hiragana");
@@ -22,7 +22,7 @@ describe("Hiragana Page", () => {
 
   test("displays FlashcardApp content", () => {
     render(<HiraganaPage />);
-    
+
     expect(screen.getByText("FlashcardApp Component")).toBeInTheDocument();
   });
 
