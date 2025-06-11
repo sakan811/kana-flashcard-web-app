@@ -15,7 +15,14 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "db:seed": "prisma db seed",
+    "test:db:generate": "npx prisma generate --schema=__tests__/db/schema.prisma",
+    "test:db:push": "npx prisma db push --schema=__tests__/db/schema.prisma",
+    "test:db:setup": "npm run test:db:generate && npm run test:db:push",
+    "test:db": "vitest run --config vitest.config.db.mts",
+    "test:db:watch": "vitest --config vitest.config.db.mts",
+    "test:db:clean": "rm -f __tests__/db/test.db",
     "postinstall": "prisma generate"
+    
   },
   "prisma": {
     "seed": "node prisma/seed.js"

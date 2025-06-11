@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./test.db"
+}
+
+// Test-specific schema (simplified from main)
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  kanaProgress  KanaProgress[]
+
+  @@map("users")
+}
+
+model Kana {
+  id           String         @id @default(uuid())
+  character    String         @unique
+  romaji       String
+  progress     KanaProgress[]
+}
+
+model KanaProgress {
+  id              String   @id @default(uuid())
+  kana_id         String   
+  user_id         String   
+  attempts        Int      @default(0)
+  correct_attempts Int      @default(0)
+  accuracy        Float    @default(0)
+  
+  kana            Kana     @relation(fields: [kana_id], references: [id])
+  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([kana_id, user_id])
+}
