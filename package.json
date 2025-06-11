@@ -22,7 +22,6 @@
     "test:db:watch": "vitest --config vitest.config.db.mts",
     "test:db:clean": "rm -f __tests__/db/test.db",
     "postinstall": "prisma generate"
-    
   },
   "prisma": {
     "seed": "node prisma/seed.js"
