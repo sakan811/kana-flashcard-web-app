@@ -48,6 +48,15 @@ clean-db:
 generate:
 	pnpm exec prisma generate
 
+test-db-setup:
+	pnpm run test:db:setup
+
+test-db-run:
+	pnpm run test:db
+
+test-db-clean:
+	pnpm run test:db:clean
+
 migrate:
 	pnpm exec prisma migrate dev
 
