@@ -74,6 +74,7 @@ async function seedTestData() {
     }
     
     // Seed kana data
+    await prisma.kana.deleteMany({});
     await prisma.kana.createMany({
       data: [
         { id: 'test-1', character: 'あ', romaji: 'a' },
@@ -82,7 +83,6 @@ async function seedTestData() {
         { id: 'test-4', character: 'ア', romaji: 'a' },
         { id: 'test-5', character: 'イ', romaji: 'i' },
       ],
-      skipDuplicates: true,
     })
 
     // Seed test user
