@@ -10,13 +10,24 @@ lint:
 format:
 	pnpm run format
 
+test-db-setup:
+	pnpm run test:db:setup
+
+test-db:
+	pnpm run test:db
+
+test-db-clean:
+	pnpm run test:db:clean
+
 test:
 	pnpm run test
 
 test-run:
 	pnpm run test:run
 
-pre-ci: lint format test
+test-all: test-run test-db-setup test-db test-db-clean
+
+pre-ci: lint format test-all
 
 up:
 	docker compose --profile pull up -d 
@@ -47,15 +58,6 @@ clean-db:
 
 generate:
 	pnpm exec prisma generate
-
-test-db-setup:
-	pnpm run test:db:setup
-
-test-db-run:
-	pnpm run test:db
-
-test-db-clean:
-	pnpm run test:db:clean
 
 migrate:
 	pnpm exec prisma migrate dev
