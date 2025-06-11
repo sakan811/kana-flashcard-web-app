@@ -1,3 +1,4 @@
+// __tests__/db/setup.ts
 import { execSync } from 'child_process'
 import { join } from 'path'
 import { existsSync, mkdirSync } from 'fs'
@@ -66,15 +67,12 @@ async function seedTestData() {
   console.log('🌱 Seeding test data...')
   
   try {
-    // Check if data already exists
-    const existingKana = await prisma.kana.count()
-    if (existingKana > 0) {
-      console.log('📦 Test data already exists, skipping seed')
-      return
-    }
+    // Always ensure fresh data for reliable tests
+    await prisma.kanaProgress.deleteMany({})
+    await prisma.kana.deleteMany({})
+    await prisma.user.deleteMany({})
     
     // Seed kana data
-    await prisma.kana.deleteMany({});
     await prisma.kana.createMany({
       data: [
         { id: 'test-1', character: 'あ', romaji: 'a' },
@@ -86,10 +84,8 @@ async function seedTestData() {
     })
 
     // Seed test user
-    await prisma.user.upsert({
-      where: { id: 'test-user-1' },
-      update: {},
-      create: {
+    await prisma.user.create({
+      data: {
         id: 'test-user-1',
         email: 'test@example.com',
         name: 'Test User',
@@ -133,13 +129,35 @@ export async function cleanupTestDatabase() {
   isSetupComplete = false
 }
 
-// Clean only progress data between tests, not the entire database
-export async function cleanProgressData() {
+// Clean and re-seed reference data between tests
+export async function resetTestData() {
   const prisma = await getTestPrisma()
   try {
+    // Clean all data
     await prisma.kanaProgress.deleteMany({})
+    await prisma.kana.deleteMany({})
+    await prisma.user.deleteMany({})
+    
+    // Re-seed reference data
+    await prisma.kana.createMany({
+      data: [
+        { id: 'test-1', character: 'あ', romaji: 'a' },
+        { id: 'test-2', character: 'い', romaji: 'i' },
+        { id: 'test-3', character: 'う', romaji: 'u' },
+        { id: 'test-4', character: 'ア', romaji: 'a' },
+        { id: 'test-5', character: 'イ', romaji: 'i' },
+      ],
+    })
+
+    await prisma.user.create({
+      data: {
+        id: 'test-user-1',
+        email: 'test@example.com',
+        name: 'Test User',
+      },
+    })
   } catch (error) {
-    console.warn('Warning: Could not clean progress data:', error)
+    console.warn('Warning: Could not reset test data:', error)
   }
 }
 
@@ -152,7 +170,7 @@ afterAll(async () => {
   await cleanupTestDatabase()
 })
 
-// Clean only progress data between tests
+// Reset all data between tests to ensure clean state
 beforeEach(async () => {
-  await cleanProgressData()
+  await resetTestData()
 })
