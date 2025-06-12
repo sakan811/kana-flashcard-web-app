@@ -56,9 +56,9 @@ cp .env.local.example .env
 # Edit .env with your Google OAuth credentials and NEXTAUTH_SECRET
 docker compose up -d saku-mari-db
 pnpm install
-npx prisma generate
-npx prisma migrate dev
-npx prisma db seed
+pnpm exec prisma generate
+pnpm exec prisma migrate dev
+pnpm exec prisma db seed
 pnpm run dev
 ```
 
