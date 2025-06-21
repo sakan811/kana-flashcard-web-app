@@ -14,7 +14,10 @@ test.describe('Dashboard Features', () => {
       await page.getByRole('button', { name: 'Submit' }).click();
       
       // Wait for result and go to next card
-      await expect(page.locator('text=Correct!,text=Incorrect!')).toBeVisible();
+      await expect(
+        page.getByText('Correct!').or(page.getByText('Incorrect!'))
+      ).toBeVisible({ timeout: 5000 });
+      
       await page.getByRole('button', { name: 'Next Card' }).click();
     }
   });
@@ -76,14 +79,22 @@ test.describe('Dashboard Features', () => {
     // Click character header to sort
     await page.getByText('Character').click();
     
-    // Should show sort indicator
-    await expect(page.locator('text=Character').locator('..').getByText('↑,↓')).toBeVisible();
+    // Should show sort indicator (either up or down arrow)
+    await expect(
+      page.locator('text=Character').locator('..').getByText('↑').or(
+        page.locator('text=Character').locator('..').getByText('↓')
+      )
+    ).toBeVisible();
     
     // Click again to reverse sort
     await page.getByText('Character').click();
     
-    // Should show reversed sort indicator
-    await expect(page.locator('text=Character').locator('..').getByText('↑,↓')).toBeVisible();
+    // Should show sort indicator (arrow should change or remain)
+    await expect(
+      page.locator('text=Character').locator('..').getByText('↑').or(
+        page.locator('text=Character').locator('..').getByText('↓')
+      )
+    ).toBeVisible();
   });
 
   test('should navigate back to practice', async ({ page }) => {
