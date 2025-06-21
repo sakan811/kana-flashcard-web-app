@@ -50,6 +50,7 @@ export default function MultipleChoice({
     <div className="space-y-2 sm:space-y-3">
       {choices.map((choice, index) => (
         <button
+          data-testid="choice-buttons"
           key={`choice-${index}-${choice}`}
           onClick={() => onChoiceSelect(index)}
           onKeyDown={(e) => handleKeyDown(e, index)}

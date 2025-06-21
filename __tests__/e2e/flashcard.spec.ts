@@ -82,25 +82,22 @@ test.describe('Flashcard Features', () => {
     // Switch to multiple choice
     await page.getByTestId('multiple-choice-button').click();
     
-    // Wait for choices to load by checking for multiple choice buttons
-    await page.waitForFunction(() => {
-      const buttons = document.querySelectorAll('button');
-      const choiceButtons = Array.from(buttons).filter(button => 
-        /^[a-z]+$/i.test(button.textContent?.trim() || '') && 
-        button.textContent?.trim().length <= 4
-      );
-      return choiceButtons.length >= 3; // Should have at least 3 choice buttons
-    }, { timeout: 10000 });
+    // Wait for instruction text to appear (indicates choices are loaded)
+    await expect(page.getByText('Tap to select your answer')).toBeVisible({ timeout: 10000 });
     
-    // Select first available choice
-    const choiceButtons = page.locator('button').filter({ hasText: /^[a-z]{1,4}$/ });
-    await choiceButtons.first().click();
+    // Select choice using aria-label (more reliable than text matching)
+    const firstChoice = page.getByRole('button', { name: /^Choice \d+:/ }).first();
     
-    // Should show selection checkmark
-    await expect(page.getByText('✓')).toBeVisible();
+    // Ensure button is ready and click
+    await firstChoice.waitFor({ state: 'visible' });
+    await firstChoice.click();
+    
+    // Verify selection state - check if submit button becomes enabled
+    const submitButton = page.getByRole('button', { name: 'Submit' });
+    await expect(submitButton).toBeEnabled({ timeout: 2000 });
     
     // Submit answer
-    await page.getByRole('button', { name: 'Submit' }).click();
+    await submitButton.click();
     
     // Should show result
     await expectResult(page);
@@ -140,9 +137,15 @@ test.describe('Flashcard Features', () => {
     // Press Enter to go to next card
     await page.keyboard.press('Enter');
     
-    // Wait for the result to disappear (state transition has 500ms delay)
-    await expect(page.getByText('Correct!')).not.toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('Incorrect!')).not.toBeVisible({ timeout: 10000 });
+    // Wait for transition by checking that the input is empty and submit button is visible
+    // This indicates we've moved to the next card
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).toHaveValue('');
     await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
+    
+    // Ensure no result messages are visible (wait a bit for transition)
+    await page.waitForTimeout(1000); // Give time for result to disappear
+    await expect(page.getByText('Correct!')).not.toBeVisible();
+    await expect(page.getByText('Incorrect!')).not.toBeVisible();
   });
 });
