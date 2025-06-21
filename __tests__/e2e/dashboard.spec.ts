@@ -73,8 +73,8 @@ test.describe('Dashboard Features', () => {
     // Should show sortable headers
     await expect(page.getByText('Character').nth(2)).toBeVisible();
     await expect(page.getByText('Romaji')).toBeVisible();
-    await expect(page.getByText('Attempts')).toBeVisible();
-    await expect(page.getByText('Accuracy')).toBeVisible();
+    await expect(page.getByText('Attempts').nth(1)).toBeVisible();
+    await expect(page.getByText('Accuracy').nth(1)).toBeVisible();
     
     // Click character header to sort
     await page.getByText('Character').nth(2).click();
@@ -87,7 +87,7 @@ test.describe('Dashboard Features', () => {
     ).toBeVisible();
     
     // Click again to reverse sort
-    await page.getByText('Character').click();
+    await page.getByText('Character').nth(2).click();
     
     // Should show sort indicator (arrow should change or remain)
     await expect(

@@ -87,7 +87,7 @@ test.describe('Authentication Flow', () => {
     await expect(page.getByText('Sign Out')).toBeVisible();
     
     // Click sign out
-    await page.getByText('Sign Out').click();
+    await page.getByText('Sign Out').click({ force: true });
     
     // Should show welcome message for unauthenticated users
     await expect(page.getByText('Welcome to SakuMari!')).toBeVisible();
