@@ -47,22 +47,22 @@ export default function MultipleChoice({
   }
 
   return (
-    <div className="space-y-2 sm:space-y-3">
+    <div className="mt-6 sm:mt-8 space-y-3 sm:space-y-4">
       {choices.map((choice, index) => (
         <button
-          data-testid="choice-buttons"
+          data-testid={`choice-button-${index}`}
           key={`choice-${index}-${choice}`}
           onClick={() => onChoiceSelect(index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
           disabled={disabled}
-          className={`w-full py-3 sm:py-4 px-4 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 border-2 min-h-[48px] focus:outline-none focus:ring-2 focus:ring-[#d1622b] focus:ring-opacity-50 ${
+          className={`w-full py-4 sm:py-5 px-4 sm:px-6 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 border-2 min-h-[56px] sm:min-h-[64px] focus:outline-none focus:ring-2 focus:ring-[#d1622b] focus:ring-opacity-50 ${
             selectedChoice === index
-              ? "border-[#d1622b] bg-[#fad182]/40 text-[#403933] shadow-md transform scale-105"
-              : "border-[#705a39] bg-white text-[#403933] hover:border-[#d1622b] hover:bg-[#fad182]/20 hover:shadow-sm hover:transform hover:scale-102"
+              ? "border-[#d1622b] bg-[#fad182]/40 text-[#403933] shadow-md"
+              : "border-[#705a39] bg-white text-[#403933] hover:border-[#d1622b] hover:bg-[#fad182]/20 hover:shadow-sm"
           } ${
             disabled
               ? "opacity-50 cursor-not-allowed"
-              : "cursor-pointer active:transform active:scale-95"
+              : "cursor-pointer"
           }`}
           aria-label={`Choice ${index + 1}: ${choice}`}
           tabIndex={disabled ? -1 : 0}
@@ -78,7 +78,7 @@ export default function MultipleChoice({
 
       {error && (
         <div
-          className="text-[#ae0d13] text-xs sm:text-sm font-medium mt-2 p-2 bg-red-50 border border-red-200 rounded-md"
+          className="text-[#ae0d13] text-xs sm:text-sm font-medium mt-3 sm:mt-4 p-3 bg-red-50 border border-red-200 rounded-md"
           role="alert"
           aria-live="polite"
         >
@@ -86,7 +86,7 @@ export default function MultipleChoice({
         </div>
       )}
 
-      <div className="text-xs text-[#705a39] text-center mt-2 opacity-75">
+      <div className="text-xs text-[#705a39] text-center mt-3 sm:mt-4 opacity-75">
         Tap to select your answer
       </div>
     </div>
