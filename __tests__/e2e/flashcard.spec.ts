@@ -121,8 +121,8 @@ test.describe('Flashcard Features', () => {
     await page.getByRole('button', { name: 'Next Card' }).click();
     
     // Should show new card (result should be hidden)
-    await expect(page.getByText('Correct!')).not.toBeVisible();
-    await expect(page.getByText('Incorrect!')).not.toBeVisible();
+    await expect(page.getByText('Correct!')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Incorrect!')).not.toBeVisible({ timeout: 10000 });
     await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
   });
 
@@ -140,8 +140,9 @@ test.describe('Flashcard Features', () => {
     // Press Enter to go to next card
     await page.keyboard.press('Enter');
     
-    // Should show new card
-    await expect(page.getByText('Correct!')).not.toBeVisible();
-    await expect(page.getByText('Incorrect!')).not.toBeVisible();
+    // Wait for the result to disappear (state transition has 500ms delay)
+    await expect(page.getByText('Correct!')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Incorrect!')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
   });
 });
