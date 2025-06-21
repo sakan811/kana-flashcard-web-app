@@ -62,14 +62,14 @@ test.describe('Flashcard Features', () => {
     await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
     
     // Switch to multiple choice
-    await page.getByText('Choices').click();
+    await page.getByTestId('multiple-choice-button').click();
     
     // Should hide typing input and show choices
     await expect(page.getByPlaceholder('Type romaji equivalent...')).not.toBeVisible();
     await expect(page.getByText('Tap to select your answer')).toBeVisible();
     
     // Switch back to typing
-    await page.getByText('Typing').click();
+    await page.getByTestId('typing-button').click();
     
     // Should show typing input again
     await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
@@ -80,7 +80,7 @@ test.describe('Flashcard Features', () => {
     await waitForKanaLoad(page);
     
     // Switch to multiple choice
-    await page.getByText('Choices').click();
+    await page.getByTestId('multiple-choice-button').click();
     
     // Wait for choices to load by checking for multiple choice buttons
     await page.waitForFunction(() => {
