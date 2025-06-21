@@ -21,6 +21,7 @@
     "test:db": "vitest run --config vitest.config.db.mts",
     "test:db:watch": "vitest --config vitest.config.db.mts",
     "test:db:clean": "rm -f __tests__/db/test.db",
+    "test:e2e": "npx playwright test",
     "postinstall": "prisma generate"
   },
   "prisma": {
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.3.3",
+    "@playwright/test": "^1.53.1",
     "@tailwindcss/postcss": "^4.1.10",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",

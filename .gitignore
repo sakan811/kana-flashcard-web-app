@@ -31,3 +31,10 @@ __tests__/db/test.db
 __tests__/db/generated/
 __tests__/db/migrations/
 /__tests__/db/test.db-journal
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

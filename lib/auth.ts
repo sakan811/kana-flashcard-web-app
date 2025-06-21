@@ -18,16 +18,39 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
+
+// Define providers conditionally
+const googleProvider = Google({
+  clientId: process.env.AUTH_GOOGLE_ID!,
+  clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+});
+
+const testCredentialsProvider = Credentials({
+  id: "test-credentials",
+  name: "Test User",
+  credentials: {
+    password: { label: "Password", type: "password" },
+  },
+  authorize: (credentials) => {
+    if (credentials?.password === "test123") {
+      return {
+        id: "test-user-e2e",
+        email: "test@sakumari.local",
+        name: "Test User",
+        image: null,
+      };
+    }
+    return null;
+  },
+});
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID!,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
-    }),
-  ],
+  providers: process.env.NODE_ENV === "development" 
+    ? [googleProvider, testCredentialsProvider]
+    : [googleProvider],
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
