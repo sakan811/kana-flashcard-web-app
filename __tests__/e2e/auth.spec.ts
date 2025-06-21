@@ -20,7 +20,7 @@ test.describe('Authentication Flow', () => {
     await page.waitForURL('/hiragana');
     
     // Should show flashcard interface
-    await expect(page.getByPlaceholderText('Type romaji equivalent...')).toBeVisible();
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
     
     // Should show mode selector
     await expect(page.getByText('Typing')).toBeVisible();
@@ -34,7 +34,7 @@ test.describe('Authentication Flow', () => {
     await page.waitForSelector('[data-testid="current-kana"], .text-6xl, .text-7xl, .text-8xl', { timeout: 10000 });
     
     // Type answer
-    await page.getByPlaceholderText('Type romaji equivalent...').fill('a');
+    await page.getByPlaceholder('Type romaji equivalent...').fill('a');
     await page.getByRole('button', { name: 'Submit' }).click();
     
     // Should show result

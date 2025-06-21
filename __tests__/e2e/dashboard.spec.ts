@@ -10,7 +10,7 @@ test.describe('Dashboard Features', () => {
       // Wait for input to be ready
       await page.waitForSelector('input[placeholder="Type romaji equivalent..."]', { timeout: 10000 });
       
-      await page.getByPlaceholderText('Type romaji equivalent...').fill('a');
+      await page.getByPlaceholder('Type romaji equivalent...').fill('a');
       await page.getByRole('button', { name: 'Submit' }).click();
       
       // Wait for result and go to next card

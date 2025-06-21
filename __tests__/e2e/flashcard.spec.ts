@@ -5,10 +5,10 @@ test.describe('Flashcard Features', () => {
     await page.goto('/hiragana');
 
     // Should show typing mode by default
-    await expect(page.getByPlaceholderText('Type romaji equivalent...')).toBeVisible();
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
     
     // Test typing interaction
-    await page.getByPlaceholderText('Type romaji equivalent...').fill('a');
+    await page.getByPlaceholder('Type romaji equivalent...').fill('a');
     await page.getByRole('button', { name: 'Submit' }).click();
     
     // Should show result
@@ -19,10 +19,10 @@ test.describe('Flashcard Features', () => {
     await page.goto('/katakana');
 
     // Should show typing interface
-    await expect(page.getByPlaceholderText('Type romaji equivalent...')).toBeVisible();
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
     
     // Test interaction
-    await page.getByPlaceholderText('Type romaji equivalent...').fill('a');
+    await page.getByPlaceholder('Type romaji equivalent...').fill('a');
     await page.getByRole('button', { name: 'Submit' }).click();
     
     // Should show result
@@ -43,20 +43,20 @@ test.describe('Flashcard Features', () => {
     await page.goto('/hiragana');
     
     // Should start in typing mode
-    await expect(page.getByPlaceholderText('Type romaji equivalent...')).toBeVisible();
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
     
     // Switch to multiple choice
     await page.getByText('Choices').click();
     
     // Should hide typing input and show choices
-    await expect(page.getByPlaceholderText('Type romaji equivalent...')).not.toBeVisible();
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).not.toBeVisible();
     await expect(page.getByText('Tap to select your answer')).toBeVisible();
     
     // Switch back to typing
     await page.getByText('Typing').click();
     
     // Should show typing input again
-    await expect(page.getByPlaceholderText('Type romaji equivalent...')).toBeVisible();
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
   });
 
   test('should use multiple choice mode', async ({ page }) => {
@@ -86,7 +86,7 @@ test.describe('Flashcard Features', () => {
     await page.goto('/hiragana');
     
     // Answer current card
-    await page.getByPlaceholderText('Type romaji equivalent...').fill('a');
+    await page.getByPlaceholder('Type romaji equivalent...').fill('a');
     await page.getByRole('button', { name: 'Submit' }).click();
     
     // Wait for result
@@ -97,15 +97,15 @@ test.describe('Flashcard Features', () => {
     
     // Should show new card (result should be hidden)
     await expect(page.locator('text=Correct!,text=Incorrect!')).not.toBeVisible();
-    await expect(page.getByPlaceholderText('Type romaji equivalent...')).toBeVisible();
+    await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
   });
 
   test('should handle keyboard navigation', async ({ page }) => {
     await page.goto('/hiragana');
     
     // Type answer and press Enter
-    await page.getByPlaceholderText('Type romaji equivalent...').fill('a');
-    await page.getByPlaceholderText('Type romaji equivalent...').press('Enter');
+    await page.getByPlaceholder('Type romaji equivalent...').fill('a');
+    await page.getByPlaceholder('Type romaji equivalent...').press('Enter');
     
     // Should show result
     await expect(page.locator('text=Correct!,text=Incorrect!')).toBeVisible();
