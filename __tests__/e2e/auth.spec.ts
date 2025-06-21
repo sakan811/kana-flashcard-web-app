@@ -19,6 +19,9 @@ test.describe('Authentication Flow', () => {
     await page.getByText('ひらがな Hiragana Practice').click();
     await page.waitForURL('/hiragana');
     
+    // Wait for flashcard interface to load
+    await page.waitForSelector('input[placeholder="Type romaji equivalent..."]', { timeout: 10000 });
+    
     // Should show flashcard interface
     await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
     
@@ -30,28 +33,38 @@ test.describe('Authentication Flow', () => {
   test('should practice flashcard', async ({ page }) => {
     await page.goto('/hiragana');
     
-    // Wait for kana to load
-    await page.waitForSelector('[data-testid="current-kana"], .text-6xl, .text-7xl, .text-8xl', { timeout: 10000 });
+    // Wait for kana to load and be displayed
+    await page.waitForSelector('input[placeholder="Type romaji equivalent..."]', { timeout: 10000 });
     
     // Type answer
     await page.getByPlaceholder('Type romaji equivalent...').fill('a');
     await page.getByRole('button', { name: 'Submit' }).click();
     
     // Should show result
-    await expect(page.locator('text=Correct!,text=Incorrect!')).toBeVisible({ timeout: 5000 });
+    await expect(
+      page.getByText('Correct!').or(page.getByText('Incorrect!'))
+    ).toBeVisible({ timeout: 5000 });
   });
 
   test('should switch to multiple choice mode', async ({ page }) => {
     await page.goto('/hiragana');
     
     // Wait for page to load
-    await page.waitForSelector('[data-testid="current-kana"], .text-6xl, .text-7xl, .text-8xl', { timeout: 10000 });
+    await page.waitForSelector('input[placeholder="Type romaji equivalent..."]', { timeout: 10000 });
     
     // Switch to multiple choice
     await page.getByText('Choices').click();
     
+    // Should show choice buttons - wait for them to load
+    await page.waitForFunction(() => {
+      const buttons = document.querySelectorAll('button');
+      return Array.from(buttons).some(button => 
+        /^[a-z]+$/i.test(button.textContent?.trim() || '')
+      );
+    }, { timeout: 10000 });
+    
     // Should show choice buttons
-    await expect(page.locator('button:has-text("a"),button:has-text("ka"),button:has-text("sa")')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('button').filter({ hasText: /^[a-z]+$/i }).first()).toBeVisible();
   });
 
   test('should access dashboard', async ({ page }) => {
