@@ -26,8 +26,8 @@ test.describe('Authentication Flow', () => {
     await expect(page.getByPlaceholder('Type romaji equivalent...')).toBeVisible();
     
     // Should show mode selector
-    await expect(page.getByText('Typing')).toBeVisible();
-    await expect(page.getByText('Choices')).toBeVisible();
+    await expect(page.getByTestId('typing-button')).toBeVisible();
+    await expect(page.getByTestId('multiple-choice-button')).toBeVisible();
   });
 
   test('should practice flashcard', async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe('Authentication Flow', () => {
     await page.waitForSelector('input[placeholder="Type romaji equivalent..."]', { timeout: 10000 });
     
     // Switch to multiple choice
-    await page.getByText('Choices').click();
+    await page.getByTestId('multiple-choice-button').click();
     
     // Should show choice buttons - wait for them to load
     await page.waitForFunction(() => {
