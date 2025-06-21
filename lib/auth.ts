@@ -49,20 +49,10 @@ const testCredentialsProvider = Credentials({
 
 // Determine which providers to use based on environment
 const getProviders = () => {
-  const providers = [];
+  const { NODE_ENV } = process.env;
   
-  // Always include Google in production
-  if (process.env.NODE_ENV === "production") {
-    providers.push(googleProvider);
-  } else {
-    // In development/test, include both Google and test credentials
-    if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
-      providers.push(googleProvider);
-    }
-    providers.push(testCredentialsProvider);
-  }
-  
-  return providers;
+  if (NODE_ENV === "test") return [testCredentialsProvider];
+  if (NODE_ENV === "production" || NODE_ENV === "development") return [googleProvider];
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -86,8 +76,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         id: token.id as string,
       },
     }),
-  },
-  pages: {
-    signIn: '/api/auth/signin',
   },
 });

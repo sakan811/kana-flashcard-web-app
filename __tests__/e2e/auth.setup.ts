@@ -4,40 +4,25 @@ import path from 'path';
 const authFile = path.join(__dirname, '../../playwright/.auth/user.json');
 
 setup('authenticate', async ({ page }) => {
-  // Navigate to home page
-  await page.goto('/');
+  // Navigate directly to the test credentials signin page
+  await page.goto('/api/auth/signin');
   
-  // Wait for the page to load
-  await expect(page.getByText('🌸 SakuMari')).toBeVisible();
+  // Wait for the credentials form to load
+  await page.waitForSelector('form', { timeout: 10000 });
   
-  // Click sign in button
-  await page.getByRole('button', { name: 'Sign In with Google' }).click();
+  // Fill the password field (your test credentials provider expects "test123")
+  await page.fill('input[name="password"]', 'test123');
   
-  // Should redirect to NextAuth signin page (not Google)
-  await page.waitForURL('**/auth/signin', { timeout: 10000 });
+  // Submit the form
+  await page.click('button[type="submit"]');
   
-  // Check if we have the test credentials form
-  // If not, we might need to access it directly
-  const passwordField = page.getByLabel('Password');
-  if (await passwordField.isVisible({ timeout: 5000 })) {
-    // Use test credentials
-    await passwordField.fill('test123');
-    await page.getByRole('button', { name: 'Sign in with Test User' }).click();
-  } else {
-    // Fallback: navigate directly to test provider
-    await page.goto('/api/auth/signin/test-credentials');
-    await page.waitForSelector('input[name="password"]', { timeout: 5000 });
-    await page.fill('input[name="password"]', 'test123');
-    await page.click('button[type="submit"]');
-  }
-  
-  // Wait for redirect back to home page
+  // Wait for redirect to home page after successful authentication
   await page.waitForURL('/', { timeout: 10000 });
   
-  // Verify we're authenticated by checking for authenticated content
+  // Verify authentication was successful by checking for authenticated content
   await expect(page.getByText('ひらがな Hiragana Practice')).toBeVisible({ timeout: 10000 });
   await expect(page.getByText('カタカナ Katakana Practice')).toBeVisible();
   
-  // Save signed-in state to 'storageState.json'
+  // Save the authenticated state
   await page.context().storageState({ path: authFile });
 });
