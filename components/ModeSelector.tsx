@@ -33,6 +33,7 @@ export default function ModeSelector({
   return (
     <div className="mb-4 flex gap-2 p-1 bg-white/50 backdrop-blur-sm rounded-lg border border-[#705a39]/20 shadow-sm">
       <button
+        data-testid="typing-button"
         onClick={() => onModeChange("typing")}
         disabled={disabled}
         className={`flex-1 py-2 px-3 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 ${
@@ -46,6 +47,7 @@ export default function ModeSelector({
         <span className="xs:hidden">Type</span>
       </button>
       <button
+        data-testid="multiple-choice-button"
         onClick={() => onModeChange("multiple-choice")}
         disabled={disabled}
         className={`flex-1 py-2 px-3 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 ${
