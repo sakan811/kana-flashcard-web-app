@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { PrismaClient } = require("../src/generated/client");
+const { PrismaClient } = require("../node_modules/generated");
 
 const prisma = new PrismaClient();
 

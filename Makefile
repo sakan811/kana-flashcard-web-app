@@ -73,3 +73,8 @@ studio:
 
 reset:
 	pnpm exec prisma migrate reset
+
+setup-db:
+	pnpm exec prisma generate && \
+	pnpm exec prisma migrate dev && \
+	pnpm exec prisma db seed 

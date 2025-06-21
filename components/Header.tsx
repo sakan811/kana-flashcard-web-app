@@ -38,7 +38,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
           {/* Logo */}
           <Link
             href="/"
-            className="text-lg sm:text-2xl font-bold text-[#fad182] hover:text-white transition-colors duration-200 drop-shadow-sm"
+            className="text-lg sm:text-2xl font-bold text-[#fad182] hover:text-white transition-colors duration-200 drop-shadow-sm min-h-[44px] relative z-10 inline-flex items-center"
           >
             🌸 SakuMari
           </Link>
@@ -49,19 +49,19 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
               <>
                 <Link
                   href="/hiragana"
-                  className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 py-2 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm xl:text-base"
+                  className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-3 py-2 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm xl:text-base min-h-[44px] relative z-10 inline-flex items-center"
                 >
                   <span className="hidden xl:inline">ひらがな </span>Hiragana
                 </Link>
                 <Link
                   href="/katakana"
-                  className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 py-2 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm xl:text-base"
+                  className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-3 py-2 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm xl:text-base min-h-[44px] relative z-10 inline-flex items-center"
                 >
                   <span className="hidden xl:inline">カタカナ </span>Katakana
                 </Link>
                 <Link
                   href="/dashboard"
-                  className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 xl:px-4 py-2 rounded-lg bg-[#d1622b] hover:bg-[#ae0d13] border-2 border-[#d1622b] hover:border-[#ae0d13] shadow-lg hover:shadow-xl transform hover:scale-105 text-sm xl:text-base"
+                  className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-4 py-3 rounded-lg bg-[#d1622b] hover:bg-[#ae0d13] border-2 border-[#d1622b] hover:border-[#ae0d13] shadow-lg hover:shadow-xl text-sm xl:text-base min-h-[44px] relative z-10 inline-flex items-center"
                 >
                   📊 Dashboard
                 </Link>
@@ -85,7 +85,8 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                   )}
                   <button
                     onClick={() => signOut()}
-                    className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-2 xl:px-3 py-2 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm xl:text-base"
+                    className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-4 py-3 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm xl:text-base min-h-[44px] min-w-[80px] relative z-10 cursor-pointer"
+                    type="button"
                   >
                     Sign Out
                   </button>
@@ -95,7 +96,8 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
               <button
                 onClick={() => signIn("google")}
                 disabled={status === "loading"}
-                className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 xl:px-4 py-2 rounded-lg bg-[#d1622b] hover:bg-[#ae0d13] border-2 border-[#d1622b] hover:border-[#ae0d13] shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm xl:text-base"
+                className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-4 py-3 rounded-lg bg-[#d1622b] hover:bg-[#ae0d13] border-2 border-[#d1622b] hover:border-[#ae0d13] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm xl:text-base min-h-[44px] relative z-10 cursor-pointer"
+                type="button"
               >
                 {status === "loading" ? "Loading..." : "Sign In with Google"}
               </button>
@@ -105,8 +107,9 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden text-[#fad182] hover:text-white transition-colors duration-200 p-2"
+            className="lg:hidden text-[#fad182] hover:text-white transition-colors duration-200 p-3 min-h-[44px] min-w-[44px] relative z-10 cursor-pointer"
             aria-label="Toggle mobile menu"
+            type="button"
           >
             <svg
               className="w-5 h-5 sm:w-6 sm:h-6"
@@ -142,21 +145,21 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                   <Link
                     href="/hiragana"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 py-2 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm sm:text-base"
+                    className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-4 py-3 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm sm:text-base min-h-[44px] relative z-10 inline-flex items-center"
                   >
                     ひらがな Hiragana
                   </Link>
                   <Link
                     href="/katakana"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 py-2 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm sm:text-base"
+                    className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-4 py-3 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-sm sm:text-base min-h-[44px] relative z-10 inline-flex items-center"
                   >
                     カタカナ Katakana
                   </Link>
                   <Link
                     href="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 py-2 rounded-lg bg-[#d1622b] hover:bg-[#ae0d13] border-2 border-[#d1622b] hover:border-[#ae0d13] shadow-lg text-sm sm:text-base w-fit"
+                    className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-4 py-3 rounded-lg bg-[#d1622b] hover:bg-[#ae0d13] border-2 border-[#d1622b] hover:border-[#ae0d13] shadow-lg text-sm sm:text-base w-fit min-h-[44px] relative z-10 inline-flex items-center"
                   >
                     📊 Dashboard
                   </Link>
@@ -187,7 +190,8 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                       signOut();
                       setMobileMenuOpen(false);
                     }}
-                    className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 py-2 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-left text-sm sm:text-base w-fit"
+                    className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-4 py-3 rounded-lg hover:bg-white/10 border-2 border-transparent hover:border-[#fad182] text-left text-sm sm:text-base w-fit min-h-[44px] min-w-[80px] relative z-10 cursor-pointer"
+                    type="button"
                   >
                     Sign Out
                   </button>
@@ -199,7 +203,8 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
                     setMobileMenuOpen(false);
                   }}
                   disabled={status === "loading"}
-                  className="text-[#fad182] hover:text-white transition-all duration-200 font-medium px-3 py-2 rounded-lg bg-[#d1622b] hover:bg-[#ae0d13] border-2 border-[#d1622b] hover:border-[#ae0d13] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-fit"
+                  className="text-[#fad182] hover:text-white transition-colors duration-200 font-medium px-4 py-3 rounded-lg bg-[#d1622b] hover:bg-[#ae0d13] border-2 border-[#d1622b] hover:border-[#ae0d13] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-fit min-h-[44px] relative z-10 cursor-pointer"
+                  type="button"
                 >
                   {status === "loading" ? "Loading..." : "Sign In with Google"}
                 </button>
