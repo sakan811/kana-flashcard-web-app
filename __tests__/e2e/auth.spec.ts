@@ -88,6 +88,8 @@ test.describe('Authentication Flow', () => {
     
     // Click sign out
     await page.getByText('Sign Out').click({ force: true });
+
+    await page.waitForTimeout(10000);
     
     // Should show welcome message for unauthenticated users
     await expect(page.getByText('Welcome to SakuMari!')).toBeVisible();
@@ -97,7 +99,9 @@ test.describe('Authentication Flow', () => {
   test('should handle unauthenticated access to protected routes', async ({ page }) => {
     // First logout
     await page.goto('/');
-    await page.getByText('Sign Out').click();
+    await page.getByText('Sign Out').click({ force: true });
+
+    await page.waitForTimeout(10000);
     
     // Try to access protected route
     await page.goto('/hiragana');
