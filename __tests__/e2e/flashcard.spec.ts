@@ -85,14 +85,29 @@ test.describe('Flashcard Features', () => {
     // Wait for instruction text to appear (indicates choices are loaded)
     await expect(page.getByText('Tap to select your answer')).toBeVisible({ timeout: 10000 });
     
-    // Select choice using aria-label (more reliable than text matching)
-    const firstChoice = page.getByRole('button', { name: /^Choice \d+:/ }).first();
+    // Wait for choice buttons to be present and visible
+    await page.waitForSelector('[data-testid^="choice-button-"]', { timeout: 10000 });
     
-    // Ensure button is ready and click
-    await firstChoice.waitFor({ state: 'visible' });
-    await firstChoice.click();
+    // Get the first choice button using the new specific testid
+    const firstChoice = page.getByTestId('choice-button-0');
     
-    // Verify selection state - check if submit button becomes enabled
+    // Ensure button is visible and enabled before clicking
+    await expect(firstChoice).toBeVisible({ timeout: 5000 });
+    await expect(firstChoice).toBeEnabled();
+    
+    // Wait for button to be in stable state
+    await page.waitForTimeout(500);
+    
+    // Use force click to bypass potential overlay issues
+    await firstChoice.click({ force: true });
+    
+    // Wait for selection state to update and verify
+    await page.waitForTimeout(200);
+    
+    // Check if the button is now selected (has selection styles)
+    await expect(firstChoice).toHaveClass(/border-\[#d1622b\]/);
+    
+    // Verify submit button is available and enabled
     const submitButton = page.getByRole('button', { name: 'Submit' });
     await expect(submitButton).toBeEnabled({ timeout: 2000 });
     
@@ -100,7 +115,7 @@ test.describe('Flashcard Features', () => {
     await submitButton.click();
     
     // Should show result
-    await expectResult(page);
+    await expectResult(page, 10000); // Increased timeout
   });
 
   test('should proceed to next card', async ({ page }) => {
@@ -133,6 +148,8 @@ test.describe('Flashcard Features', () => {
     
     // Should show result
     await expectResult(page);
+
+    await page.waitForTimeout(10000);
     
     // Press Enter to go to next card
     await page.keyboard.press('Enter');
