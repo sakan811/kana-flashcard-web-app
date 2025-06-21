@@ -4,8 +4,6 @@ A web application for practicing Japanese Hiragana and Katakana characters with 
 
 [![Web-App Test](https://github.com/sakan811/SakuMari/actions/workflows/test-app.yml/badge.svg)](https://github.com/sakan811/SakuMari/actions/workflows/test-app.yml)
 
-[![Docker CI](https://github.com/sakan811/SakuMari/actions/workflows/docker-ci.yml/badge.svg)](https://github.com/sakan811/SakuMari/actions/workflows/docker-ci.yml)
-
 ## Features
 
 - **Interactive Flashcards**: Practice Hiragana and Katakana with randomized character selection
@@ -33,19 +31,7 @@ For local development, you'll need Google OAuth credentials:
 
 For more details: [Google OAuth 2.0 Documentation](https://developers.google.com/identity/protocols/oauth2)
 
-### Option 1: Docker
-
-```bash
-git clone https://github.com/sakan811/SakuMari.git
-cd SakuMari
-cp .env.docker.example .env.docker
-# Edit .env.docker with your Google OAuth credentials and NEXTAUTH_SECRET
-docker compose --profile pull up -d
-```
-
-Open <http://localhost:3000>
-
-### Option 2: Local Development
+## Local Development
 
 **Prerequisites**: Install [PNPM](https://pnpm.io/installation)
 
