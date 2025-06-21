@@ -21,12 +21,13 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 
-// Define providers conditionally
+// Google OAuth provider
 const googleProvider = Google({
   clientId: process.env.AUTH_GOOGLE_ID!,
   clientSecret: process.env.AUTH_GOOGLE_SECRET!,
 });
 
+// Test credentials provider for development and testing
 const testCredentialsProvider = Credentials({
   id: "test-credentials",
   name: "Test User",
@@ -46,11 +47,27 @@ const testCredentialsProvider = Credentials({
   },
 });
 
+// Determine which providers to use based on environment
+const getProviders = () => {
+  const providers = [];
+  
+  // Always include Google in production
+  if (process.env.NODE_ENV === "production") {
+    providers.push(googleProvider);
+  } else {
+    // In development/test, include both Google and test credentials
+    if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
+      providers.push(googleProvider);
+    }
+    providers.push(testCredentialsProvider);
+  }
+  
+  return providers;
+};
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  providers: process.env.NODE_ENV === "development" 
-    ? [googleProvider, testCredentialsProvider]
-    : [googleProvider],
+  providers: getProviders(),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -69,5 +86,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         id: token.id as string,
       },
     }),
+  },
+  pages: {
+    signIn: '/api/auth/signin',
   },
 });

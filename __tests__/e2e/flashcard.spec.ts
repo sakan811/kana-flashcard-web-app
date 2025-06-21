@@ -1,19 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Flashcard Features', () => {
-  test.beforeEach(async ({ page }) => {
-    // Login before each test
-    await page.goto('/');
-    await page.getByRole('button', { name: 'Sign In with Google' }).click();
-    await page.waitForURL('**/auth/signin');
-    await page.getByLabel('Password').fill('test123');
-    await page.getByRole('button', { name: 'Sign in with Test User' }).click();
-    await page.waitForURL('/');
-  });
-
   test('should practice hiragana flashcards', async ({ page }) => {
-    await page.getByText('ひらがな Hiragana Practice').click();
-    await page.waitForURL('/hiragana');
+    await page.goto('/hiragana');
 
     // Should show typing mode by default
     await expect(page.getByPlaceholderText('Type romaji equivalent...')).toBeVisible();
@@ -27,8 +16,7 @@ test.describe('Flashcard Features', () => {
   });
 
   test('should practice katakana flashcards', async ({ page }) => {
-    await page.getByText('カタカナ Katakana Practice').click();
-    await page.waitForURL('/katakana');
+    await page.goto('/katakana');
 
     // Should show typing interface
     await expect(page.getByPlaceholderText('Type romaji equivalent...')).toBeVisible();

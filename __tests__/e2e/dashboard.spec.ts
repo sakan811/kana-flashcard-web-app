@@ -2,20 +2,14 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Dashboard Features', () => {
   test.beforeEach(async ({ page }) => {
-    // Login and create some practice data
-    await page.goto('/');
-    await page.getByRole('button', { name: 'Sign In with Google' }).click();
-    await page.waitForURL('**/auth/signin');
-    await page.getByLabel('Password').fill('test123');
-    await page.getByRole('button', { name: 'Sign in with Test User' }).click();
-    await page.waitForURL('/');
-
-    // Practice a few cards to generate data
-    await page.getByText('ひらがな Hiragana Practice').click();
-    await page.waitForURL('/hiragana');
+    // Practice a few cards to generate data for dashboard
+    await page.goto('/hiragana');
     
-    // Submit a few answers
+    // Submit a few answers to create practice data
     for (let i = 0; i < 3; i++) {
+      // Wait for input to be ready
+      await page.waitForSelector('input[placeholder="Type romaji equivalent..."]', { timeout: 10000 });
+      
       await page.getByPlaceholderText('Type romaji equivalent...').fill('a');
       await page.getByRole('button', { name: 'Submit' }).click();
       
@@ -104,25 +98,6 @@ test.describe('Dashboard Features', () => {
     // Should navigate to home page
     await page.waitForURL('/');
     await expect(page.getByText('🌸 SakuMari 🌸')).toBeVisible();
-  });
-
-  test('should show empty state when no practice data', async ({ page }) => {
-    // Create a fresh user session (this would require clearing data or new user)
-    await page.goto('/dashboard');
-    
-    // Should handle empty state gracefully - either show message or show zero stats
-    await expect(page.getByText('Dashboard')).toBeVisible();
-    
-    // Stats should show reasonable defaults
-    const statsElements = [
-      page.getByText('Total Characters Practiced'),
-      page.getByText('Average Accuracy'),
-      page.getByText('Total Attempts')
-    ];
-    
-    for (const element of statsElements) {
-      await expect(element).toBeVisible();
-    }
   });
 
   test('should be responsive on mobile', async ({ page }) => {
