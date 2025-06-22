@@ -201,6 +201,21 @@ async function seed() {
 
     console.log("Seeding completed!");
     console.log(`Added ${hiragana.length + katakana.length} kana characters.`);
+
+    // Create test user for e2e tests
+    if (process.env.NODE_ENV === "test") {
+      console.log("Creating test user for e2e tests...");
+      await prisma.user.upsert({
+        where: { id: "test-user-e2e" },
+        update: {},
+        create: {
+          id: "test-user-e2e",
+          email: "test@sakumari.local",
+          name: "Test User",
+        },
+      });
+      console.log("Test user created!");
+    }
   } catch (error) {
     console.error("Seeding failed:", error);
     throw error;

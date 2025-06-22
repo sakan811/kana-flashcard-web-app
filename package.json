@@ -22,6 +22,7 @@
     "test:db:watch": "vitest --config vitest.config.db.mts",
     "test:db:clean": "rm -f __tests__/db/test.db",
     "test:e2e": "npx playwright test",
+    "test:e2e:setup": "cross-env NODE_ENV=test pnpm exec prisma generate && cross-env NODE_ENV=test pnpm exec prisma migrate deploy && cross-env NODE_ENV=test pnpm exec prisma db seed",
     "postinstall": "prisma generate"
   },
   "prisma": {
@@ -49,6 +50,7 @@
     "@types/node": "^24.0.3",
     "@types/react": "19.1.8",
     "@vitejs/plugin-react": "^4.5.2",
+    "cross-env": "^7.0.3",
     "eslint": "9.29.0",
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "^10.1.5",
