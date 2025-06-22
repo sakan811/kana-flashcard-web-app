@@ -49,10 +49,3 @@ pnpm run dev
 ```
 
 Open <http://localhost:3000>
-
-## Usage
-
-1. **Home Page**: Choose between Hiragana or Katakana practice
-2. **Flashcard Practice**: Type the romaji equivalent of the displayed character
-3. **Dashboard**: View your practice statistics and character-specific accuracy
-4. **Progress Tracking**: The app automatically tracks your performance and shows difficult characters more often
