@@ -59,11 +59,7 @@ export default function MultipleChoice({
             selectedChoice === index
               ? "border-[#d1622b] bg-[#fad182]/40 text-[#403933] shadow-md"
               : "border-[#705a39] bg-white text-[#403933] hover:border-[#d1622b] hover:bg-[#fad182]/20 hover:shadow-sm"
-          } ${
-            disabled
-              ? "opacity-50 cursor-not-allowed"
-              : "cursor-pointer"
-          }`}
+          } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
           aria-label={`Choice ${index + 1}: ${choice}`}
           tabIndex={disabled ? -1 : 0}
         >
