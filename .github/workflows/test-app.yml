@@ -38,7 +38,7 @@ jobs:
         run: pnpm install
 
       - name: Run tests
-        run: pnpm test 
+        run: pnpm test
 
       - name: Run db tests
         run: pnpm run test:db:setup && pnpm run test:db

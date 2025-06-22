@@ -50,9 +50,10 @@ const testCredentialsProvider = Credentials({
 // Determine which providers to use based on environment
 const getProviders = () => {
   const { NODE_ENV } = process.env;
-  
+
   if (NODE_ENV === "test") return [testCredentialsProvider];
-  if (NODE_ENV === "production" || NODE_ENV === "development") return [googleProvider];
+  if (NODE_ENV === "production" || NODE_ENV === "development")
+    return [googleProvider];
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
