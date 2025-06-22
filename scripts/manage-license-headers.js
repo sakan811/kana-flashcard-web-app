@@ -60,7 +60,7 @@ const SKIP_DIRS = [
 ];
 
 // Files to skip
-const SKIP_FILES = ["next-env.d.ts", "next.config.js"];
+const SKIP_FILES = ["next-env.d.ts", "next.config.js", "playwright.config.ts"];
 
 function shouldProcessFile(filePath) {
   const ext = path.extname(filePath);
