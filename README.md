@@ -27,7 +27,7 @@ For local development, you'll need Google OAuth credentials:
 5. Create credentials: "APIs & Services" → "Credentials" → "Create Credentials" → "OAuth client ID" → "Web application"
 6. Add redirect URI: `http://localhost:3000/api/auth/callback/google`
 7. Copy Client ID and Client Secret
-8. Generate NEXTAUTH_SECRET at [https://auth-secret-gen.vercel.app/](https://auth-secret-gen.vercel.app/)
+8. Generate AUTH_SECRET at [https://auth-secret-gen.vercel.app/](https://auth-secret-gen.vercel.app/)
 
 For more details: [Google OAuth 2.0 Documentation](https://developers.google.com/identity/protocols/oauth2)
 
@@ -38,8 +38,8 @@ For more details: [Google OAuth 2.0 Documentation](https://developers.google.com
 ```bash
 git clone https://github.com/sakan811/SakuMari.git
 cd SakuMari
-cp .env.local.example .env
-# Edit .env with your Google OAuth credentials and NEXTAUTH_SECRET
+cp .env.example .env
+# Edit .env with your Google OAuth credentials and AUTH_SECRET
 docker compose up -d saku-mari-db
 pnpm install
 pnpm exec prisma generate
