@@ -110,11 +110,14 @@ test.describe("Authentication Flow", () => {
     // Click sign out
     await page.getByText("Sign Out").click({ force: true });
 
-    // Wait for navigation and reload page to ensure auth state is updated
-    await page.waitForTimeout(2000);
+    // Wait for logout to complete by ensuring Sign Out button disappears
+    await expect(page.getByText("Sign Out")).not.toBeVisible({ timeout: 10000 });
+    
+    // Reload and wait for page to fully load
     await page.reload();
+    await page.waitForLoadState('networkidle');
 
-    // Wait for logout to complete by waiting for sign-in button to appear
+    // Wait for sign-in button to appear
     await expect(page.getByRole("button", { name: "Sign In with Google" })).toBeVisible({ timeout: 10000 });
 
     // Should show welcome message for unauthenticated users
@@ -132,7 +135,7 @@ test.describe("Authentication Flow", () => {
     await page.getByText("Sign Out").click({ force: true });
 
     // Wait for logout to complete
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(10000);
     await page.reload();
     await expect(page.getByRole("button", { name: "Sign In with Google" })).toBeVisible({ timeout: 10000 });
 
