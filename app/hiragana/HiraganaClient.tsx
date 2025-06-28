@@ -15,21 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "next";
-import DashboardClient from "./DashboardClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Dashboard - Your Progress",
-  description: "Track your Japanese Kana learning progress. View your statistics, accuracy, and performance metrics.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-  alternates: {
-    canonical: "/dashboard",
-  },
-};
+import FlashcardApp from "@/components/FlashcardApp";
 
-export default function DashboardPage() {
-  return <DashboardClient />;
+export default function HiraganaClient() {
+  return <FlashcardApp kanaType="hiragana" />;
 }

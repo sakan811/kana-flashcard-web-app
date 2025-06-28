@@ -15,10 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-"use client";
+import { Metadata } from "next";
+import KatakanaClient from "./KatakanaClient";
 
-import FlashcardApp from "@/components/FlashcardApp";
+export const metadata: Metadata = {
+  title: "Katakana Practice",
+  description: "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols used for foreign words and names.",
+  keywords: ["Katakana", "Japanese characters", "flashcards", "practice", "learning", "アイウエオ"],
+  alternates: {
+    canonical: "/katakana",
+  },
+  openGraph: {
+    title: "Katakana Practice | SakuMari",
+    description: "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols.",
+    url: "/katakana",
+  },
+  twitter: {
+    title: "Katakana Practice | SakuMari",
+    description: "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols.",
+  },
+};
 
 export default function KatakanaPage() {
-  return <FlashcardApp kanaType="katakana" />;
+  return <KatakanaClient />;
 }

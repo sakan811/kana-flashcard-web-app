@@ -15,10 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-"use client";
+import { Metadata } from "next";
+import HiraganaClient from "./HiraganaClient";
 
-import FlashcardApp from "@/components/FlashcardApp";
+export const metadata: Metadata = {
+  title: "Hiragana Practice",
+  description: "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols and improve your reading skills.",
+  keywords: ["Hiragana", "Japanese characters", "flashcards", "practice", "learning", "あいうえお"],
+  alternates: {
+    canonical: "/hiragana",
+  },
+  openGraph: {
+    title: "Hiragana Practice | SakuMari",
+    description: "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols.",
+    url: "/hiragana",
+  },
+  twitter: {
+    title: "Hiragana Practice | SakuMari",
+    description: "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols.",
+  },
+};
 
 export default function HiraganaPage() {
-  return <FlashcardApp kanaType="hiragana" />;
+  return <HiraganaClient />;
 }
