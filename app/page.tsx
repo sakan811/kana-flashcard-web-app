@@ -34,9 +34,13 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://saku-mari.vercel.app",
+    title: "SakuMari - Master Japanese Kana",
     description:
       "Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters.",
-    url: "/",
+    siteName: "SakuMari",
   },
   twitter: {
     description:
