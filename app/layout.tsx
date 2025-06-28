@@ -22,10 +22,19 @@ import Providers from "@/components/SessionProviders";
 export const metadata: Metadata = {
   title: {
     default: "SakuMari - Master Japanese Kana",
-    template: "%s | SakuMari"
+    template: "%s | SakuMari",
   },
-  description: "Master Japanese Hiragana and Katakana with interactive flashcards. Learn, practice, and track your progress in this free educational app.",
-  keywords: ["Japanese", "Hiragana", "Katakana", "flashcards", "learn Japanese", "kana practice", "Japanese alphabet"],
+  description:
+    "Master Japanese Hiragana and Katakana with interactive flashcards. Learn, practice, and track your progress in this free educational app.",
+  keywords: [
+    "Japanese",
+    "Hiragana",
+    "Katakana",
+    "flashcards",
+    "learn Japanese",
+    "kana practice",
+    "Japanese alphabet",
+  ],
   authors: [{ name: "Sakan Nirattisaykul" }],
   creator: "Sakan Nirattisaykul",
   publisher: "SakuMari",
@@ -43,13 +52,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://saku-mari.vercel.app",
     title: "SakuMari - Master Japanese Kana",
-    description: "Master Japanese Hiragana and Katakana with interactive flashcards. Learn, practice, and track your progress.",
+    description:
+      "Master Japanese Hiragana and Katakana with interactive flashcards. Learn, practice, and track your progress.",
     siteName: "SakuMari",
   },
   twitter: {
     card: "summary_large_image",
     title: "SakuMari - Master Japanese Kana",
-    description: "Master Japanese Hiragana and Katakana with interactive flashcards. Learn, practice, and track your progress.",
+    description:
+      "Master Japanese Hiragana and Katakana with interactive flashcards. Learn, practice, and track your progress.",
   },
   robots: {
     index: true,

@@ -19,17 +19,28 @@ import { Metadata } from "next";
 import HomeClient from "./HomeClient";
 
 export const metadata: Metadata = {
-  description: "Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters with progress tracking.",
-  keywords: ["Japanese learning", "Hiragana", "Katakana", "flashcards", "Japanese alphabet", "kana practice", "learn Japanese free"],
+  description:
+    "Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters with progress tracking.",
+  keywords: [
+    "Japanese learning",
+    "Hiragana",
+    "Katakana",
+    "flashcards",
+    "Japanese alphabet",
+    "kana practice",
+    "learn Japanese free",
+  ],
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    description: "Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters.",
+    description:
+      "Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters.",
     url: "/",
   },
   twitter: {
-    description: "Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters.",
+    description:
+      "Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters.",
   },
 };
 

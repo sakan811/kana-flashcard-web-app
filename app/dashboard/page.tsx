@@ -20,7 +20,8 @@ import DashboardClient from "./DashboardClient";
 
 export const metadata: Metadata = {
   title: "Dashboard - Your Progress",
-  description: "Track your Japanese Kana learning progress. View your statistics, accuracy, and performance metrics.",
+  description:
+    "Track your Japanese Kana learning progress. View your statistics, accuracy, and performance metrics.",
   robots: {
     index: false,
     follow: false,

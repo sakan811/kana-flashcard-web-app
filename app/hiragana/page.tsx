@@ -20,19 +20,29 @@ import HiraganaClient from "./HiraganaClient";
 
 export const metadata: Metadata = {
   title: "Hiragana Practice",
-  description: "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols and improve your reading skills.",
-  keywords: ["Hiragana", "Japanese characters", "flashcards", "practice", "learning", "あいうえお"],
+  description:
+    "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols and improve your reading skills.",
+  keywords: [
+    "Hiragana",
+    "Japanese characters",
+    "flashcards",
+    "practice",
+    "learning",
+    "あいうえお",
+  ],
   alternates: {
     canonical: "/hiragana",
   },
   openGraph: {
     title: "Hiragana Practice | SakuMari",
-    description: "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols.",
+    description:
+      "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols.",
     url: "/hiragana",
   },
   twitter: {
     title: "Hiragana Practice | SakuMari",
-    description: "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols.",
+    description:
+      "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols.",
   },
 };
 
