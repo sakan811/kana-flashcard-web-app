@@ -5,6 +5,9 @@
 
 import { test, expect } from '@playwright/test';
 
+// Skip auth setup for SEO tests
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test.describe('SEO Metadata E2E Tests', () => {
   test.describe('Home Page SEO', () => {
     test('should have correct meta tags in document head', async ({ page }) => {

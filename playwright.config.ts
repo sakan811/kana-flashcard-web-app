@@ -28,6 +28,15 @@ export default defineConfig({
       testMatch: /.*\.teardown\.ts/,
     },
 
+    // SEO tests (no auth required)
+    {
+      name: "seo-chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+      testMatch: /.*seo-metadata\.spec\.ts/,
+    },
+
     // Main test projects that depend on setup
     {
       name: "chromium",
@@ -37,6 +46,7 @@ export default defineConfig({
         storageState: "playwright/.auth/user.json",
       },
       dependencies: ["setup"],
+      testIgnore: /.*seo-metadata\.spec\.ts/,
     },
     {
       name: "firefox",
@@ -46,6 +56,7 @@ export default defineConfig({
         storageState: "playwright/.auth/user.json",
       },
       dependencies: ["setup"],
+      testIgnore: /.*seo-metadata\.spec\.ts/,
     },
     {
       name: "webkit",
@@ -55,6 +66,7 @@ export default defineConfig({
         storageState: "playwright/.auth/user.json",
       },
       dependencies: ["setup"],
+      testIgnore: /.*seo-metadata\.spec\.ts/,
     },
   ],
 
