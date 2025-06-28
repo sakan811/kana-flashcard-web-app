@@ -19,7 +19,7 @@ import { Metadata } from "next";
 import HiraganaClient from "./HiraganaClient";
 
 export const metadata: Metadata = {
-  title: "Hiragana Practice",
+  title: "Hiragana Practice | SakuMari",
   description:
     "Practice Japanese Hiragana characters with interactive flashcards. Master all 46 basic Hiragana symbols and improve your reading skills.",
   keywords: [

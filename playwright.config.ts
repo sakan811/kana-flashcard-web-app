@@ -5,17 +5,13 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  workers: process.env.CI ? 1 : undefined,
   reporter: "html",
-  timeout: 60000, // 1 minute per test
-  expect: { timeout: 10000 }, // 10 seconds for assertions
 
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    actionTimeout: 10000, // 10 seconds for actions
-    navigationTimeout: 30000, // 30 seconds for page navigation
   },
 
   projects: [
@@ -75,7 +71,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "cross-env NODE_ENV=test pnpm run dev",
+    command: "pnpm run start",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     env: {
