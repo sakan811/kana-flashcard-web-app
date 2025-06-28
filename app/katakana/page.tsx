@@ -20,19 +20,29 @@ import KatakanaClient from "./KatakanaClient";
 
 export const metadata: Metadata = {
   title: "Katakana Practice",
-  description: "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols used for foreign words and names.",
-  keywords: ["Katakana", "Japanese characters", "flashcards", "practice", "learning", "アイウエオ"],
+  description:
+    "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols used for foreign words and names.",
+  keywords: [
+    "Katakana",
+    "Japanese characters",
+    "flashcards",
+    "practice",
+    "learning",
+    "アイウエオ",
+  ],
   alternates: {
     canonical: "/katakana",
   },
   openGraph: {
     title: "Katakana Practice | SakuMari",
-    description: "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols.",
+    description:
+      "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols.",
     url: "/katakana",
   },
   twitter: {
     title: "Katakana Practice | SakuMari",
-    description: "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols.",
+    description:
+      "Practice Japanese Katakana characters with interactive flashcards. Master all 46 basic Katakana symbols.",
   },
 };
 
