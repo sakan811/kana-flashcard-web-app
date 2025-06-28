@@ -43,6 +43,7 @@ export const metadata: Metadata = {
     siteName: "SakuMari",
   },
   twitter: {
+    card: "summary_large_image",
     description:
       "Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters.",
   },
