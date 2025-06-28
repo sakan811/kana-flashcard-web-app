@@ -4,13 +4,17 @@ import path from "path";
 const authFile = path.join(__dirname, "../../playwright/.auth/user.json");
 
 setup("authenticate", async ({ page }) => {
-  // Navigate directly to the test credentials signin page
+  // Navigate to the signin page
   await page.goto("/api/auth/signin");
 
-  // Wait for the credentials form to load
-  await page.waitForSelector("form", { timeout: 10000 });
+  // Wait for the signin page to load
+  await page.waitForLoadState("networkidle");
 
-  // Fill the password field (your test credentials provider expects "test123")
+  // The test credentials provider should be the only option when NODE_ENV=test
+  // Look for the "Sign in with Test User" form/button
+  await page.waitForSelector('form', { timeout: 10000 });
+
+  // Fill the password field (test credentials provider expects "test123")
   await page.fill('input[name="password"]', "test123");
 
   // Submit the form
