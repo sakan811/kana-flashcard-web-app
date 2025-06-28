@@ -54,6 +54,9 @@ const getProviders = () => {
   if (NODE_ENV === "test") return [testCredentialsProvider];
   if (NODE_ENV === "production" || NODE_ENV === "development")
     return [googleProvider];
+  
+  // Fallback to Google provider for any other environment
+  return [googleProvider];
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
