@@ -73,7 +73,7 @@ test.describe('SEO Metadata E2E Tests', () => {
       await page.goto('/');
 
       const canonical = page.locator('link[rel="canonical"]');
-      await expect(canonical).toHaveAttribute('href', /localhost:3000\/$/);
+      await expect(canonical).toHaveAttribute('href', /https:\/\/saku-mari\.vercel\.app/);
     });
   });
 
@@ -101,7 +101,7 @@ test.describe('SEO Metadata E2E Tests', () => {
       await expect(ogTitle).toHaveAttribute('content', /SakuMari/);
 
       const ogUrl = page.locator('meta[property="og:url"]');
-      await expect(ogUrl).toHaveAttribute('content', /localhost:3000/);
+      await expect(ogUrl).toHaveAttribute('content', /saku-mari\.vercel\.app/);
     });
   });
 
@@ -129,7 +129,7 @@ test.describe('SEO Metadata E2E Tests', () => {
       await expect(ogTitle).toHaveAttribute('content', /SakuMari/);
 
       const ogUrl = page.locator('meta[property="og:url"]');
-      await expect(ogUrl).toHaveAttribute('content', /localhost:3000/);
+      await expect(ogUrl).toHaveAttribute('content', /saku-mari\.vercel\.app/);
     });
   });
 
