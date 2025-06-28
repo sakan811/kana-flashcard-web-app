@@ -25,6 +25,9 @@ test:
 test-run:
 	pnpm run test:run
 
+test-e2e:
+	pnpm run test:e2e
+
 test-all: test-run test-db-setup test-db test-db-clean
 
 pre-ci: lint format test-all
