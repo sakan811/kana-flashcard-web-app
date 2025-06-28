@@ -167,11 +167,11 @@ test.describe('SEO Metadata - Production Build', () => {
       await page.waitForLoadState('networkidle');
 
       // Check for key SEO content
-      await expect(page.locator('text=SakuMari')).toBeVisible();
-      await expect(page.locator('text=Japanese')).toBeVisible();
-      await expect(page.locator('text=Hiragana')).toBeVisible();
-      await expect(page.locator('text=Katakana')).toBeVisible();
-      await expect(page.locator('text=flashcard')).toBeVisible();
+      await expect(page.locator('text=SakuMari').first()).toBeVisible();
+      await expect(page.locator('text=Japanese').first()).toBeVisible();
+      await expect(page.locator('text=Hiragana').first()).toBeVisible();
+      await expect(page.locator('text=Katakana').first()).toBeVisible();
+      await expect(page.locator('text=flashcard').first()).toBeVisible();
     });
 
     test('should have descriptive link text', async ({ page }) => {
@@ -197,9 +197,9 @@ test.describe('SEO Metadata - Production Build', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      // Should include actual Japanese characters
-      await expect(page.locator('text=ひらがな')).toBeVisible(); // Hiragana
-      await expect(page.locator('text=カタカナ')).toBeVisible(); // Katakana
+      // Should include actual Japanese characters - use first() to avoid strict mode violation
+      await expect(page.locator('text=ひらがな').first()).toBeVisible(); // Hiragana
+      await expect(page.locator('text=カタカナ').first()).toBeVisible(); // Katakana
     });
   });
 });

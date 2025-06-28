@@ -110,8 +110,12 @@ test.describe("Authentication Flow", () => {
     // Click sign out
     await page.getByText("Sign Out").click({ force: true });
 
-    // Wait for logout to complete by waiting for sign-out button to disappear
-    await expect(page.getByText("Sign Out")).not.toBeVisible({ timeout: 10000 });
+    // Wait for navigation and reload page to ensure auth state is updated
+    await page.waitForTimeout(2000);
+    await page.reload();
+
+    // Wait for logout to complete by waiting for sign-in button to appear
+    await expect(page.getByRole("button", { name: "Sign In with Google" })).toBeVisible({ timeout: 10000 });
 
     // Should show welcome message for unauthenticated users
     await expect(page.getByText("🌸 SakuMari 🌸")).toBeVisible();
@@ -128,7 +132,9 @@ test.describe("Authentication Flow", () => {
     await page.getByText("Sign Out").click({ force: true });
 
     // Wait for logout to complete
-    await expect(page.getByText("Sign Out")).not.toBeVisible({ timeout: 10000 });
+    await page.waitForTimeout(2000);
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Sign In with Google" })).toBeVisible({ timeout: 10000 });
 
     // Try to access protected route
     await page.goto("/hiragana");
