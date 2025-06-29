@@ -238,6 +238,12 @@ test.describe('SEO Metadata E2E Tests', () => {
 
     test('should have proper heading structure', async ({ page }) => {
       await page.goto('/');
+      
+      // Wait for the page to fully load
+      await page.waitForLoadState('networkidle');
+      
+      // Wait for the h1 to be visible
+      await expect(page.locator('h1')).toBeVisible();
 
       // Should have exactly one h1
       const h1Count = await page.locator('h1').count();
