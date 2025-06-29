@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import FlashcardApp from "@/components/FlashcardApp";
 
 // Mock fetch globally
@@ -31,15 +31,20 @@ describe("Session Management", () => {
       status: "authenticated",
     });
 
-    const { rerender } = render(<FlashcardApp kanaType="hiragana" />);
-
-    // Simulate session expiration
-    mockUseSession.mockReturnValue({
-      data: null,
-      status: "unauthenticated",
+    let rerender: any;
+    act(() => {
+      ({ rerender } = render(<FlashcardApp kanaType="hiragana" />));
     });
 
-    rerender(<FlashcardApp kanaType="hiragana" />);
+    // Simulate session expiration
+    act(() => {
+      mockUseSession.mockReturnValue({
+        data: null,
+        status: "unauthenticated",
+      });
+
+      rerender(<FlashcardApp kanaType="hiragana" />);
+    });
 
     // Should handle gracefully without errors
     expect(screen.queryByRole("status")).toBeInTheDocument();
@@ -56,10 +61,15 @@ describe("Session Management", () => {
       status: "authenticated",
     });
 
-    const { rerender } = render(<FlashcardApp kanaType="hiragana" />);
+    let rerender: any;
+    act(() => {
+      ({ rerender } = render(<FlashcardApp kanaType="hiragana" />));
+    });
 
     // Re-render with same session
-    rerender(<FlashcardApp kanaType="katakana" />);
+    act(() => {
+      rerender(<FlashcardApp kanaType="katakana" />);
+    });
 
     // Session should persist
     expect(mockUseSession).toHaveBeenCalled();
@@ -73,7 +83,9 @@ describe("Session Management", () => {
       status: "authenticated",
     });
 
-    render(<FlashcardApp kanaType="hiragana" />);
+    act(() => {
+      render(<FlashcardApp kanaType="hiragana" />);
+    });
 
     // Should handle network errors gracefully
     await waitFor(() => {

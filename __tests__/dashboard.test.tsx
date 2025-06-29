@@ -89,7 +89,9 @@ describe("Dashboard Component", () => {
   test("handles API errors", async () => {
     mockFetch.mockRejectedValue(new Error("Network error"));
 
-    render(<Dashboard />);
+    act(() => {
+      render(<Dashboard />);
+    });
 
     await waitFor(() => {
       expect(screen.getByText("Failed to load progress data")).toBeTruthy();

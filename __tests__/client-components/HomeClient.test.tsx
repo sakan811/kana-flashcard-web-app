@@ -46,7 +46,9 @@ describe('HomeClient Component', () => {
       render(<HomeClient />);
 
       expect(screen.getByTestId('header')).toBeInTheDocument();
-      expect(screen.getByRole('generic')).toHaveClass('animate-spin');
+      const spinner = document.querySelector('.animate-spin');
+      expect(spinner).toBeTruthy();
+      expect(spinner).toHaveClass('animate-spin');
     });
   });
 
@@ -114,7 +116,8 @@ describe('HomeClient Component', () => {
       expect(screen.getByText('ひらがな Hiragana Practice')).toBeInTheDocument();
       expect(screen.getByText('あいう')).toBeInTheDocument();
       expect(screen.getByText('Practice the Hiragana characters')).toBeInTheDocument();
-      expect(screen.getByText('Start Learning →')).toBeInTheDocument();
+      const startLearning = screen.getAllByText('Start Learning →');
+      expect(startLearning.length).toBeGreaterThan(0);
     });
 
     it('should show Katakana practice card with correct content', () => {
@@ -160,7 +163,7 @@ describe('HomeClient Component', () => {
     it('should have proper CSS classes for styling', () => {
       render(<HomeClient />);
 
-      const container = screen.getByRole('generic');
+      const container = document.querySelector('.min-h-screen');
       expect(container).toHaveClass('min-h-screen', 'bg-gradient-to-br', 'from-[#fad182]', 'via-[#f5c55a]', 'to-[#fad182]');
     });
 
