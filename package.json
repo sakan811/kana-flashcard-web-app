@@ -22,7 +22,8 @@
     "test:db": "vitest run --config vitest.config.db.mts",
     "test:db:watch": "vitest --config vitest.config.db.mts",
     "test:db:clean": "cross-env NODE_ENV=test && (rm -f __tests__/db/test.db || del __tests__\\db\\test.db 2>nul || true)",
-    "test:e2e": "npx playwright test",
+    "test:e2e": "cross-env NODE_ENV=test npx playwright test ",
+    "test:e2e:build": "cross-env NODE_ENV=test next build",
     "test:e2e:setup": "cross-env NODE_ENV=test pnpm exec prisma generate && cross-env NODE_ENV=test pnpm exec prisma migrate deploy && cross-env NODE_ENV=test pnpm exec prisma db seed",
     "postinstall": "prisma generate"
   },
