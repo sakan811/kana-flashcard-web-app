@@ -1,34 +1,23 @@
 dev:
-	pnpm run dev
+	pnpm dev
 
 build:
-	pnpm run build
+	pnpm build
 
 lint:
-	pnpm run lint
+	pnpm lint
 
 format:
-	pnpm run format
-
-test-db-setup:
-	pnpm run test:db:setup
-
-test-db:
-	pnpm run test:db
-
-test-db-clean:
-	pnpm run test:db:clean
-
-test:
-	pnpm run test
-
-test-run:
-	pnpm run test:run
+	pnpm format
 
 test-e2e:
-	pnpm run test:e2e
+	pnpm test:e2e
 
-test-all: test-run test-db-setup test-db test-db-clean
+test-all:
+	pnpm test:run && \
+	pnpm test:db:setup && \
+	pnpm test:db && \
+	pnpm test:db:clean
 
 pre-ci: lint format test-all
 
