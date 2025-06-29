@@ -119,8 +119,8 @@ describe('SEO Integration Tests', () => {
       render(<HomeClient />);
 
       // Check that actual Japanese characters are included for better language SEO
-      expect(screen.getByText('ひらがな')).toBeInTheDocument(); // Hiragana
-      expect(screen.getByText('カタカナ')).toBeInTheDocument(); // Katakana
+      expect(screen.getByText(/ひらがな/)).toBeInTheDocument(); // Hiragana
+      expect(screen.getByText(/カタカナ/)).toBeInTheDocument(); // Katakana
       expect(screen.getByText('あいう')).toBeInTheDocument(); // Sample Hiragana
       expect(screen.getByText('アイウ')).toBeInTheDocument(); // Sample Katakana
     });
@@ -191,8 +191,9 @@ describe('SEO Integration Tests', () => {
 
     it('should pass correct props between server and client components', () => {
       // Hiragana client should get correct kana type
-      render(<HiraganaClient />);
+      const { unmount } = render(<HiraganaClient />);
       expect(screen.getByTestId('flashcard-app')).toHaveAttribute('data-kana-type', 'hiragana');
+      unmount();
 
       // Katakana client should get correct kana type
       render(<KatakanaClient />);

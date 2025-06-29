@@ -39,7 +39,7 @@ vi.mock("next/link", () => ({
 
 // Mock next/image
 vi.mock("next/image", () => ({
-  default: ({ src, alt, ...props }: any) => (
+  default: ({ src, alt, unoptimized, ...props }: any) => (
     <img src={src} alt={alt} {...props} />
   ),
 }));

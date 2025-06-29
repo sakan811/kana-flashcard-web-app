@@ -115,7 +115,7 @@ describe('SEO Metadata Configuration', () => {
       expect(homeMetadata.openGraph?.description).toBe(
         'Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters.'
       );
-      expect(homeMetadata.openGraph?.url).toBe('/');
+      expect(homeMetadata.openGraph?.url).toBe('https://saku-mari.vercel.app');
     });
 
     it('should have Twitter Card configuration', () => {
@@ -127,7 +127,7 @@ describe('SEO Metadata Configuration', () => {
 
   describe('Hiragana Page Metadata', () => {
     it('should have Hiragana-specific title', () => {
-      expect(hiraganaMetadata.title).toBe('Hiragana Practice');
+      expect(hiraganaMetadata.title).toBe('Hiragana Practice | SakuMari');
     });
 
     it('should have Hiragana-specific description', () => {
