@@ -45,6 +45,24 @@ export default function Flashcard() {
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Helper function to safely set timeout
+  const setSafeTimeout = (callback: () => void, delay: number) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(callback, delay);
+  };
 
   // Focus input when component mounts, when card changes, or after result is cleared
   useEffect(() => {
@@ -70,7 +88,7 @@ export default function Flashcard() {
         setSelectedChoice(null);
         setError("");
         // Allow a brief delay before enabling the next action
-        setTimeout(() => setIsProcessing(false), 500);
+        setSafeTimeout(() => setIsProcessing(false), 500);
       }
     };
 
@@ -113,7 +131,7 @@ export default function Flashcard() {
     submitAnswer(userAnswer);
 
     // Allow a brief delay before enabling the next action
-    setTimeout(() => setIsProcessing(false), 500);
+    setSafeTimeout(() => setIsProcessing(false), 500);
   };
 
   const handleNextCard = () => {
@@ -123,7 +141,7 @@ export default function Flashcard() {
     setSelectedChoice(null);
     setError("");
     // Allow a brief delay before enabling the next action
-    setTimeout(() => setIsProcessing(false), 500);
+    setSafeTimeout(() => setIsProcessing(false), 500);
   };
 
   const handleModeChange = (mode: InteractionMode) => {

@@ -11,6 +11,7 @@ format:
 	pnpm format
 
 test-e2e:
+	pnpm test:e2e:build && \
 	pnpm test:e2e
 
 test-all:
