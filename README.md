@@ -14,7 +14,7 @@ A web application for practicing Japanese Hiragana and Katakana characters with 
 
 ## Try It Live
 
-🚀 **[https://saku-mari.vercel.app/](https://saku-mari.vercel.app/)** - No setup required!
+🚀 **[https://sakumari.fukudev.org/](https://sakumari.fukudev.org/)** - No setup required!
 
 ## Local Setup
 
