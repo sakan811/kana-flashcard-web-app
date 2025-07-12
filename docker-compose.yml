@@ -1,0 +1,25 @@
+services:
+  saku-mari-db:
+    image: postgres:latest
+    ports:
+      - "7777:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - saku-mari-network
+
+volumes:
+  postgres_data:
+
+networks:
+  saku-mari-network:
+    driver: bridge
