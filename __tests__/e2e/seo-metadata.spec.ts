@@ -46,7 +46,7 @@ test.describe('SEO Metadata E2E Tests', () => {
 
       // Check OpenGraph URL
       const ogUrl = page.locator('meta[property="og:url"]');
-      await expect(ogUrl).toHaveAttribute('content', /saku-mari\.vercel\.app/);
+      await expect(ogUrl).toHaveAttribute('content', /sakumari\.fukudev\.org/);
 
       // Check OpenGraph site name
       const ogSiteName = page.locator('meta[property="og:site_name"]');
@@ -73,7 +73,7 @@ test.describe('SEO Metadata E2E Tests', () => {
       await page.goto('/');
 
       const canonical = page.locator('link[rel="canonical"]');
-      await expect(canonical).toHaveAttribute('href', /https:\/\/saku-mari\.vercel\.app/);
+      await expect(canonical).toHaveAttribute('href', /https:\/\/sakumari\.fukudev\.org/);
     });
   });
 
@@ -101,7 +101,7 @@ test.describe('SEO Metadata E2E Tests', () => {
       await expect(ogTitle).toHaveAttribute('content', /SakuMari/);
 
       const ogUrl = page.locator('meta[property="og:url"]');
-      await expect(ogUrl).toHaveAttribute('content', /saku-mari\.vercel\.app/);
+      await expect(ogUrl).toHaveAttribute('content', /sakumari\.fukudev\.org/);
     });
   });
 
@@ -129,7 +129,7 @@ test.describe('SEO Metadata E2E Tests', () => {
       await expect(ogTitle).toHaveAttribute('content', /SakuMari/);
 
       const ogUrl = page.locator('meta[property="og:url"]');
-      await expect(ogUrl).toHaveAttribute('content', /saku-mari\.vercel\.app/);
+      await expect(ogUrl).toHaveAttribute('content', /sakumari\.fukudev\.org/);
     });
   });
 
