@@ -43,14 +43,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://saku-mari.vercel.app/"),
+  metadataBase: new URL("https://sakumari.fukudev.org/"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://saku-mari.vercel.app",
+    url: "https://sakumari.fukudev.org",
     title: "SakuMari - Master Japanese Kana",
     description:
       "Master Japanese Hiragana and Katakana with interactive flashcards. Learn, practice, and track your progress.",

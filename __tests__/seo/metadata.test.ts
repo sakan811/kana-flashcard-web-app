@@ -52,14 +52,14 @@ describe('SEO Metadata Configuration', () => {
     });
 
     it('should have proper metadata base URL', () => {
-      expect(layoutMetadata.metadataBase).toEqual(new URL('https://saku-mari.vercel.app'));
+      expect(layoutMetadata.metadataBase).toEqual(new URL('https://sakumari.fukudev.org'));
     });
 
     it('should configure OpenGraph metadata', () => {
       expect(layoutMetadata.openGraph).toEqual({
         type: 'website',
         locale: 'en_US',
-        url: 'https://saku-mari.vercel.app',
+        url: 'https://sakumari.fukudev.org',
         title: 'SakuMari - Master Japanese Kana',
         description: 'Master Japanese Hiragana and Katakana with interactive flashcards. Learn, practice, and track your progress.',
         siteName: 'SakuMari',
@@ -115,7 +115,7 @@ describe('SEO Metadata Configuration', () => {
       expect(homeMetadata.openGraph?.description).toBe(
         'Master Japanese Hiragana and Katakana with interactive flashcards. Free educational app to learn Japanese characters.'
       );
-      expect(homeMetadata.openGraph?.url).toBe('https://saku-mari.vercel.app');
+      expect(homeMetadata.openGraph?.url).toBe('https://sakumari.fukudev.org');
     });
 
     it('should have Twitter Card configuration', () => {

@@ -24,6 +24,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/"],
     },
-    sitemap: "https://saku-mari.vercel.app/sitemap.xml",
+    sitemap: "https://sakumari.fukudev.org/sitemap.xml",
   };
 }
