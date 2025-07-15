@@ -2,8 +2,11 @@ version: '3.8'
 
 services:
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: kana-flashcard-app:latest
-    container_name: kana-flashcard-app
+    container_name: kana-flashcard-app-build
     ports:
       - "3000:3000"
     environment:
@@ -23,13 +26,13 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: kana-flashcard-db
+    container_name: kana-flashcard-db-build
     environment:
       - POSTGRES_DB=kana_flashcard
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_build:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -42,7 +45,7 @@ services:
       - app-network
 
 volumes:
-  postgres_data:
+  postgres_data_build:
 
 networks:
   app-network:
