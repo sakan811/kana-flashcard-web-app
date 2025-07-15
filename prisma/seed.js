@@ -179,8 +179,17 @@ async function seed() {
   try {
     // Clear existing data without transaction (Supabase fix)
     console.log("Clearing existing data...");
-    await prisma.kanaProgress.deleteMany({});
-    await prisma.kana.deleteMany({});
+    try {
+      await prisma.kanaProgress.deleteMany({});
+    } catch (error) {
+      console.log("KanaProgress table doesn't exist yet, skipping deletion");
+    }
+    
+    try {
+      await prisma.kana.deleteMany({});
+    } catch (error) {
+      console.log("Kana table doesn't exist yet, skipping deletion");
+    }
 
     // Add a small delay to ensure cleanup
     await new Promise((resolve) => setTimeout(resolve, 1000));
