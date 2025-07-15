@@ -43,4 +43,24 @@ reset:
 setup-db:
 	pnpm exec prisma generate && \
 	pnpm exec prisma migrate dev && \
-	pnpm exec prisma db seed 
+	pnpm exec prisma db seed
+
+# Docker Compose commands
+docker-up:
+	docker-compose up -d
+
+docker-down:
+	docker-compose down
+
+docker-clean:
+	docker-compose down -v --remove-orphans -rmi all
+
+# Build-specific compose commands
+docker-up-build:
+	docker-compose -f docker-compose.build.yml up -d build
+
+docker-down-build:
+	docker-compose -f docker-compose.build.yml down
+
+docker-clean-build:
+	docker-compose -f docker-compose.build.yml down -v --remove-orphans -rmi all

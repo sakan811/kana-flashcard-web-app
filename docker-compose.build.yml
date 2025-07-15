@@ -11,8 +11,8 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - POSTGRES_PRISMA_URL=postgresql://postgres:postgres@db:5432/kana_flashcard
-      - POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@db:5432/kana_flashcard
+      - POSTGRES_PRISMA_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-kana_flashcard}
+      - POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-kana_flashcard}
       - AUTH_URL=http://localhost:3000
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
@@ -25,16 +25,16 @@ services:
       - app-network
 
   db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: kana-flashcard-db-build
     environment:
-      - POSTGRES_DB=kana_flashcard
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-kana_flashcard}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     volumes:
-      - postgres_data_build:/var/lib/postgresql/data
+      - ./postgres_data_build:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
