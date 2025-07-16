@@ -47,20 +47,25 @@ setup-db:
 
 # Docker Compose commands
 docker-up:
-	docker-compose up -d
+	docker compose up -d
 
 docker-down:
-	docker-compose down
+	docker compose down
 
 docker-clean:
-	docker-compose down -v --remove-orphans --rmi all
+	docker compose down -v --remove-orphans --rmi all
 
 # Build-specific compose commands
 docker-up-build:
-	docker-compose -f docker-compose.build.yml up -d --build
+	docker compose -f docker-compose.build.yml up -d --build
 
 docker-down-build:
-	docker-compose -f docker-compose.build.yml down
+	docker compose -f docker-compose.build.yml down
 
 docker-clean-build:
-	docker-compose -f docker-compose.build.yml down -v --remove-orphans --rmi all
+	docker compose -f docker-compose.build.yml down -v --remove-orphans --rmi all
+
+docker-db-setup:
+	docker compose exec app pnpm exec prisma generate && \
+	docker compose exec app pnpm exec prisma migrate deploy && \
+	docker compose exec app pnpm exec prisma db seed
