@@ -12,12 +12,12 @@ services:
   db:
     container_name: kana-flashcard-db-build
     volumes:
-      - postgres_data_build:/var/lib/postgresql/data
+      - ./postgres_data_build:/var/lib/postgresql/data
 
   pgadmin:
     container_name: kana-flashcard-pgadmin-build
     volumes:
-      - pgadmin_data_build:/var/lib/pgadmin
+      - ./pgadmin_data_build:/var/lib/pgadmin
     ports:
       - "8081:80"
 
