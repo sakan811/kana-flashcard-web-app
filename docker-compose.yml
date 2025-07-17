@@ -60,11 +60,15 @@ services:
     restart: unless-stopped
     networks:
       - app-network
-    user: "999:999"
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - SETGID
+      - SETUID
     read_only: true
     tmpfs:
       - /tmp
@@ -95,11 +99,15 @@ services:
     restart: unless-stopped
     networks:
       - app-network
-    user: "5050:5050"
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - SETGID
+      - SETUID
     read_only: true
     tmpfs:
       - /tmp
@@ -112,22 +120,10 @@ services:
         reservations:
           memory: 256M
           cpus: '0.25'
-    profiles:
-      - dev
 
 volumes:
   postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/postgres_data
   pgadmin_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/pgadmin_data
 
 networks:
   app-network:
