@@ -47,3 +47,4 @@ node_modules/
 
 # Docker Cloudflare secrets
 docker-compose.cloudflare.yml
+/data

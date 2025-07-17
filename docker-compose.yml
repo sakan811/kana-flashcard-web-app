@@ -1,15 +1,17 @@
-
 services:
+  # =============================================================================
+  # APP SERVICE - Production (controlled by prod profile)
+  # =============================================================================
   app:
     image: kana-flashcard-app:latest
     container_name: kana-flashcard-app
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=${NODE_ENV:-production}
-      - POSTGRES_PRISMA_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kana_flashcard}
-      - POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kana_flashcard}
-      - AUTH_URL=${AUTH_URL:-https://sakumari.fukudev.org}
+      - NODE_ENV=${NODE_ENV}
+      - POSTGRES_PRISMA_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - AUTH_URL=${AUTH_URL}
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
       - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
@@ -17,17 +19,12 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
-    networks:
-      - app-network
     user: "1001:1001"
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    read_only: true
     tmpfs:
       - /tmp
       - /app/.next/cache
+    networks:
+      - app-network
     deploy:
       resources:
         limits:
@@ -42,16 +39,69 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    profiles:
+      - prod
 
+  # =============================================================================
+  # APP BUILD SERVICE - Build from source (controlled by build profile)
+  # =============================================================================
+  app-build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kana-flashcard-app:latest
+    container_name: kana-flashcard-app
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - POSTGRES_PRISMA_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - AUTH_URL=${AUTH_URL}
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    user: "1001:1001"
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - build
+
+  # =============================================================================
+  # DATABASE SERVICE - Always up
+  # =============================================================================
   db:
     image: postgres:17-alpine
     container_name: kana-flashcard-db
+    ports:
+      - "5432:5432"
     environment:
-      - POSTGRES_DB=${POSTGRES_DB:-kana_flashcard}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -60,16 +110,6 @@ services:
     restart: unless-stopped
     networks:
       - app-network
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - FOWNER
-      - SETGID
-      - SETUID
-    read_only: true
     tmpfs:
       - /tmp
       - /var/run/postgresql
@@ -82,33 +122,25 @@ services:
           memory: 256M
           cpus: '0.25'
 
+  # =============================================================================
+  # PGADMIN SERVICE - Always up
+  # =============================================================================
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: kana-flashcard-pgadmin
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-admin}
-      - PGADMIN_CONFIG_SERVER_MODE=False
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
     ports:
       - "8080:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - app-network
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - FOWNER
-      - SETGID
-      - SETUID
-    read_only: true
     tmpfs:
       - /tmp
       - /var/run/pgadmin
@@ -121,9 +153,42 @@ services:
           memory: 256M
           cpus: '0.25'
 
-volumes:
-  postgres_data:
-  pgadmin_data:
+  # =============================================================================
+  # CLOUDFLARE TUNNEL - Production only
+  # =============================================================================
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: kana-flashcard-cloudflared
+    command: ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARE_TUNNEL_TOKEN}"]
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      app:
+        condition: service_healthy
+      pgadmin:
+        condition: service_started
+    restart: always
+    networks:
+      - app-network
+    tmpfs:
+      - /tmp
+      - /etc/cloudflared
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.25'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep cloudflared || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    profiles:
+      - prod
 
 networks:
   app-network:
