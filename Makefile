@@ -55,17 +55,14 @@ docker-down:
 docker-clean:
 	docker compose down -v --remove-orphans --rmi all
 
-# Build-specific compose commands
+# Profile-based compose commands
 docker-up-build:
-	docker compose -f docker-compose.build.yml up -d --build
+	docker compose --profile build up -d --build
 
-docker-down-build:
-	docker compose -f docker-compose.build.yml down
+docker-up-prod:
+	docker compose --profile prod up -d
 
-docker-clean-build:
-	docker compose -f docker-compose.build.yml down -v --remove-orphans --rmi all
-
-docker-db-setup:
-	docker compose exec app pnpm exec prisma generate && \
-	docker compose exec app pnpm exec prisma migrate deploy && \
-	docker compose exec app pnpm exec prisma db seed
+docker-build-db-setup:
+	docker compose exec app-build pnpm exec prisma generate && \
+	docker compose exec app-build pnpm exec prisma migrate deploy && \
+	docker compose exec app-build pnpm exec prisma db seed

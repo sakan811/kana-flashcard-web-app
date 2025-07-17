@@ -87,3 +87,4 @@ logs
 # Other
 postgres_data/
 pgadmin_data/
+data/
