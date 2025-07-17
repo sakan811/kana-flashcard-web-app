@@ -1,8 +1,8 @@
-include:
-  - docker-compose.yml
-
 services:
   app:
+    extends:
+      file: docker-compose.yml
+      service: app
     build:
       context: .
       dockerfile: Dockerfile
@@ -10,17 +10,29 @@ services:
     image: kana-flashcard-app:latest
 
   db:
+    extends:
+      file: docker-compose.yml
+      service: db
     container_name: kana-flashcard-db-build
     volumes:
-      - ./postgres_data_build:/var/lib/postgresql/data
+      - postgres_data_build:/var/lib/postgresql/data:Z
 
   pgadmin:
+    extends:
+      file: docker-compose.yml
+      service: pgadmin
     container_name: kana-flashcard-pgadmin-build
     volumes:
-      - ./pgadmin_data_build:/var/lib/pgadmin
+      - pgadmin_data_build:/var/lib/pgadmin:Z
     ports:
       - "8081:80"
 
 volumes:
   postgres_data_build:
+    driver: local
   pgadmin_data_build:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
