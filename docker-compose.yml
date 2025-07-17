@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
       - POSTGRES_PRISMA_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kana_flashcard}
       - POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kana_flashcard}
       - AUTH_URL=${AUTH_URL:-https://sakumari.fukudev.org}
@@ -20,11 +20,14 @@ services:
     networks:
       - app-network
     user: "1001:1001"
-    read_only: true
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
     deploy:
       resources:
         limits:
@@ -33,6 +36,12 @@ services:
         reservations:
           memory: 512M
           cpus: '0.5'
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   db:
     image: postgres:17-alpine
@@ -42,7 +51,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data:Z
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -52,11 +61,14 @@ services:
     networks:
       - app-network
     user: "999:999"
-    read_only: true
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
     deploy:
       resources:
         limits:
@@ -74,7 +86,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-admin}
       - PGADMIN_CONFIG_SERVER_MODE=False
     volumes:
-      - pgadmin_data:/var/lib/pgadmin:Z
+      - pgadmin_data:/var/lib/pgadmin
     ports:
       - "8080:80"
     depends_on:
@@ -84,11 +96,14 @@ services:
     networks:
       - app-network
     user: "5050:5050"
-    read_only: true
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/pgadmin
     deploy:
       resources:
         limits:
@@ -103,8 +118,16 @@ services:
 volumes:
   postgres_data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/postgres_data
   pgadmin_data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/pgadmin_data
 
 networks:
   app-network:
