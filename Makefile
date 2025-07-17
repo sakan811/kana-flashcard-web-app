@@ -66,3 +66,17 @@ docker-build-db-setup:
 	docker compose exec app-build pnpm exec prisma generate && \
 	docker compose exec app-build pnpm exec prisma migrate deploy && \
 	docker compose exec app-build pnpm exec prisma db seed
+
+docker-db-setup:
+	docker compose exec app pnpm exec prisma generate && \
+	docker compose exec app pnpm exec prisma migrate deploy && \
+	docker compose exec app pnpm exec prisma db seed
+
+# Build Docker image
+# Usage: make docker-build [IMAGE_NAME=sakumari] [TAG=latest]
+docker-build:
+	docker build -t $(IMAGE_NAME):$(TAG) .
+
+# Set default values for image build
+IMAGE_NAME ?= kana-flashcard-app
+TAG ?= latest

@@ -162,11 +162,6 @@ services:
     command: ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARE_TUNNEL_TOKEN}"]
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
-    depends_on:
-      app:
-        condition: service_healthy
-      pgadmin:
-        condition: service_started
     restart: always
     networks:
       - app-network
