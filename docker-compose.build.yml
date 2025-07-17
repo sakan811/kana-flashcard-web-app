@@ -7,7 +7,9 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: kana-flashcard-app-build
-    image: kana-flashcard-app:latest
+    image: kana-flashcard-app:build
+    environment:
+      - NODE_ENV=development
 
   db:
     extends:
@@ -15,7 +17,7 @@ services:
       service: db
     container_name: kana-flashcard-db-build
     volumes:
-      - postgres_data_build:/var/lib/postgresql/data:Z
+      - postgres_data_build:/var/lib/postgresql/data
 
   pgadmin:
     extends:
@@ -23,15 +25,23 @@ services:
       service: pgadmin
     container_name: kana-flashcard-pgadmin-build
     volumes:
-      - pgadmin_data_build:/var/lib/pgadmin:Z
+      - pgadmin_data_build:/var/lib/pgadmin
     ports:
       - "8081:80"
 
 volumes:
   postgres_data_build:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/postgres_data_build
   pgadmin_data_build:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/pgadmin_data_build
 
 networks:
   app-network:
