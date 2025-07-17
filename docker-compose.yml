@@ -7,9 +7,9 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - POSTGRES_PRISMA_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-kana_flashcard}
-      - POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-kana_flashcard}
-      - AUTH_URL=http://localhost:3000
+      - POSTGRES_PRISMA_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kana_flashcard}
+      - POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kana_flashcard}
+      - AUTH_URL=${AUTH_URL:-https://sakumari.fukudev.org}
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
       - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
@@ -19,6 +19,20 @@ services:
     restart: unless-stopped
     networks:
       - app-network
+    user: "1001:1001"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
 
   db:
     image: postgres:17-alpine
@@ -26,11 +40,9 @@ services:
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-kana_flashcard}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - postgres_data:/var/lib/postgresql/data:Z
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -39,6 +51,20 @@ services:
     restart: unless-stopped
     networks:
       - app-network
+    user: "999:999"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -48,7 +74,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-admin}
       - PGADMIN_CONFIG_SERVER_MODE=False
     volumes:
-      - ./pgadmin_data:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin:Z
     ports:
       - "8080:80"
     depends_on:
@@ -57,10 +83,28 @@ services:
     restart: unless-stopped
     networks:
       - app-network
+    user: "5050:5050"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    profiles:
+      - dev
 
 volumes:
   postgres_data:
+    driver: local
   pgadmin_data:
+    driver: local
 
 networks:
   app-network:
