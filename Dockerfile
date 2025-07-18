@@ -1,11 +1,14 @@
-# Build stage
-FROM node:23-alpine AS builder
+# Base stage
+FROM node:23-slim AS base
 
 # Install pnpm and OpenSSL
-RUN npm install -g pnpm && apk add --no-cache openssl
+RUN npm install -g pnpm && apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
+
+# Build stage
+FROM base AS builder
 
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
@@ -17,18 +20,13 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Generate Prisma client
-ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
-ENV PRISMA_GENERATE_SKIP_DOWNLOAD=true
-RUN pnpm prisma generate
+RUN PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 pnpm exec prisma generate
 
 # Build the application
 RUN pnpm build
 
 # Production stage
-FROM node:23-alpine AS runner
-
-# Install pnpm and OpenSSL
-RUN npm install -g pnpm && apk add --no-cache openssl
+FROM base AS runner
 
 # Set working directory
 WORKDIR /app
