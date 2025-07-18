@@ -33,7 +33,7 @@ jobs:
         with:
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/saku-mari:latest
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/sakumari:latest
           sbom: ${{ github.event_name != 'pull_request' }}
           provenance: ${{ github.event_name != 'pull_request' && 'mode=max' || 'false' }}
 
