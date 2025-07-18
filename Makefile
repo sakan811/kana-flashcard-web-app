@@ -78,5 +78,5 @@ docker-build:
 	docker build -t $(IMAGE_NAME):$(TAG) .
 
 # Set default values for image build
-IMAGE_NAME ?= kana-flashcard-app
+IMAGE_NAME ?= sakumari
 TAG ?= latest
