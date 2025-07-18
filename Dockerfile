@@ -19,8 +19,10 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Generate Prisma client
-RUN PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 pnpm exec prisma generate
+# Generate Prisma client with alternative mirror
+ENV PRISMA_ENGINES_MIRROR=https://registry.npmmirror.com/-/binary/prisma
+ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
+RUN pnpm exec prisma generate
 
 # Build the application
 RUN pnpm build
