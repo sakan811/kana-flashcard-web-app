@@ -40,6 +40,9 @@ jobs:
         run: pnpm install
 
       - name: Build the App
+        env:
+          PRISMA_ENGINES_MIRROR: https://registry.npmmirror.com/-/binary/prisma
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
         run: pnpm build
 
       - name: Setup environment
@@ -53,6 +56,9 @@ jobs:
           EOF
 
       - name: Setup database
+        env:
+          PRISMA_ENGINES_MIRROR: https://registry.npmmirror.com/-/binary/prisma
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
         run: |
           pnpm exec prisma generate
           pnpm exec prisma migrate deploy

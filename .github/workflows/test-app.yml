@@ -41,4 +41,7 @@ jobs:
         run: pnpm test
 
       - name: Run db tests
+        env:
+          PRISMA_ENGINES_MIRROR: https://registry.npmmirror.com/-/binary/prisma
+          PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
         run: pnpm run test:db:setup && pnpm run test:db
