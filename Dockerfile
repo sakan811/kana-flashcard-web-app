@@ -1,8 +1,8 @@
 # Build stage
 FROM node:23-alpine AS builder
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm and OpenSSL
+RUN npm install -g pnpm && apk add --no-cache openssl
 
 # Set working directory
 WORKDIR /app
@@ -18,6 +18,7 @@ COPY . .
 
 # Generate Prisma client
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
+ENV PRISMA_GENERATE_SKIP_DOWNLOAD=true
 RUN pnpm prisma generate
 
 # Build the application
@@ -26,8 +27,8 @@ RUN pnpm build
 # Production stage
 FROM node:23-alpine AS runner
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm and OpenSSL
+RUN npm install -g pnpm && apk add --no-cache openssl
 
 # Set working directory
 WORKDIR /app
