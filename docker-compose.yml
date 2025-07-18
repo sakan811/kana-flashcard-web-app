@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -17,18 +17,6 @@ services:
     restart: unless-stopped
     networks:
       - sakumari
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    cap_add:
-      - SETGID
-      - SETUID
-      - DAC_OVERRIDE
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /var/run/postgresql
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -39,21 +27,13 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     volumes:
-      - ./data/pgadmin:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - sakumari
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /var/run/pgadmin
 
   # Production app service (prod profile)
   app:
@@ -76,19 +56,6 @@ services:
     user: "nextjs:nodejs"
     networks:
       - sakumari
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /app/.next/cache
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: '1.0'
     profiles:
       - prod
 
@@ -115,19 +82,6 @@ services:
     user: "nextjs:nodejs"
     networks:
       - sakumari
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /app/.next/cache
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: '1.0'
     profiles:
       - build
 
@@ -139,21 +93,12 @@ services:
     restart: unless-stopped
     networks:
       - sakumari
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /etc/cloudflared
-    deploy:
-      resources:
-        limits:
-          memory: 128M
-          cpus: '0.25'
     profiles:
       - prod
+
+volumes:
+  postgres_data:
+  pgadmin_data:
 
 networks:
   sakumari:
