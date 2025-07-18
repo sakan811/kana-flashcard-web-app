@@ -123,44 +123,51 @@ pnpm run dev
 ```
 
 **Database Management:**
+
 - pgAdmin: <http://localhost:8080> (use credentials from .env)
 - Direct PostgreSQL: `localhost:5432`
 
 ### Full Stack Docker Deployment
 
 **Option 1: Build from source**
+
 ```bash
 # Edit .env with your credentials (use POSTGRES_HOST=db for Docker networking)
 docker compose --profile build up -d
 
 # Database setup (run inside Docker container)
 docker compose exec app-build pnpm exec prisma generate
-docker compose exec app-build pnpm exec prisma migrate dev
+docker compose exec app-build pnpm exec prisma migrate deploy
 docker compose exec app-build pnpm exec prisma db seed
 ```
+
 - App runs on port 3001
 - Builds from local source code
 - Database setup runs inside the Docker container
 
 **Option 2: Production deployment**
+
 ```bash
 # Edit .env with your credentials (use POSTGRES_HOST=db for Docker networking)
 docker compose --profile prod up -d
 
 # Database setup (run inside Docker container)
 docker compose exec app pnpm exec prisma generate
-docker compose exec app pnpm exec prisma migrate dev
+docker compose exec app pnpm exec prisma migrate deploy
 docker compose exec app pnpm exec prisma db seed
 ```
+
 - App runs on port 3000
 - Uses pre-built image
 - Includes Cloudflare tunnel support
 - Database setup runs inside the Docker container
 
 **Database only:**
+
 ```bash
 docker compose up -d
 ```
+
 - Runs PostgreSQL and pgAdmin only
 - Use for external app development (see "Local Development (Docker Database Only)" above)
 
@@ -181,4 +188,48 @@ pnpm run test:e2e         # Run E2E tests
 
 # All tests
 make test-all             # Run all tests + cleanup
+```
+
+## Useful Makefile Commands
+
+The project includes a comprehensive Makefile with convenient commands for development:
+
+### Development Commands
+
+```bash
+make dev                  # Start development server
+make build                # Build production application
+make lint                 # Run ESLint
+make format               # Format code with Prettier
+make pre-ci               # Run lint, format, and all tests (recommended before committing)
+```
+
+### Database Management
+
+```bash
+make setup-db             # One-command database setup: generate + migrate + seed
+make generate             # Generate Prisma client
+make migrate              # Run database migrations (development)
+make migrate-prod         # Run database migrations (production)
+make seed                 # Seed database with Kana data
+make studio               # Open Prisma Studio for database management
+make reset                # Reset database (removes all data)
+```
+
+### Docker Commands
+
+```bash
+make docker-up            # Start database and pgAdmin services
+make docker-down          # Stop all services
+make docker-clean         # Clean up Docker resources (volumes, images, orphans)
+make docker-up-build      # Build and run full stack from source
+make docker-up-prod       # Run production deployment
+make docker-build         # Build Docker image (default: sakumari:latest)
+```
+
+### Docker Database Setup
+
+```bash
+make docker-build-db-setup  # Setup database for build profile
+make docker-db-setup        # Setup database for production profile
 ```

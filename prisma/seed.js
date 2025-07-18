@@ -184,7 +184,7 @@ async function seed() {
     } catch (error) {
       console.log("KanaProgress table doesn't exist yet, skipping deletion");
     }
-    
+
     try {
       await prisma.kana.deleteMany({});
     } catch (error) {

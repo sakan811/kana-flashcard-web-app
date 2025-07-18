@@ -12,7 +12,7 @@ setup("authenticate", async ({ page }) => {
 
   // The test credentials provider should be the only option when NODE_ENV=test
   // Look for the "Sign in with Test User" form/button
-  await page.waitForSelector('form', { timeout: 10000 });
+  await page.waitForSelector("form", { timeout: 10000 });
 
   // Fill the password field (test credentials provider expects "test123")
   await page.fill('input[name="password"]', "test123");
