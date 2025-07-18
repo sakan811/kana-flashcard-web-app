@@ -111,14 +111,18 @@ test.describe("Authentication Flow", () => {
     await page.getByText("Sign Out").click({ force: true });
 
     // Wait for logout to complete by ensuring Sign Out button disappears
-    await expect(page.getByText("Sign Out")).not.toBeVisible({ timeout: 10000 });
-    
+    await expect(page.getByText("Sign Out")).not.toBeVisible({
+      timeout: 10000,
+    });
+
     // Reload and wait for page to fully load
     await page.reload();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState("networkidle");
 
     // Wait for sign-in button to appear
-    await expect(page.getByRole("button", { name: "Sign In with Google" })).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.getByRole("button", { name: "Sign In with Google" }),
+    ).toBeVisible({ timeout: 10000 });
 
     // Should show welcome message for unauthenticated users
     await expect(page.getByText("🌸 SakuMari 🌸")).toBeVisible();
@@ -137,12 +141,16 @@ test.describe("Authentication Flow", () => {
     // Wait for logout to complete
     await page.waitForTimeout(10000);
     await page.reload();
-    await expect(page.getByRole("button", { name: "Sign In with Google" })).toBeVisible({ timeout: 10000 });
+    await expect(
+      page.getByRole("button", { name: "Sign In with Google" }),
+    ).toBeVisible({ timeout: 10000 });
 
     // Try to access protected route
     await page.goto("/hiragana");
 
     // Should show sign in prompt on the hiragana page or redirect to home
-    await expect(page.getByRole("button", { name: "Sign In with Google" })).toBeVisible({ timeout: 5000 });
+    await expect(
+      page.getByRole("button", { name: "Sign In with Google" }),
+    ).toBeVisible({ timeout: 5000 });
   });
 });
